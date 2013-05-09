@@ -1,0 +1,21 @@
+object FormDisplay: TFormDisplay
+  Left = 192
+  Top = 107
+  BorderStyle = bsDialog
+  Caption = #26597#30475#29031#29255
+  ClientHeight = 536
+  ClientWidth = 971
+  Color = clBtnFace
+  Font.Charset = GB2312_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = #23435#20307
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 12
+end

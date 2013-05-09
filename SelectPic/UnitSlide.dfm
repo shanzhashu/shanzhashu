@@ -1,0 +1,29 @@
+object FormSlide: TFormSlide
+  Left = 280
+  Top = 366
+  BorderStyle = bsNone
+  ClientHeight = 269
+  ClientWidth = 490
+  Color = cl3DDkShadow
+  Font.Charset = GB2312_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = #23435#20307
+  Font.Style = []
+  KeyPreview = True
+  OldCreateOrder = False
+  WindowState = wsMaximized
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 12
+  object tmrSlide: TTimer
+    Enabled = False
+    Interval = 2000
+    OnTimer = tmrSlideTimer
+    Left = 40
+    Top = 40
+  end
+end
