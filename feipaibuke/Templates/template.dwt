@@ -20,7 +20,7 @@ body {
 </style>
 </head>
 
-<body>
+<body><div style="width:1440px;border:1x solid #eeeeee">
 <table width="1280" border="0" cellpadding="0" cellspacing="0" class="TitleContent">
   <tr>
     <td width="10%" rowspan="2" nowrap="nowrap"><img src="../images/logo_main.png" width="300" height="167" /></td>
@@ -70,5 +70,6 @@ body {
     <td align="right">QQ£º277833206 </td>
   </tr>
 </table>
+</div>
 </body>
 </html>

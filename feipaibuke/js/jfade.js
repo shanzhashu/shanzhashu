@@ -1,4 +1,4 @@
-$(function($) {
+(function($) {
 	$.fn.jfade = function(settings) {
    
 	var defaults = {
