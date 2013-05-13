@@ -2,6 +2,12 @@
 
 body {
 	margin:0px;
+	min-width:1000px;
+    width:expression(document.body.clientWidth < 1024 ? "1000px" : "100%" ); 
+	min-height:700px;
+    height:auto !important;
+    overflow:visible;
+	position:relative;
 	}
 	
 td {
