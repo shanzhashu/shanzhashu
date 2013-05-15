@@ -2,13 +2,13 @@
 
 body {
 	margin:0px;
-	min-width:1000px;
-    width:expression(document.body.clientWidth < 1024 ? "1000px" : "100%" ); 
+	min-width:750px;
+  width:expression(document.body.clientWidth < 1024 ? "750px" : "100%" ); 
 	min-height:700px;
-    height:auto !important;
-    overflow:visible;
+  height:auto !important;
+  overflow:visible;
 	position:relative;
-	}
+}
 	
 td {
 	font:9pt Tahoma, "ËÎÌו",Verdana, Arial, Helvetica, sans-serif;
@@ -149,3 +149,8 @@ a:hover {
 }
 .business_list {font-size: 14px; line-height:16pt;}
 .business_listcontent {font-size: 14px; line-height:16pt;}
+
+.front_table {
+	min-width:800px;
+  width:expression(document.body.clientWidth < 1024 ? "995px" : "75%" ); 
+}
