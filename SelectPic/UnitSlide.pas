@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Contnrs, LXImage, ExtCtrls, GDIPAPI, GDIPOBJ, GDIPUTIL;
+  Dialogs, Contnrs, LXImage, ExtCtrls, GDIPAPI, GDIPOBJ, GDIPUTIL,
+  StdCtrls;
 
 const
   WM_START_SLIDE = WM_USER + 250;
@@ -12,6 +13,7 @@ const
 type
   TFormSlide = class(TForm)
     tmrSlide: TTimer;
+    lblChecked: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -53,6 +55,7 @@ begin
 //  FImgContent.OnMouseMove := ImageMouseMove;
 //  FImgContent.OnMouseUp := ImageMouseUp;
   FImgContent.OnDblClick := ImageDblClick;
+  lblChecked.BringToFront;
 end;
 
 procedure TFormSlide.FormKeyDown(Sender: TObject; var Key: Word;
@@ -144,6 +147,10 @@ begin
 
   F := TFileItem(FFiles.Items[CurIdx]);
   ShowMatchedImage(F.FileName);
+  if F.Checked then
+    lblChecked.Caption := 'ÒÑÑ¡Ôñ'
+  else
+    lblChecked.Caption := '';
 end;
 
 procedure TFormSlide.StartSlide(var Msg: TMessage);

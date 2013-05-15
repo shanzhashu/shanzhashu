@@ -19,6 +19,19 @@ object FormSlide: TFormSlide
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 12
+  object lblChecked: TLabel
+    Left = 16
+    Top = 16
+    Width = 6
+    Height = 12
+    Font.Charset = GB2312_CHARSET
+    Font.Color = clYellow
+    Font.Height = -12
+    Font.Name = #23435#20307
+    Font.Style = []
+    ParentFont = False
+    Transparent = True
+  end
   object tmrSlide: TTimer
     Enabled = False
     Interval = 2000
