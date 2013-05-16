@@ -11,10 +11,12 @@ object FormDisplay: TFormDisplay
   Font.Height = -12
   Font.Name = #23435#20307
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 12

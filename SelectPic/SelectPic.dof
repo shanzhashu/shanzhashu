@@ -115,7 +115,7 @@ AutoIncBuild=0
 MajorVer=1
 MinorVer=0
 Release=0
-Build=1
+Build=5
 Debug=0
 PreRelease=0
 Special=0
@@ -126,7 +126,7 @@ CodePage=936
 [Version Info Keys]
 CompanyName=
 FileDescription=
-FileVersion=1.0.0.1
+FileVersion=1.0.0.5
 InternalName=
 LegalCopyright=
 LegalTrademarks=
@@ -134,7 +134,7 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 Comments=
-LastCompiledTime=2013-5-8 13:06:27
+LastCompiledTime=2013-5-16 14:16:13
 [Excluded Packages]
 C:\Program Files\Borland\Delphi7\Projects\Bpl\dclrx7.bpl=RX Library Controls and Tools
 C:\Program Files\Borland\Delphi7\Projects\Bpl\dclrxdb7.bpl=RX Library Database Components

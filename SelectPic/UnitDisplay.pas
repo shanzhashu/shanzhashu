@@ -14,6 +14,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     FFileName: string;
     FImage: TLXImage;
@@ -119,6 +121,15 @@ begin
   FImgWidth := FImage.Width;
   FImgHeight := FImage.Height;
   ShowMatchedImage(FileName);
+end;
+
+procedure TFormDisplay.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+  begin
+    Close;
+  end
 end;
 
 end.

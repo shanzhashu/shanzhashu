@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Contnrs, LXImage, ExtCtrls, GDIPAPI, GDIPOBJ, GDIPUTIL,
-  StdCtrls;
+  StdCtrls, UnitMain;
 
 const
   WM_START_SLIDE = WM_USER + 250;
@@ -30,6 +30,10 @@ type
     procedure ShowMatchedImage(const FileName: string);
     procedure StartSlide(var Msg: TMessage); message WM_START_SLIDE;
     procedure ImageDblClick(Sender: TObject);
+
+    procedure PrevImage;
+    procedure NextImage;
+    procedure UpdateChecked(F: TFileItem);
   public
     { Public declarations }
     property Files: TObjectList read FFiles write FFiles;
@@ -41,7 +45,7 @@ var
 
 implementation
 
-uses UnitMain, UnitOptions;
+uses UnitOptions;
 
 {$R *.dfm}
 
@@ -64,6 +68,18 @@ begin
   if Key = VK_ESCAPE then
   begin
     Close;
+  end
+  else if Key in [VK_LEFT, VK_UP, VK_PRIOR]  then
+  begin
+    tmrSlide.Enabled := False;
+    PrevImage;
+    tmrSlide.Enabled := True;
+  end
+  else if Key in [VK_RIGHT, VK_DOWN, VK_NEXT] then
+  begin
+    tmrSlide.Enabled := False;
+    NextImage;
+    tmrSlide.Enabled := True;
   end;
 end;
 
@@ -138,19 +154,8 @@ begin
 end;
 
 procedure TFormSlide.tmrSlideTimer(Sender: TObject);
-var
-  F: TFileItem;
 begin
-  Inc(FCurIdx);
-  if CurIdx = FFiles.Count then
-    CurIdx := 0;
-
-  F := TFileItem(FFiles.Items[CurIdx]);
-  ShowMatchedImage(F.FileName);
-  if F.Checked then
-    lblChecked.Caption := '已选择'
-  else
-    lblChecked.Caption := '';
+  NextImage;
 end;
 
 procedure TFormSlide.StartSlide(var Msg: TMessage);
@@ -164,6 +169,8 @@ begin
   begin
     F := TFileItem(FFiles.Items[CurIdx]);
     ShowMatchedImage(F.FileName);
+    UpdateChecked(F);
+
     tmrSlide.Interval := IniOptions.ConfigSlideDelay * 1000;
     tmrSlide.Enabled := True;
   end;
@@ -178,6 +185,40 @@ end;
 procedure TFormSlide.ImageDblClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TFormSlide.NextImage;
+var
+  F: TFileItem;
+begin
+  Inc(FCurIdx);
+  if CurIdx = FFiles.Count then
+    CurIdx := 0;
+
+  F := TFileItem(FFiles.Items[CurIdx]);
+  ShowMatchedImage(F.FileName);
+  UpdateChecked(F);
+end;
+
+procedure TFormSlide.PrevImage;
+var
+  F: TFileItem;
+begin
+  Dec(FCurIdx);
+  if CurIdx < 0 then
+    CurIdx := FFiles.Count - 1;
+
+  F := TFileItem(FFiles.Items[CurIdx]);
+  ShowMatchedImage(F.FileName);
+  UpdateChecked(F);
+end;
+
+procedure TFormSlide.UpdateChecked(F: TFileItem);
+begin
+  if F.Checked then
+    lblChecked.Caption := '已选择'
+  else
+    lblChecked.Caption := '';
 end;
 
 end.
