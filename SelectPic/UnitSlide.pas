@@ -26,10 +26,12 @@ type
     FFiles: TObjectList;
     FCurIdx: Integer;
     FGPImage: TGPImage;
+    FCurrentFileName: string;
     FImgWidth, FImgHeight: Integer;
     procedure ShowMatchedImage(const FileName: string);
     procedure StartSlide(var Msg: TMessage); message WM_START_SLIDE;
     procedure ImageDblClick(Sender: TObject);
+    procedure ImageMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 
     procedure PrevImage;
     procedure NextImage;
@@ -45,7 +47,7 @@ var
 
 implementation
 
-uses UnitOptions;
+uses UnitOptions, CnShellUtils;
 
 {$R *.dfm}
 
@@ -57,7 +59,7 @@ begin
   FImgContent.Align := alClient;
 //  FImgContent.OnMouseDown := ImageMouseDown;
 //  FImgContent.OnMouseMove := ImageMouseMove;
-//  FImgContent.OnMouseUp := ImageMouseUp;
+  FImgContent.OnMouseUp := ImageMouseUp;
   FImgContent.OnDblClick := ImageDblClick;
   lblChecked.BringToFront;
 end;
@@ -138,6 +140,7 @@ begin
       end;
     end;
     FImgContent.Invalidate;
+    FCurrentFileName := FileName;
   except
     ;
   end;
@@ -219,6 +222,22 @@ begin
     lblChecked.Caption := 'ÒÑÑ¡Ôñ'
   else
     lblChecked.Caption := '';
+end;
+
+procedure TFormSlide.ImageMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  P: TPoint;
+begin
+  if Button = mbRight then
+  begin
+    if FCurrentFileName <> '' then
+    begin
+      P.X := X;
+      P.Y := Y;
+      DisplayContextMenu(Handle, FCurrentFileName, FImgContent.ClientToScreen(P));
+    end;
+  end;
 end;
 
 end.

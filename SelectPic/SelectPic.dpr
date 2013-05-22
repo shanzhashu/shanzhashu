@@ -11,7 +11,8 @@ uses
   UnitSlide in 'UnitSlide.pas' {FormSlide},
   UnitDisplay in 'UnitDisplay.pas' {FormDisplay},
   UnitOptions in 'UnitOptions.pas',
-  UnitSetting in 'UnitSetting.pas' {FormSetting};
+  UnitSetting in 'UnitSetting.pas' {FormSetting},
+  CnShellUtils in 'CnShellUtils.pas';
 
 {$R *.res}
 

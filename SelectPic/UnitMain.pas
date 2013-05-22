@@ -159,7 +159,7 @@ var
 
 implementation
 
-uses UnitSlide, UnitOptions, UnitDisplay, UnitSetting;
+uses UnitSlide, UnitOptions, UnitDisplay, UnitSetting, CnShellUtils;
 
 {$R *.dfm}
 
@@ -826,9 +826,12 @@ end;
 procedure TFormMain.ImageMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-  FImageMouseDown := True;
-  FImageMouseDownPos.X := X;
-  FImageMouseDownPos.Y := Y;
+  if Button = mbLeft then
+  begin
+    FImageMouseDown := True;
+    FImageMouseDownPos.X := X;
+    FImageMouseDownPos.Y := Y;
+  end;
 end;
 
 procedure TFormMain.ImageMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -857,12 +860,25 @@ end;
 procedure TFormMain.ImageMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
+  P: TPoint;
   DeltaX, DeltaY: Integer;
 begin
-  FImageMouseDown := False;
-  DeltaX := X - FImageMouseDownPos.X;
-  DeltaY := Y - FImageMouseDownPos.Y;
-  OffsetRect(FDestRect, DeltaX, DeltaY);
+  if Button = mbLeft then
+  begin
+    FImageMouseDown := False;
+    DeltaX := X - FImageMouseDownPos.X;
+    DeltaY := Y - FImageMouseDownPos.Y;
+    OffsetRect(FDestRect, DeltaX, DeltaY);
+  end
+  else if Button = mbRight then
+  begin
+    if FCurrentFileName <> '' then
+    begin
+      P.X := X;
+      P.Y := Y;
+      DisplayContextMenu(Handle, FCurrentFileName, FImgContent.ClientToScreen(P));
+    end;
+  end;
 end;
 
 procedure TFormMain.ImageDblClick(Sender: TObject);
