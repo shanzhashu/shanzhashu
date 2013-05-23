@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ImgList, ExtCtrls, StdCtrls, ShellCtrls, Contnrs, jpeg,
-  GDIPAPI, GDIPOBJ, GDIPUTIL, Buttons, LXImage, ActnList, ToolWin;
+  GDIPAPI, GDIPOBJ, GDIPUTIL, Buttons, LXImage, ActnList, ToolWin, ShellAPI;
 
 const
   WM_UPDATE_SELECTION = WM_USER + 200;
@@ -63,6 +63,9 @@ type
     btnSetting: TToolButton;
     btn5: TToolButton;
     pnlDisplay: TPanel;
+    actDeleteFile: TAction;
+    btnDeleteFile: TToolButton;
+    btn4: TToolButton;
 
     procedure tvMainChange(Sender: TObject; Node: TTreeNode);
     procedure FormCreate(Sender: TObject);
@@ -96,6 +99,7 @@ type
     procedure actlstMainUpdate(Action: TBasicAction; var Handled: Boolean);
     procedure actSettingExecute(Sender: TObject);
     procedure pnlDisplayResize(Sender: TObject);
+    procedure actDeleteFileExecute(Sender: TObject);
   private
     { Private declarations }
     FCheckedBitmap: TBitmap;
@@ -122,6 +126,7 @@ type
     procedure UpdateShowingImageInfo;
     procedure ShowMatchedImage(const FileName: string; ForceReload: Boolean = True);
     procedure ShowActualImage(const FileName: string; ForceReload: Boolean = True);
+    procedure ClearImage();
     procedure ImageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ImageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure ImageMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -187,6 +192,20 @@ type
 
 var
   FindAbort: Boolean;
+
+function DeleteFileWithUndo(FileName : string ): Boolean;
+var
+  Fos : TSHFileOpStruct;
+begin
+  FillChar( Fos, SizeOf( Fos ), 0 );
+  with Fos do
+  begin
+    wFunc  := FO_DELETE;
+    pFrom  := PChar( FileName );
+    fFlags := FOF_ALLOWUNDO or FOF_NOCONFIRMATION or FOF_SILENT;
+  end;
+  Result := ( 0 = ShFileOperation( Fos ) );
+end;
 
 procedure ExploreDir(APath: string; ShowDir: Boolean);
 var
@@ -448,6 +467,7 @@ begin
   ilImages.Clear;
   lstSelection.Clear;
   FCurrentFileName := '';
+  ClearImage;
 
   Screen.Cursor := crHourGlass;
   try
@@ -458,7 +478,6 @@ begin
 
   if Res then
   begin
-    //ShowMessage('Find ' + IntToStr(FFiles.Count));
     lvImages.Items.Count := FFiles.Count;
     lvImages.Invalidate;
   end;
@@ -745,6 +764,7 @@ begin
 //        imgContent.Canvas.Pen.Color := clBlack;
 //        imgContent.Canvas.FrameRect(R);
       end;
+      G.Free;
     end;
     FImgContent.Invalidate;
     FDisplayMode := dmMatch;
@@ -813,6 +833,7 @@ begin
       FSrcRect.Bottom := FSrcRect.Top + H; // To prevent exceed Image Size?
       G.DrawImage(FCurrentGPImage, FDestRect.Left,
         FDestRect.Top, W, H);
+      G.Free;
     end;
     FImgContent.Invalidate;
     FDisplayMode := dmActual;
@@ -1283,6 +1304,11 @@ begin
   begin
     (Action as TAction).Enabled := FFiles.Count > 0;
     Handled := True;
+  end
+  else if Action = actDeleteFile then
+  begin
+    (Action as TAction).Enabled := FCurrentFileName <> '';
+    Handled := True;
   end;
 end;
 
@@ -1308,6 +1334,72 @@ begin
   FCurImgWidth := pnlDisplay.Width;
   FCurImgHeight := pnlDisplay.Height;
   PostMessage(Handle, WM_UPDATE_IMAGE, 0, 0);
+end;
+
+procedure TFormMain.ClearImage;
+var
+  G: TGPGraphics;
+begin
+  G := TGPGraphics.Create(FImgContent.Canvas.Handle);
+  G.Clear(MakeColor($FF, $FF, $FF));
+  G.Free;
+  FImgContent.Invalidate;
+end;
+
+procedure TFormMain.actDeleteFileExecute(Sender: TObject);
+var
+  I: Integer;
+  F: TFileItem;
+  Deleted, Res: Boolean;
+begin
+  if FCurrentFileName <> '' then
+  begin
+    if QueryDlg('确实要删除文件：' + FCurrentFileName + '？删除后不可恢复。') then
+    begin
+      if FCurrentGPImage <> nil then
+        FreeAndNil(FCurrentGPImage);
+
+      Res := DeleteFile(FCurrentFileName);
+      if not Res then
+      begin
+        ErrDlg('文件删除失败！错误码：' + IntToStr(GetLastError));
+        Exit;
+      end;
+
+      Deleted := False;
+      for I := 0 to FFiles.Count - 1 do
+      begin
+        F := TFileItem(FFiles.Items[I]);
+        if F.FileName = FCurrentFileName then
+        begin
+          FFiles.Remove(F);
+          Deleted := True;
+          Break;
+        end;
+      end;
+
+      if Deleted then
+      begin
+        PostMessage(Handle, WM_UPDATE_SELECTION, 0, 0);
+        lvImages.Items.Count := FFiles.Count;
+        lvImages.Invalidate;
+
+        if FFiles.Count = 0 then
+        begin
+          ClearImage;
+          FCurrentFileName := '';
+          UpdateShowingImageInfo;
+          Exit;
+        end;
+
+        if FCurrentIndex >= FFiles.Count then
+          FCurrentIndex := FFiles.Count - 1;
+
+        FCurrentFileName := TFileItem(FFiles.Items[FCurrentIndex]).FileName;
+        ShowMatchedImage(FCurrentFileName);
+      end;
+    end;
+  end;
 end;
 
 end.
