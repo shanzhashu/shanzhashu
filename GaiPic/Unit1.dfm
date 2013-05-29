@@ -111,6 +111,7 @@ object FormMain: TFormMain
         'Canon EOS 7D'
         'Canon EOS 5D Mark II'
         'Canon EOS 5D Mark III'
+        'Canon EOS 1DX'
         'Canon EOS 60D')
     end
     object chkChangeCamara: TCheckBox
@@ -152,10 +153,13 @@ object FormMain: TFormMain
     ItemHeight = 12
     ItemIndex = 0
     TabOrder = 9
-    Text = '3456x2304'
+    Text = '2784x1856'
     Items.Strings = (
-      '3456x2304'
+      '2784x1856'
+      '4080x2720 '
+      '5616x3744'
       '2592x1728'
+      '3456x2304'
       '5184x3456')
   end
 end

@@ -53,6 +53,8 @@ implementation
 
 {$R *.dfm}
 
+//非全幅：3456x2304 2592x1728 5184x3456
+// 全幅： 5616x3744 4080x2720 2784x1856
 const
   S_SelectSourceDirectoryCaption = '请选择照片所在的目录...';
 
