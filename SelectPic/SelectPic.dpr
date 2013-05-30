@@ -12,7 +12,8 @@ uses
   UnitDisplay in 'UnitDisplay.pas' {FormDisplay},
   UnitOptions in 'UnitOptions.pas',
   UnitSetting in 'UnitSetting.pas' {FormSetting},
-  CnShellUtils in 'CnShellUtils.pas';
+  CnShellUtils in 'CnShellUtils.pas',
+  UnitInfo in 'UnitInfo.pas' {FormInfo};
 
 {$R *.res}
 

@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ImgList, ExtCtrls, StdCtrls, ShellCtrls, Contnrs, jpeg,
-  GDIPAPI, GDIPOBJ, GDIPUTIL, Buttons, LXImage, ActnList, ToolWin, ShellAPI;
+  GDIPAPI, GDIPOBJ, GDIPUTIL, Buttons, LXImage, ActnList, ToolWin, ShellAPI,
+  Menus;
 
 const
   WM_UPDATE_SELECTION = WM_USER + 200;
@@ -66,6 +67,11 @@ type
     actDeleteFile: TAction;
     btnDeleteFile: TToolButton;
     btn4: TToolButton;
+    actContextMenu: TAction;
+    actShowInfo: TAction;
+    pmImage: TPopupMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
 
     procedure tvMainChange(Sender: TObject; Node: TTreeNode);
     procedure FormCreate(Sender: TObject);
@@ -100,6 +106,8 @@ type
     procedure actSettingExecute(Sender: TObject);
     procedure pnlDisplayResize(Sender: TObject);
     procedure actDeleteFileExecute(Sender: TObject);
+    procedure actContextMenuExecute(Sender: TObject);
+    procedure actShowInfoExecute(Sender: TObject);
   private
     { Private declarations }
     FCheckedBitmap: TBitmap;
@@ -119,6 +127,7 @@ type
     FImageMouseDownPos: TPoint;
     FImageMouseDown: Boolean;
     FCurSelectionChanged: Boolean;
+    FExifTool: string;
     procedure OnFindFile(const FileName: string; const Info: TSearchRec; var Abort: Boolean);
     procedure UpdateSelectionText(var Msg: TMessage); message WM_UPDATE_SELECTION;
     procedure UpdateImage(var Msg: TMessage); message WM_UPDATE_IMAGE;
@@ -164,7 +173,8 @@ var
 
 implementation
 
-uses UnitSlide, UnitOptions, UnitDisplay, UnitSetting, CnShellUtils;
+uses UnitSlide, UnitOptions, UnitDisplay, UnitSetting, CnShellUtils,
+  UnitInfo;
 
 {$R *.dfm}
 
@@ -192,6 +202,125 @@ type
 
 var
   FindAbort: Boolean;
+
+// 用管道方式在 Dir 目录执行 CmdLine，Output 返回输出信息，
+// dwExitCode 返回退出码。如果成功返回 True
+function InternalWinExecWithPipe(const CmdLine, Dir: string; slOutput: TStrings;
+  var dwExitCode: Cardinal): Boolean;
+var
+  HOutRead, HOutWrite: THandle;
+  StartInfo: TStartupInfo;
+  ProceInfo: TProcessInformation;
+  sa: TSecurityAttributes;
+  InStream: THandleStream;
+  strTemp: string;
+  PDir: PChar;
+
+  procedure ReadLinesFromPipe(IsEnd: Boolean);
+  var
+    s: string;
+    ls: TStringList;
+    i: Integer;
+  begin
+    if InStream.Position < InStream.Size then
+    begin
+      SetLength(s, InStream.Size - InStream.Position);
+      InStream.Read(PChar(s)^, InStream.Size - InStream.Position);
+      strTemp := strTemp + s;
+      ls := TStringList.Create;
+      try
+        ls.Text := strTemp;
+        for i := 0 to ls.Count - 2 do
+          slOutput.Add(ls[i]);
+        strTemp := ls[ls.Count - 1];
+      finally
+        ls.Free;
+      end;
+    end;
+
+    if IsEnd and (strTemp <> '') then
+    begin
+      slOutput.Add(strTemp);
+      strTemp := '';
+    end;
+  end;
+begin
+  dwExitCode := 0;
+  Result := False;
+  try
+    FillChar(sa, sizeof(sa), 0);
+    sa.nLength := sizeof(sa);
+    sa.bInheritHandle := True;
+    sa.lpSecurityDescriptor := nil;
+    InStream := nil;
+    strTemp := '';
+    HOutRead := INVALID_HANDLE_VALUE;
+    HOutWrite := INVALID_HANDLE_VALUE;
+    try
+      Win32Check(CreatePipe(HOutRead, HOutWrite, @sa, 0));
+
+      FillChar(StartInfo, SizeOf(StartInfo), 0);
+      StartInfo.cb := SizeOf(StartInfo);
+      StartInfo.wShowWindow := SW_HIDE;
+      StartInfo.dwFlags := STARTF_USESTDHANDLES + STARTF_USESHOWWINDOW;
+      StartInfo.hStdError := HOutWrite;
+      StartInfo.hStdInput := GetStdHandle(STD_INPUT_HANDLE);
+      StartInfo.hStdOutput := HOutWrite;
+
+      InStream := THandleStream.Create(HOutRead);
+
+      if Dir <> '' then
+        PDir := PChar(Dir)
+      else
+        PDir := nil;
+      Win32Check(CreateProcess(nil, //lpApplicationName: PChar
+        PChar(CmdLine), //lpCommandLine: PChar
+        nil, //lpProcessAttributes: PSecurityAttributes
+        nil, //lpThreadAttributes: PSecurityAttributes
+        True, //bInheritHandles: BOOL
+        NORMAL_PRIORITY_CLASS, //CREATE_NEW_CONSOLE,
+        nil,
+        PDir,
+        StartInfo,
+        ProceInfo));
+
+      while WaitForSingleObject(ProceInfo.hProcess, 100) = WAIT_TIMEOUT do
+      begin
+        ReadLinesFromPipe(False);
+        Application.ProcessMessages;
+        //if Application.Terminated then break;
+      end;
+      ReadLinesFromPipe(True);
+
+      GetExitCodeProcess(ProceInfo.hProcess, dwExitCode);
+
+      CloseHandle(ProceInfo.hProcess);
+      CloseHandle(ProceInfo.hThread);
+
+      Result := True;
+    finally
+      if InStream <> nil then InStream.Free;
+      if HOutRead <> INVALID_HANDLE_VALUE then CloseHandle(HOutRead);
+      if HOutWrite <> INVALID_HANDLE_VALUE then CloseHandle(HOutWrite);
+    end;
+  except
+    ;
+  end;
+end;
+
+function WinExecWithPipe(const CmdLine, Dir: string; var Output: string;
+  var dwExitCode: Cardinal): Boolean;
+var
+  slOutput: TStringList;
+begin
+  slOutput := TStringList.Create;
+  try
+    Result := InternalWinExecWithPipe(CmdLine, Dir, slOutput, dwExitCode);
+    Output := slOutput.Text;
+  finally
+    slOutput.Free;
+  end;
+end;
 
 function DeleteFileWithUndo(FileName : string ): Boolean;
 var
@@ -498,6 +627,8 @@ begin
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
+var
+  P: string;
 begin
   FFiles := TObjectList.Create(True);
 
@@ -522,6 +653,7 @@ begin
   FImgContent.OnMouseMove := ImageMouseMove;
   FImgContent.OnMouseUp := ImageMouseUp;
   FImgContent.OnDblClick := ImageDblClick;
+  FImgContent.PopupMenu := pmImage;
 
   IniOptions.LoadFromFile(INI_FILE);
 
@@ -536,13 +668,29 @@ begin
   Width := Screen.DesktopWidth;
   Height := Screen.DesktopHeight - 30;
   lvImages.DoubleBuffered := True;
+
+  P := ExtractFilePath(Application.ExeName);
+  P := IncludeTrailingPathDelimiter(P) + '\exiftool.exe';
+  if FileExists(P) then
+  begin
+    FExifTool := P;
+  end
+  else
+  begin
+    P :=  ExtractFilePath(Application.ExeName);
+    P := IncludeTrailingPathDelimiter(P) + '..\GaiPic\exiftool.exe';
+    if FileExists(P) then
+    begin
+      FExifTool := P;
+    end;
+  end;
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
 begin
   FUncheckedIcon.Free;
   FCheckedIcon.Free;
-  
+
   FUncheckedBitMap.Free;
   FCheckedBitmap.Free;
   FFiles.Free;
@@ -890,16 +1038,16 @@ begin
     DeltaX := X - FImageMouseDownPos.X;
     DeltaY := Y - FImageMouseDownPos.Y;
     OffsetRect(FDestRect, DeltaX, DeltaY);
-  end
-  else if Button = mbRight then
-  begin
-    if FCurrentFileName <> '' then
-    begin
-      P.X := X;
-      P.Y := Y;
-      DisplayContextMenu(Handle, FCurrentFileName, FImgContent.ClientToScreen(P));
-    end;
   end;
+//  else if Button = mbRight then
+//  begin
+//    if FCurrentFileName <> '' then
+//    begin
+//      P.X := X;
+//      P.Y := Y;
+//      DisplayContextMenu(Handle, FCurrentFileName, FImgContent.ClientToScreen(P));
+//    end;
+//  end;
 end;
 
 procedure TFormMain.ImageDblClick(Sender: TObject);
@@ -1309,7 +1457,17 @@ begin
   begin
     (Action as TAction).Enabled := FCurrentFileName <> '';
     Handled := True;
-  end;
+  end
+  else if Action = actShowInfo then
+  begin
+    (Action as TAction).Enabled := FCurrentFileName <> '';
+    Handled := True;
+  end
+  else if Action = actContextMenu then
+  begin
+    (Action as TAction).Enabled := FCurrentFileName <> '';
+    Handled := True;
+  end
 end;
 
 procedure TFormMain.actSettingExecute(Sender: TObject);
@@ -1400,6 +1558,36 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TFormMain.actContextMenuExecute(Sender: TObject);
+begin
+  if FCurrentFileName <> '' then
+  begin
+    DisplayContextMenu(Handle, FCurrentFileName, Mouse.CursorPos);
+  end;
+end;
+
+procedure TFormMain.actShowInfoExecute(Sender: TObject);
+var
+  S: string;
+  ExitCode: DWORD;
+begin
+  Screen.Cursor := crHourGlass;
+  if WinExecWithPipe(FExifTool + ' ' + FCurrentFileName, '', S, ExitCode) then
+  begin
+    with TFormInfo.Create(nil) do
+    begin
+      Caption := FCurrentFileName;
+      lstInfo.Items.Clear;
+      lstInfo.Items.Text := S;
+      TranslateStrings;
+      Screen.Cursor := crDefault;
+      ShowModal;
+      Free;
+    end;
+  end;
+  Screen.Cursor := crDefault;
 end;
 
 end.
