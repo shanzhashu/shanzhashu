@@ -14,6 +14,7 @@ const
   INFO_QUERY_CAPTION = 'ÌáÊ¾';
   INFO_ERROR_CAPTION = '´íÎó';
   INI_FILE = '.\feipaibuke.ini';
+  ERROR_FILE = '.\error.bmp';
 
 type
   TDisplayMode = (dmMatch, dmActual, dmCustom);
@@ -483,38 +484,59 @@ var
   E: Extended;
   H, W: Integer;
   G: TGPGraphics;
-  Img, Thumb: TGPImage;
+  Img, Thumb, Err: TGPImage;
 begin
   if not Bmp.HandleAllocated then
     Exit;
 
-  G := TGPGraphics.Create(Bmp.Canvas.Handle);
-  Img := TGPImage.Create(FileName);
+  G := nil;
+  Img := nil;
+  Thumb := nil;
 
-  W := Img.GetWidth;
-  H := Img.GetHeight;
-  if W > H then
-  begin
-    W := THUMB_MAX;
-    E := Img.GetWidth / W;
-    E := Img.GetHeight / E;
-    H := Round(E);
-  end
-  else
-  begin
-    H := THUMB_MAX;
-    E := Img.GetHeight /H;
-    E := Img.GetWidth /E;
-    W := Round(E);
+  try
+    try
+      G := TGPGraphics.Create(Bmp.Canvas.Handle);
+      Img := TGPImage.Create(FileName);
+
+      W := Img.GetWidth;
+      H := Img.GetHeight;
+      if W > H then
+      begin
+        W := THUMB_MAX;
+        E := Img.GetWidth / W;
+        E := Img.GetHeight / E;
+        H := Round(E);
+      end
+      else
+      begin
+        H := THUMB_MAX;
+        E := Img.GetHeight /H;
+        E := Img.GetWidth /E;
+        W := Round(E);
+      end;
+
+      Thumb := Img.GetThumbnailImage(W, H, nil, nil);
+      G.Clear(MakeColor($FF, $FF, $FF));
+      G.DrawImage(Thumb, (Bmp.Width - W) div 2, (Bmp.Height - H) div 2, Thumb.GetWidth, Thumb.GetHeight);
+    except
+      G.Clear(MakeColor($FF, $FF, $FF));
+      Err := nil;
+      try
+        try
+          Err := TGPImage.Create(ERROR_FILE);
+          G.DrawImage(Err, (Bmp.Width - Err.GetWidth) div 2, (Bmp.Height - Err.GetHeight) div 2);
+        except
+          ;
+        end;
+      finally
+      Err.Free;
+      end;
+    end;
+  finally
+    Img.Free;
+    Thumb.Free;
+    G.Free;
   end;
-
-  Thumb := Img.GetThumbnailImage(W, H, nil, nil);
-  G.Clear(MakeColor($FF, $FF, $FF));
-  G.DrawImage(Thumb, (Bmp.Width - W) div 2, (Bmp.Height - H) div 2, Thumb.GetWidth, Thumb.GetHeight);
-
-  Img.Free;
-  Thumb.Free;
-  G.Free;
 end;
 
 
