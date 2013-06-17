@@ -73,6 +73,15 @@ type
     pmImage: TPopupMenu;
     N1: TMenuItem;
     N2: TMenuItem;
+    actRotateClockWise: TAction;
+    actRotateAntiClockWise: TAction;
+    btnRotateClockWise: TToolButton;
+    btnRotateAntiClockWise: TToolButton;
+    btn6: TToolButton;
+    N3: TMenuItem;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    N6: TMenuItem;
 
     procedure tvMainChange(Sender: TObject; Node: TTreeNode);
     procedure FormCreate(Sender: TObject);
@@ -109,6 +118,8 @@ type
     procedure actDeleteFileExecute(Sender: TObject);
     procedure actContextMenuExecute(Sender: TObject);
     procedure actShowInfoExecute(Sender: TObject);
+    procedure actRotateClockWiseExecute(Sender: TObject);
+    procedure actRotateAntiClockWiseExecute(Sender: TObject);
   private
     { Private declarations }
     FCheckedBitmap: TBitmap;
@@ -129,6 +140,7 @@ type
     FImageMouseDown: Boolean;
     FCurSelectionChanged: Boolean;
     FExifTool: string;
+    FGmTool: string;
     procedure OnFindFile(const FileName: string; const Info: TSearchRec; var Abort: Boolean);
     procedure UpdateSelectionText(var Msg: TMessage); message WM_UPDATE_SELECTION;
     procedure UpdateImage(var Msg: TMessage); message WM_UPDATE_IMAGE;
@@ -145,6 +157,7 @@ type
     procedure InfoDlg(const Msg: string; const Cap: string = INFO_QUERY_CAPTION);
     procedure ErrDlg(const Msg: string; const Cap: string = INFO_ERROR_CAPTION);
     function YesNoDlg(const Msg: string; const Cap: string = INFO_QUERY_CAPTION): Boolean;
+    procedure RefreshCurrentThumbnail();
   public
     { Public declarations }
   end;
@@ -203,6 +216,53 @@ type
 
 var
   FindAbort: Boolean;
+
+// 运行一个文件并等待其结束
+function WinExecAndWait32(FileName: string; Visibility: Integer;
+  ProcessMsg: Boolean): Integer;
+var
+  zAppName: array[0..512] of Char;
+  zCurDir: array[0..255] of Char;
+  WorkDir: string;
+  StartupInfo: TStartupInfo;
+  ProcessInfo: TProcessInformation;
+begin
+  StrPCopy(zAppName, FileName);
+  GetDir(0, WorkDir);
+  StrPCopy(zCurDir, WorkDir);
+  FillChar(StartupInfo, SizeOf(StartupInfo), #0);
+  StartupInfo.cb := SizeOf(StartupInfo);
+
+  StartupInfo.dwFlags := STARTF_USESHOWWINDOW;
+  StartupInfo.wShowWindow := Visibility;
+  if not CreateProcess(nil,
+    zAppName,                           { pointer to command line string }
+    nil,                                { pointer to process security attributes }
+    nil,                                { pointer to thread security attributes }
+    False,                              { handle inheritance flag }
+    CREATE_NEW_CONSOLE or               { creation flags }
+    NORMAL_PRIORITY_CLASS,
+    nil,                                { pointer to new environment block }
+    nil,                                { pointer to current directory name }
+    StartupInfo,                        { pointer to STARTUPINFO }
+    ProcessInfo) then
+    Result := -1                        { pointer to PROCESS_INF }
+  else
+  begin
+    if ProcessMsg then
+    begin
+      repeat
+        Application.ProcessMessages;
+        GetExitCodeProcess(ProcessInfo.hProcess, Cardinal(Result));
+      until (Result <> STILL_ACTIVE) or Application.Terminated;
+    end
+    else
+    begin
+      WaitforSingleObject(ProcessInfo.hProcess, INFINITE);
+      GetExitCodeProcess(ProcessInfo.hProcess, Cardinal(Result));
+    end;
+  end;
+end;
 
 // 用管道方式在 Dir 目录执行 CmdLine，Output 返回输出信息，
 // dwExitCode 返回退出码。如果成功返回 True
@@ -704,6 +764,22 @@ begin
     if FileExists(P) then
     begin
       FExifTool := P;
+    end;
+  end;
+
+  P := ExtractFilePath(Application.ExeName);
+  P := IncludeTrailingPathDelimiter(P) + '\gm.exe';
+  if FileExists(P) then
+  begin
+    FGmTool := P;
+  end
+  else
+  begin
+    P :=  ExtractFilePath(Application.ExeName);
+    P := IncludeTrailingPathDelimiter(P) + '..\GaiPic\gm.exe';
+    if FileExists(P) then
+    begin
+      FGmTool := P;
     end;
   end;
 end;
@@ -1490,6 +1566,16 @@ begin
     (Action as TAction).Enabled := FCurrentFileName <> '';
     Handled := True;
   end
+  else if Action = actRotateClockWise then
+  begin
+    (Action as TAction).Enabled := FCurrentFileName <> '';
+    Handled := True;
+  end
+  else if Action = actRotateAntiClockWise then
+  begin
+    (Action as TAction).Enabled := FCurrentFileName <> '';
+    Handled := True;
+  end
 end;
 
 procedure TFormMain.actSettingExecute(Sender: TObject);
@@ -1610,6 +1696,80 @@ begin
     end;
   end;
   Screen.Cursor := crDefault;
+end;
+
+procedure TFormMain.actRotateClockWiseExecute(Sender: TObject);
+var
+  Cmd: string;
+  Res: Integer;
+begin
+  if FCurrentGPImage <> nil then
+    FreeAndNil(FCurrentGPImage);
+
+  Cmd := FGmTool + ' convert -rotate 90 -compress Lossless "' + FCurrentFileName + '" "' + FCurrentFileName + '"';
+  Screen.Cursor := crHourGlass;
+  try
+    Res := WinExecAndWait32(Cmd, SW_HIDE, True);
+  finally
+    Screen.Cursor := crDefault;
+  end;
+
+  if Res <> 0 then
+  begin
+    ErrDlg('错误码：' + IntToStr(Res) + ' 旋转失败：' + Cmd);
+    Exit;
+  end;
+
+  // 刷新缩略图
+  RefreshCurrentThumbnail();
+  ShowMatchedImage(FCurrentFileName, True);
+end;
+
+procedure TFormMain.actRotateAntiClockWiseExecute(Sender: TObject);
+var
+  Cmd: string;
+  Res: Integer;
+begin
+  if FCurrentGPImage <> nil then
+    FreeAndNil(FCurrentGPImage);
+
+  Cmd := FGmTool + ' convert -rotate -90 -compress Lossless "' + FCurrentFileName + '" "' + FCurrentFileName + '"';
+  Screen.Cursor := crHourGlass;
+  try
+    Res := WinExecAndWait32(Cmd, SW_HIDE, True);
+  finally
+    Screen.Cursor := crDefault;
+  end;
+
+  if Res <> 0 then
+  begin
+    ErrDlg('错误码：' + IntToStr(Res) + ' 旋转失败：' + Cmd);
+    Exit;
+  end;
+
+  // 刷新缩略图
+  RefreshCurrentThumbnail();
+  ShowMatchedImage(FCurrentFileName, True);
+end;
+
+procedure TFormMain.RefreshCurrentThumbnail;
+var
+  Idx: Integer;
+  F: TFileItem;
+begin
+  if lvImages.Selected = nil then
+    Exit;
+  Idx := lvImages.Selected.Index;
+
+  if (Idx < 0) or (Idx >= FFiles.Count) then
+    Exit;
+
+  F := TFileItem(FFiles.Items[Idx]);
+  if F.FileName <> FCurrentFileName then
+    Exit;
+
+  F.ThumbValid := False;
+  lvImages.Invalidate;
 end;
 
 end.
