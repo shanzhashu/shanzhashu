@@ -53,8 +53,9 @@ implementation
 
 {$R *.dfm}
 
-//非全幅：3456x2304 2592x1728 5184x3456
-// 全幅： 5616x3744 4080x2720 2784x1856
+// 非全幅：L 5184x3456，M 3456x2304 S 2592x1728
+//   全幅：L 5616x3744, M 4080x2720 S 2784x1856
+
 const
   S_SelectSourceDirectoryCaption = '请选择照片所在的目录...';
 
@@ -535,16 +536,24 @@ procedure TFormMain.ExtractIntegers(const S: string; var Int1,
   Int2: Integer);
 var
   P: Integer;
-  S1, S2: string;
+  S0, S1, S2: string;
 begin
   Int1 := 0; Int2 := 0;
-  if S <> '' then
+  S0 := S;
+  if S0 = '' then
+    Exit;
+
+  P := Pos(' ', S0);
+  if P > 0 then
+    S0 := Copy(S0, 1, P - 1);
+
+  if S0 <> '' then
   begin
-    P := Pos('x', S);
+    P := Pos('x', S0);
     if P > 0 then
     begin
-      S1 := Copy(S, 1, P - 1);
-      S2 := Copy(S, P + 1, MaxInt);
+      S1 := Copy(S0, 1, P - 1);
+      S2 := Copy(S0, P + 1, MaxInt);
 
       Int1 := StrToIntDef(S1, 0);
       Int2 := StrToIntDef(S2, 0);
