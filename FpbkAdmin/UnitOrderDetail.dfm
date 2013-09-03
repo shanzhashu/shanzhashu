@@ -13,7 +13,6 @@ object FormOrderDetail: TFormOrderDetail
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 12
   object lblStatus: TLabel
@@ -241,6 +240,7 @@ object FormOrderDetail: TFormOrderDetail
       Date = 41520.594985127320000000
       Time = 41520.594985127320000000
       TabOrder = 4
+      OnChange = dtpShotDateChange
     end
     object seOrderDate: TSpinEdit
       Left = 356
@@ -345,6 +345,7 @@ object FormOrderDetail: TFormOrderDetail
     Height = 25
     Caption = #20445#23384
     TabOrder = 6
+    OnClick = btnOKClick
     Kind = bkOK
   end
 end

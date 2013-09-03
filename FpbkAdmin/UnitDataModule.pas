@@ -42,9 +42,16 @@ var
 var
   DataModuleMain: TDataModuleMain;
 
+procedure ErrorDlg(const Msg: string);
+
 implementation
 
 {$R *.dfm}
+
+procedure ErrorDlg(const Msg: string);
+begin
+  MessageBox(0, PChar(Msg), '´íÎó', MB_OK + MB_ICONSTOP);
+end;
 
 procedure TDataModuleMain.DataModuleCreate(Sender: TObject);
 begin

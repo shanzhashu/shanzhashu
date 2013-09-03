@@ -24,6 +24,18 @@ type
     actExit: TAction;
     N6: TMenuItem;
     X1: TMenuItem;
+    actQuerySentToFactory: TAction;
+    actQuerySentToDesign: TAction;
+    actQueryRecvFromDesign: TAction;
+    actQueryOrdered: TAction;
+    actQueryShot: TAction;
+    actQueryRecvFromFactory: TAction;
+    N7: TMenuItem;
+    N8: TMenuItem;
+    N9: TMenuItem;
+    N10: TMenuItem;
+    N11: TMenuItem;
+    N12: TMenuItem;
     procedure actManageDesignExecute(Sender: TObject);
     procedure actManageFactoryExecute(Sender: TObject);
     procedure actExitExecute(Sender: TObject);
@@ -77,6 +89,7 @@ procedure TFormMain.actNewOrderExecute(Sender: TObject);
 begin
   with TFormOrderDetail.Create(Application) do
   begin
+    IsNew := True;
     ShowModal;
     Free;
   end;
