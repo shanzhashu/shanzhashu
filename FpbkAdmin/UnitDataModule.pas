@@ -3,7 +3,11 @@ unit UnitDataModule;
 interface
 
 uses
-  SysUtils, Classes, Variants, ADODB, DB;
+  SysUtils, Classes, Variants, Windows, ADODB, DB;
+
+const
+  EMPTY_DATETIME = 2;
+  ORDER_FORM_SQL = 'SELECT * FROM OroderForms ';
 
 type
   TDataModuleMain = class(TDataModule)
@@ -12,6 +16,28 @@ type
     tblDesignNames: TADOTable;
     tblFactoryNames: TADOTable;
     tblStatusStrings: TADOTable;
+    dsOrderFormsID: TAutoIncField;
+    dsOrderFormsBabyName: TWideStringField;
+    dsOrderFormsAge: TIntegerField;
+    dsOrderFormsContactNum: TWideStringField;
+    dsOrderFormsOrderDate: TDateTimeField;
+    dsOrderFormsPrice: TIntegerField;
+    dsOrderFormsPayment: TIntegerField;
+    dsOrderFormsShotDate: TDateTimeField;
+    dsOrderFormsDesignName: TIntegerField;
+    dsOrderFormsDesignSendDate: TDateTimeField;
+    dsOrderFormsDesignReceiveDate: TDateTimeField;
+    dsOrderFormsFactoryName: TIntegerField;
+    dsOrderFormsSendToFactoryDate: TDateTimeField;
+    dsOrderFormsRecvFromFactoryDate: TDateTimeField;
+    dsOrderFormsCustomerTakenDate: TDateTimeField;
+    dsOrderFormsStatus: TIntegerField;
+    dsOrderFormsPicContent: TMemoField;
+    dsOrderFormsMemory: TWideStringField;
+    dsOrderFormsDesignNameText: TStringField;
+    dsOrderFormsFactoryNameText: TStringField;
+    dsOrderFormsStatusText: TStringField;
+    dsOrderFormsShotTime: TIntegerField;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
@@ -44,6 +70,8 @@ var
 
 procedure ErrorDlg(const Msg: string);
 
+procedure InfoDlg(const Msg: string);
+
 implementation
 
 {$R *.dfm}
@@ -51,6 +79,11 @@ implementation
 procedure ErrorDlg(const Msg: string);
 begin
   MessageBox(0, PChar(Msg), '¥ÌŒÛ', MB_OK + MB_ICONSTOP);
+end;
+
+procedure InfoDlg(const Msg: string);
+begin
+  MessageBox(0, PChar(Msg), 'Ã· æ', MB_OK + MB_ICONWARNING);
 end;
 
 procedure TDataModuleMain.DataModuleCreate(Sender: TObject);

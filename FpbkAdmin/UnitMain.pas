@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ActnList, Menus;
+  Dialogs, ActnList, Menus, DB, Grids, DBGrids;
 
 type
   TFormMain = class(TForm)
@@ -36,10 +36,19 @@ type
     N10: TMenuItem;
     N11: TMenuItem;
     N12: TMenuItem;
+    actBackupDatabase: TAction;
+    N13: TMenuItem;
+    N14: TMenuItem;
+    N15: TMenuItem;
+    actQueryAll: TAction;
+    A1: TMenuItem;
+    dbgrdOrders: TDBGrid;
+    dsOrders: TDataSource;
     procedure actManageDesignExecute(Sender: TObject);
     procedure actManageFactoryExecute(Sender: TObject);
     procedure actExitExecute(Sender: TObject);
     procedure actNewOrderExecute(Sender: TObject);
+    procedure dbgrdOrdersDblClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -90,7 +99,27 @@ begin
   with TFormOrderDetail.Create(Application) do
   begin
     IsNew := True;
+    cbbStatus.ItemIndex := Integer(osOrdered);
+    if Assigned(cbbStatus.OnChange) then
+      cbbStatus.OnChange(cbbStatus);
+
     ShowModal;
+    Free;
+  end;
+end;
+
+procedure TFormMain.dbgrdOrdersDblClick(Sender: TObject);
+begin
+  // 根据当前记录，编辑它
+  with TFormOrderDetail.Create(Application) do
+  begin
+    IsNew := False;
+    FillValues(DataModuleMain.dsOrderForms);
+
+    ShowModal;
+    if SaveSuc then
+      DataModuleMain.dsOrderForms.Requery;
+
     Free;
   end;
 end;
