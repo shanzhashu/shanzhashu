@@ -55,7 +55,6 @@ object FormMain: TFormMain
         Expanded = False
         FieldName = 'OrderDate'
         Title.Caption = #19979#35746#26085#26399
-        Width = 64
         Visible = True
       end
       item
@@ -83,14 +82,12 @@ object FormMain: TFormMain
         Expanded = False
         FieldName = 'ShotDate'
         Title.Caption = #25293#29031#26085#26399
-        Width = 64
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'CustomerTakenDate'
         Title.Caption = #21462#20214#26085#26399
-        Width = 64
         Visible = True
       end
       item
@@ -104,14 +101,12 @@ object FormMain: TFormMain
         Expanded = False
         FieldName = 'DesignSendDate'
         Title.Caption = #35774#35745#21457#20986
-        Width = 64
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'DesignReceiveDate'
         Title.Caption = #35774#35745#23436#31295
-        Width = 64
         Visible = True
       end
       item
@@ -125,14 +120,12 @@ object FormMain: TFormMain
         Expanded = False
         FieldName = 'SendToFactoryDate'
         Title.Caption = #21046#20316#21457#20986
-        Width = 64
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'RecvFromFactoryDate'
         Title.Caption = #21046#20316#23436#25104
-        Width = 64
         Visible = True
       end
       item
@@ -145,7 +138,6 @@ object FormMain: TFormMain
         Expanded = False
         FieldName = 'Memory'
         Title.Caption = #22791#27880
-        Width = 64
         Visible = True
       end>
   end
@@ -206,6 +198,11 @@ object FormMain: TFormMain
       Category = 'Query'
       Caption = '&A. '#25152#26377#35746#21333
     end
+    object actManageSuite: TAction
+      Category = 'Manage'
+      Caption = '&S. '#31649#29702#22871#39184'...'
+      OnExecute = actManageSuiteExecute
+    end
   end
   object mmMain: TMainMenu
     Left = 104
@@ -259,6 +256,9 @@ object FormMain: TFormMain
       end
       object N3: TMenuItem
         Action = actManageFactory
+      end
+      object N16: TMenuItem
+        Action = actManageSuite
       end
       object N13: TMenuItem
         Caption = '-'

@@ -38,6 +38,7 @@ type
     dsOrderFormsFactoryNameText: TStringField;
     dsOrderFormsStatusText: TStringField;
     dsOrderFormsShotTime: TIntegerField;
+    tblPreContents: TADOTable;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }

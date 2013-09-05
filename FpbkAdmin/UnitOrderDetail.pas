@@ -50,11 +50,13 @@ type
     btnCancel: TBitBtn;
     btnOK: TBitBtn;
     lblOrderDetail: TLabel;
+    btnFillSuite: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure cbbStatusChange(Sender: TObject);
     procedure dtpShotDateChange(Sender: TObject);
     procedure btnOKClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure btnFillSuiteClick(Sender: TObject);
   private
     FIsNew: Boolean;
     FID: Integer;
@@ -78,7 +80,7 @@ var
 
 implementation
 
-uses UnitDataModule;
+uses UnitDataModule, UnitSuite;
 
 {$R *.dfm}
 
@@ -476,6 +478,32 @@ begin
     DataSet.FieldValues['DesignName'] := Integer(cbbDesignName.Items.Objects[cbbDesignName.ItemIndex]);
   if cbbFactoryName.ItemIndex >= 0 then
     DataSet.FieldValues['FactoryName'] := Integer(cbbFactoryName.Items.Objects[cbbFactoryName.ItemIndex]);
+end;
+
+procedure TFormOrderDetail.btnFillSuiteClick(Sender: TObject);
+begin
+  with TFormSuite.Create(Application) do
+  begin
+    Caption := '选择预置套餐';
+    lblDesc.Caption := '您可以在此选择预置的套餐内容。选择的内容将填入订单中。';
+    btnClose.Caption := '取消';
+    btnOK.Visible := True;
+    grpSuite.Enabled := False;
+    dbnvgrSuite.Enabled := False;
+    dbgrdPreContents.OnDblClick := dbgrdPreContentsDblClick;
+
+    DataModuleMain.conDatabase.Connected := True;
+    DataModuleMain.tblPreContents.Active := True;
+    if ShowModal = mrOK then
+    begin
+      if not DataModuleMain.tblPreContents.Eof then
+      begin
+        edtPrice.Text := DataModuleMain.tblPreContents.FieldValues['PreContentPrice'];
+        mmoContent.Text := DataModuleMain.tblPreContents.FieldValues['PreContentDescription'];
+      end;
+    end;
+    DataModuleMain.tblPreContents.Active := False;
+  end;
 end;
 
 end.

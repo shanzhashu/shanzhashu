@@ -298,6 +298,14 @@ object FormOrderDetail: TFormOrderDetail
       Height = 12
       Caption = #22871#39184#20869#23481#65306
     end
+    object btnFillSuite: TSpeedButton
+      Left = 56
+      Top = 96
+      Width = 23
+      Height = 22
+      Hint = #36873#25321#39044#32622#30340#22871#39184
+      OnClick = btnFillSuiteClick
+    end
     object edtPrice: TEdit
       Left = 80
       Top = 28

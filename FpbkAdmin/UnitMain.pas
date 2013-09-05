@@ -44,11 +44,14 @@ type
     A1: TMenuItem;
     dbgrdOrders: TDBGrid;
     dsOrders: TDataSource;
+    actManageSuite: TAction;
+    N16: TMenuItem;
     procedure actManageDesignExecute(Sender: TObject);
     procedure actManageFactoryExecute(Sender: TObject);
     procedure actExitExecute(Sender: TObject);
     procedure actNewOrderExecute(Sender: TObject);
     procedure dbgrdOrdersDblClick(Sender: TObject);
+    procedure actManageSuiteExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -60,7 +63,8 @@ var
 
 implementation
 
-uses UnitDesignNames, UnitDataModule, UnitFactoryNames, UnitOrderDetail;
+uses UnitDesignNames, UnitDataModule, UnitFactoryNames, UnitOrderDetail,
+  UnitSuite;
 
 {$R *.dfm}
 
@@ -120,6 +124,18 @@ begin
     if SaveSuc then
       DataModuleMain.dsOrderForms.Requery;
 
+    Free;
+  end;
+end;
+
+procedure TFormMain.actManageSuiteExecute(Sender: TObject);
+begin
+  with TFormSuite.Create(Application) do
+  begin
+    DataModuleMain.conDatabase.Connected := True;
+    DataModuleMain.tblPreContents.Active := True;
+    ShowModal;
+    DataModuleMain.tblPreContents.Active := False;
     Free;
   end;
 end;

@@ -141,4 +141,12 @@ object DataModuleMain: TDataModuleMain
     Left = 232
     Top = 128
   end
+  object tblPreContents: TADOTable
+    Active = True
+    Connection = conDatabase
+    CursorType = ctStatic
+    TableName = 'PreContents'
+    Left = 232
+    Top = 40
+  end
 end

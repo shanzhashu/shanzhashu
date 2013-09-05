@@ -6,7 +6,8 @@ uses
   UnitDataModule in 'UnitDataModule.pas' {DataModuleMain: TDataModule},
   UnitDesignNames in 'UnitDesignNames.pas' {FormDesignNames},
   UnitFactoryNames in 'UnitFactoryNames.pas' {FormFactoryNames},
-  UnitOrderDetail in 'UnitOrderDetail.pas' {FormOrderDetail};
+  UnitOrderDetail in 'UnitOrderDetail.pas' {FormOrderDetail},
+  UnitSuite in 'UnitSuite.pas' {FormSuite};
 
 {$R *.res}
 
