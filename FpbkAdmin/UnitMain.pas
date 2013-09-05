@@ -4,7 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ActnList, Menus, DB, Grids, DBGrids;
+  Dialogs, ActnList, Menus, DB, Grids, DBGrids, ComCtrls;
+
+const
+  MSG_OPEN_DATABASE = WM_USER + 100;
 
 type
   TFormMain = class(TForm)
@@ -20,7 +23,6 @@ type
     N2: TMenuItem;
     N3: TMenuItem;
     N4: TMenuItem;
-    N5: TMenuItem;
     actExit: TAction;
     N6: TMenuItem;
     X1: TMenuItem;
@@ -46,14 +48,18 @@ type
     dsOrders: TDataSource;
     actManageSuite: TAction;
     N16: TMenuItem;
+    statMain: TStatusBar;
     procedure actManageDesignExecute(Sender: TObject);
     procedure actManageFactoryExecute(Sender: TObject);
     procedure actExitExecute(Sender: TObject);
     procedure actNewOrderExecute(Sender: TObject);
     procedure dbgrdOrdersDblClick(Sender: TObject);
     procedure actManageSuiteExecute(Sender: TObject);
+    procedure actNewShotExecute(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
+    procedure OnMsgOpenDataBase(var Msg: TMessage); message MSG_OPEN_DATABASE;
   public
     { Public declarations }
   end;
@@ -138,6 +144,32 @@ begin
     DataModuleMain.tblPreContents.Active := False;
     Free;
   end;
+end;
+
+procedure TFormMain.actNewShotExecute(Sender: TObject);
+begin
+  with TFormOrderDetail.Create(Application) do
+  begin
+    IsNew := True;
+    cbbStatus.ItemIndex := Integer(osOrdered);
+    if Assigned(cbbStatus.OnChange) then
+      cbbStatus.OnChange(cbbStatus);
+
+
+    ShowModal;
+    Free;
+  end;
+end;
+
+procedure TFormMain.FormCreate(Sender: TObject);
+begin
+  PostMessage(Handle, MSG_OPEN_DATABASE, 0, 0);
+end;
+
+procedure TFormMain.OnMsgOpenDataBase(var Msg: TMessage);
+begin
+  DataModuleMain.conDatabase.Connected := True;
+  DataModuleMain.dsOrderForms.Active := True;
 end;
 
 end.

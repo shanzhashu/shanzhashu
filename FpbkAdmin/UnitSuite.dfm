@@ -1,9 +1,10 @@
 object FormSuite: TFormSuite
   Left = 386
   Top = 177
-  Width = 402
-  Height = 544
+  BorderStyle = bsDialog
   Caption = #22871#39184#20869#23481#31649#29702
+  ClientHeight = 517
+  ClientWidth = 394
   Color = clBtnFace
   Font.Charset = GB2312_CHARSET
   Font.Color = clWindowText

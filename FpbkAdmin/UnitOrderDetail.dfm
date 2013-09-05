@@ -1,9 +1,10 @@
 object FormOrderDetail: TFormOrderDetail
   Left = 432
   Top = 284
-  Width = 647
-  Height = 538
+  BorderStyle = bsDialog
   Caption = #35746#21333#35814#24773
+  ClientHeight = 511
+  ClientWidth = 639
   Color = clBtnFace
   Font.Charset = GB2312_CHARSET
   Font.Color = clWindowText

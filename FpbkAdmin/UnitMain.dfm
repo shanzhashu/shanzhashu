@@ -1,6 +1,6 @@
 object FormMain: TFormMain
-  Left = 282
-  Top = 242
+  Left = 306
+  Top = 300
   Width = 979
   Height = 563
   Caption = #19978#28023#38750#25293#19981#21487#20799#31461#25668#24433#31649#29702#31995#32479
@@ -12,6 +12,7 @@ object FormMain: TFormMain
   Font.Style = []
   Menu = mmMain
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 12
   object dbgrdOrders: TDBGrid
@@ -75,7 +76,7 @@ object FormMain: TFormMain
         Expanded = False
         FieldName = 'StatusText'
         Title.Caption = #35746#21333#29366#24577
-        Width = 84
+        Width = 100
         Visible = True
       end
       item
@@ -141,17 +142,25 @@ object FormMain: TFormMain
         Visible = True
       end>
   end
+  object statMain: TStatusBar
+    Left = 0
+    Top = 498
+    Width = 971
+    Height = 19
+    Panels = <>
+  end
   object actlstMain: TActionList
     Left = 56
     Top = 48
     object actNewOrder: TAction
       Category = 'New'
-      Caption = '&O. '#26032#24314#39044#32422#23458#25143'...'
+      Caption = '&O. '#26032#24314#39044#32422#23458#25143#35746#21333'...'
       OnExecute = actNewOrderExecute
     end
     object actNewShot: TAction
       Category = 'New'
       Caption = '&S. '#26032#24314#25293#25668#23458#25143'...'
+      OnExecute = actNewShotExecute
     end
     object actManageDesign: TAction
       Category = 'Manage'
@@ -211,9 +220,6 @@ object FormMain: TFormMain
       Caption = '&N. '#26032#24314
       object N4: TMenuItem
         Action = actNewOrder
-      end
-      object N5: TMenuItem
-        Action = actNewShot
       end
       object N6: TMenuItem
         Caption = '-'

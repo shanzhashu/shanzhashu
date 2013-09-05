@@ -6,7 +6,6 @@ object DataModuleMain: TDataModuleMain
   Height = 252
   Width = 347
   object dsOrderForms: TADODataSet
-    Active = True
     Connection = conDatabase
     CursorType = ctStatic
     CommandText = 'select * from OrderForms'

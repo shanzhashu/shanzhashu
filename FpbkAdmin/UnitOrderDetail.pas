@@ -60,6 +60,7 @@ type
   private
     FIsNew: Boolean;
     FID: Integer;
+    FStatus: Integer;
     FSaveSuc: Boolean;
     procedure InitListValues;
     procedure SetIsNew(const Value: Boolean);
@@ -254,6 +255,12 @@ begin
       dtpShotDate.SetFocus;
       Exit;
     end;
+    if dtpOrderDate.Date > dtpShotDate.Date then
+    begin
+      ErrorDlg('拍摄日期不应早于下订日期');
+      dtpShotDate.SetFocus;
+      Exit;
+    end;
     if (seOrderDate.Value < 0) or (seOrderDate.Value > 24) then
     begin
       ErrorDlg('请选择合理的拍摄时间。');
@@ -284,6 +291,12 @@ begin
     if IsDateTimePickerEmpty(dtpTakenDate) then
     begin
       ErrorDlg('请输入合理的取件日期。');
+      dtpTakenDate.SetFocus;
+      Exit;
+    end;
+    if dtpShotDate.Date >= dtpTakenDate.Date then
+    begin
+      ErrorDlg('取件日期不应早于拍摄日期');
       dtpTakenDate.SetFocus;
       Exit;
     end;
@@ -363,6 +376,15 @@ begin
     end;
   end;
 
+  if Integer(Status) < FStatus then
+  begin
+    if not QueryDlg('状态在朝改变历史的方向变化，请确认确实要如此改动？') then
+    begin
+      cbbStatus.SetFocus;
+      Exit;
+    end;
+  end;
+
   Result := True;
 end;
 
@@ -398,6 +420,8 @@ begin
     Exit;
 
   FID := DataSet.FieldValues['ID'];
+  FStatus := DataSet.FieldValues['Status'];
+
   edtBabyName.Text := Trim(VarToStr(DataSet.FieldValues['BabyName']));
   edtContactNum.Text := Trim(VarToStr(DataSet.FieldValues['ContactNum']));
   edtAge.Text := Trim(VarToStr(DataSet.FieldValues['Age']));

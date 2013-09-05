@@ -73,6 +73,8 @@ procedure ErrorDlg(const Msg: string);
 
 procedure InfoDlg(const Msg: string);
 
+function QueryDlg(const Msg: string): Boolean;
+
 implementation
 
 {$R *.dfm}
@@ -84,11 +86,19 @@ end;
 
 procedure InfoDlg(const Msg: string);
 begin
-  MessageBox(0, PChar(Msg), '提示', MB_OK + MB_ICONWARNING);
+  MessageBox(0, PChar(Msg), '提示', MB_OK + MB_ICONINFORMATION);
 end;
+
+function QueryDlg(const Msg: string): Boolean;
+begin
+  Result := False;
+  if MessageBox(0, PChar(Msg), '询问', MB_OKCANCEL + MB_ICONQUESTION) = IDOK then
+    Result := True;
+end;  
 
 procedure TDataModuleMain.DataModuleCreate(Sender: TObject);
 begin
+  dsOrderForms.Active := False;
   InitStatusStrings;
 end;
 
