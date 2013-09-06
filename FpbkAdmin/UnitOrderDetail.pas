@@ -418,6 +418,8 @@ procedure TFormOrderDetail.FillValues(DataSet: TDataSet);
 begin
   if DataSet = nil then
     Exit;
+  if DataSet.Eof then
+    Exit;
 
   FID := DataSet.FieldValues['ID'];
   FStatus := DataSet.FieldValues['Status'];

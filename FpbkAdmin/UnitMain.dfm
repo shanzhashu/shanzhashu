@@ -1,6 +1,6 @@
 object FormMain: TFormMain
-  Left = 306
-  Top = 300
+  Left = 60
+  Top = 117
   Width = 979
   Height = 563
   Caption = #19978#28023#38750#25293#19981#21487#20799#31461#25668#24433#31649#29702#31995#32479
@@ -12,7 +12,11 @@ object FormMain: TFormMain
   Font.Style = []
   Menu = mmMain
   OldCreateOrder = False
+  Position = poScreenCenter
   OnCreate = FormCreate
+  DesignSize = (
+    971
+    517)
   PixelsPerInch = 96
   TextHeight = 12
   object dbgrdOrders: TDBGrid
@@ -20,6 +24,7 @@ object FormMain: TFormMain
     Top = 32
     Width = 897
     Height = 409
+    Anchors = [akLeft, akTop, akRight, akBottom]
     DataSource = dsOrders
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit]
     ReadOnly = True
@@ -56,6 +61,7 @@ object FormMain: TFormMain
         Expanded = False
         FieldName = 'OrderDate'
         Title.Caption = #19979#35746#26085#26399
+        Width = 64
         Visible = True
       end
       item
@@ -83,12 +89,14 @@ object FormMain: TFormMain
         Expanded = False
         FieldName = 'ShotDate'
         Title.Caption = #25293#29031#26085#26399
+        Width = 64
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'CustomerTakenDate'
         Title.Caption = #21462#20214#26085#26399
+        Width = 64
         Visible = True
       end
       item
@@ -102,12 +110,14 @@ object FormMain: TFormMain
         Expanded = False
         FieldName = 'DesignSendDate'
         Title.Caption = #35774#35745#21457#20986
+        Width = 64
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'DesignReceiveDate'
         Title.Caption = #35774#35745#23436#31295
+        Width = 64
         Visible = True
       end
       item
@@ -121,24 +131,20 @@ object FormMain: TFormMain
         Expanded = False
         FieldName = 'SendToFactoryDate'
         Title.Caption = #21046#20316#21457#20986
+        Width = 64
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'RecvFromFactoryDate'
         Title.Caption = #21046#20316#23436#25104
+        Width = 64
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'PicContent'
         Title.Caption = #22871#39184#20869#23481
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'Memory'
-        Title.Caption = #22791#27880
         Visible = True
       end>
   end
@@ -176,29 +182,35 @@ object FormMain: TFormMain
       Caption = '&X. '#36864#20986
       OnExecute = actExitExecute
     end
-    object actQuerySentToFactory: TAction
+    object actQueryAfterSentToFactory: TAction
       Category = 'Query'
       Caption = #24050#21457#21046#20316
+      OnExecute = actQueryAfterSentToFactoryExecute
     end
-    object actQuerySentToDesign: TAction
+    object actQueryAfterSentToDesign: TAction
       Category = 'Query'
       Caption = #24050#21457#35774#35745
+      OnExecute = actQueryAfterSentToDesignExecute
     end
-    object actQueryRecvFromDesign: TAction
+    object actQueryAfterRecvFromDesign: TAction
       Category = 'Query'
       Caption = #35774#35745#23436#31295
+      OnExecute = actQueryAfterRecvFromDesignExecute
     end
     object actQueryOrdered: TAction
       Category = 'Query'
       Caption = #26410#25293#25668#30340#39044#32422#23458#25143
+      OnExecute = actQueryOrderedExecute
     end
     object actQueryShot: TAction
       Category = 'Query'
       Caption = #24050#25293#25668#26410#36873#29255#23458#25143
+      OnExecute = actQueryShotExecute
     end
-    object actQueryRecvFromFactory: TAction
+    object actQueryAfterRecvFromFactory: TAction
       Category = 'Query'
       Caption = #21046#20316#23436#25104
+      OnExecute = actQueryAfterRecvFromFactoryExecute
     end
     object actBackupDatabase: TAction
       Caption = '&B. '#22791#20221#25968#25454#24211'...'
@@ -206,11 +218,22 @@ object FormMain: TFormMain
     object actQueryAll: TAction
       Category = 'Query'
       Caption = '&A. '#25152#26377#35746#21333
+      OnExecute = actQueryAllExecute
     end
     object actManageSuite: TAction
       Category = 'Manage'
       Caption = '&S. '#31649#29702#22871#39184'...'
       OnExecute = actManageSuiteExecute
+    end
+    object actQueryNotTaken: TAction
+      Category = 'Query'
+      Caption = #21046#20316#23436#25104#26410#21462#20214#23458#25143
+      OnExecute = actQueryNotTakenExecute
+    end
+    object actQueryTaken: TAction
+      Category = 'Query'
+      Caption = #24050#21462#20214#23458#25143
+      OnExecute = actQueryTakenExecute
     end
   end
   object mmMain: TMainMenu
@@ -236,17 +259,26 @@ object FormMain: TFormMain
       object N8: TMenuItem
         Action = actQueryShot
       end
+      object N17: TMenuItem
+        Action = actQueryNotTaken
+      end
+      object N18: TMenuItem
+        Action = actQueryTaken
+      end
+      object N5: TMenuItem
+        Caption = '-'
+      end
       object N9: TMenuItem
-        Action = actQuerySentToDesign
+        Action = actQueryAfterSentToDesign
       end
       object N10: TMenuItem
-        Action = actQueryRecvFromDesign
+        Action = actQueryAfterRecvFromDesign
       end
       object N11: TMenuItem
-        Action = actQuerySentToFactory
+        Action = actQueryAfterSentToFactory
       end
       object N12: TMenuItem
-        Action = actQueryRecvFromFactory
+        Action = actQueryAfterRecvFromFactory
       end
       object N15: TMenuItem
         Caption = '-'

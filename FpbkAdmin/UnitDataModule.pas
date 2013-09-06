@@ -7,7 +7,8 @@ uses
 
 const
   EMPTY_DATETIME = 2;
-  ORDER_FORM_SQL = 'SELECT * FROM OroderForms ';
+  ORDER_FORM_SQL = 'SELECT * FROM OrderForms ';
+  DEFAULT_SORT_ORDER = 'ShotDate, OrderDate';
 
 type
   TDataModuleMain = class(TDataModule)

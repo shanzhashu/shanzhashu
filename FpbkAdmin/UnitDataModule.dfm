@@ -106,18 +106,16 @@ object DataModuleMain: TDataModuleMain
     end
   end
   object conDatabase: TADOConnection
-    Connected = True
     ConnectionString = 
-      'Provider=Microsoft.ACE.OLEDB.12.0;Data Source=Database.mdb;Persi' +
-      'st Security Info=False'
+      'Provider=Microsoft.Jet.OLEDB.4.0;Data Source=Database.mdb;Persis' +
+      't Security Info=False'
     LoginPrompt = False
     Mode = cmShareDenyNone
-    Provider = 'Microsoft.ACE.OLEDB.12.0'
+    Provider = 'Microsoft.Jet.OLEDB.4.0'
     Left = 144
     Top = 40
   end
   object tblDesignNames: TADOTable
-    Active = True
     Connection = conDatabase
     CursorType = ctStatic
     TableName = 'DesignNames'
@@ -125,7 +123,6 @@ object DataModuleMain: TDataModuleMain
     Top = 128
   end
   object tblFactoryNames: TADOTable
-    Active = True
     Connection = conDatabase
     CursorType = ctStatic
     TableName = 'FactoryNames'
@@ -133,7 +130,6 @@ object DataModuleMain: TDataModuleMain
     Top = 128
   end
   object tblStatusStrings: TADOTable
-    Active = True
     Connection = conDatabase
     CursorType = ctStatic
     TableName = 'StatusStrings'
@@ -141,7 +137,6 @@ object DataModuleMain: TDataModuleMain
     Top = 128
   end
   object tblPreContents: TADOTable
-    Active = True
     Connection = conDatabase
     CursorType = ctStatic
     TableName = 'PreContents'

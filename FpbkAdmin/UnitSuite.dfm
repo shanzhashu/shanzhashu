@@ -12,6 +12,7 @@ object FormSuite: TFormSuite
   Font.Name = #23435#20307
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   PixelsPerInch = 96
   TextHeight = 12
   object lblDesc: TLabel
