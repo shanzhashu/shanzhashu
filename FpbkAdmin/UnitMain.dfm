@@ -61,7 +61,6 @@ object FormMain: TFormMain
         Expanded = False
         FieldName = 'OrderDate'
         Title.Caption = #19979#35746#26085#26399
-        Width = 64
         Visible = True
       end
       item
@@ -235,6 +234,16 @@ object FormMain: TFormMain
       Caption = #24050#21462#20214#23458#25143
       OnExecute = actQueryTakenExecute
     end
+    object actDeleteOrder: TAction
+      Category = 'Edit'
+      Caption = '&D. '#21024#38500#35746#21333'...'
+      OnExecute = actDeleteOrderExecute
+    end
+    object actModifyOrder: TAction
+      Category = 'Edit'
+      Caption = '&E. '#32534#36753#24403#21069#35746#21333'...'
+      OnExecute = actModifyOrderExecute
+    end
   end
   object mmMain: TMainMenu
     Left = 104
@@ -249,6 +258,16 @@ object FormMain: TFormMain
       end
       object X1: TMenuItem
         Action = actExit
+      end
+    end
+    object E1: TMenuItem
+      Caption = '&E. '#32534#36753
+      object E2: TMenuItem
+        Action = actModifyOrder
+        Caption = '&M. '#20462#25913#24403#21069#35746#21333'...'
+      end
+      object D1: TMenuItem
+        Action = actDeleteOrder
       end
     end
     object Q1: TMenuItem

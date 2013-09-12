@@ -69,6 +69,7 @@ type
     function IsDateTimePickerEmpty(Picker: TDateTimePicker): Boolean;
     procedure PutFieldToDateTimePicker(AVar: Variant; Picker: TDateTimePicker);
     procedure PutValuesToDataSetFields(DataSet: TDataSet);
+    function ConvertDBString(const Source: string): string;
   public
     property IsNew: Boolean read FIsNew write SetIsNew;
     property SaveSuc: Boolean read FSaveSuc;
@@ -154,6 +155,21 @@ begin
   Idx := cbbStatus.ItemIndex;
   if (Idx <= Integer(High(TOrderStatus))) and (Idx >= Integer(Low(TOrderStatus))) then
     lblOrderDetail.Caption := OrderStatusDetailStrings[TOrderStatus(Idx)];
+
+  case TOrderStatus(Idx) of
+    osDesignSent:
+      if IsDateTimePickerEmpty(dtpDesignSend) then
+        dtpDesignSend.Date := Date;
+    osDesignOK:
+      if IsDateTimePickerEmpty(dtpRecvDesign) then
+        dtpRecvDesign.Date := Date;
+    osSentToFactory:
+      if IsDateTimePickerEmpty(dtpSendToFactory) then
+        dtpSendToFactory.Date := Date;
+    osRecvFromFactory:
+      if IsDateTimePickerEmpty(dtpRecvFromFactory) then
+        dtpRecvFromFactory.Date := Date;
+  end;
 end;
 
 procedure TFormOrderDetail.dtpShotDateChange(Sender: TObject);
@@ -473,8 +489,8 @@ begin
   if DataSet = nil then
     Exit;
 
-  DataSet.FieldValues['BabyName'] := Trim(edtBabyName.Text);
-  DataSet.FieldValues['ContactNum'] := Trim(edtContactNum.Text);
+  DataSet.FieldValues['BabyName'] := ConvertDBString(edtBabyName.Text);
+  DataSet.FieldValues['ContactNum'] := ConvertDBString(edtContactNum.Text);
   DataSet.FieldValues['Age'] := StrToInt(edtAge.Text);
   DataSet.FieldValues['Price'] := StrToInt(edtPrice.Text);
   DataSet.FieldValues['Payment'] := StrToInt(edtPayment.Text);
@@ -498,7 +514,7 @@ begin
   if not IsDateTimePickerEmpty(dtpRecvDesign) then
     DataSet.FieldValues['RecvFromFactoryDate'] := FormatDateTime('yyyy-mm-dd', dtpRecvFromFactory.Date);
 
-  DataSet.FieldValues['PicContent'] := Trim(mmoContent.Text);
+  DataSet.FieldValues['PicContent'] := ConvertDBString(mmoContent.Text);
 
   if cbbDesignName.ItemIndex >= 0 then
     DataSet.FieldValues['DesignName'] := Integer(cbbDesignName.Items.Objects[cbbDesignName.ItemIndex]);
@@ -530,6 +546,16 @@ begin
     end;
     DataModuleMain.tblPreContents.Active := False;
   end;
+end;
+
+function TFormOrderDetail.ConvertDBString(const Source: string): string;
+begin
+  Result := Trim(Source);
+  Result := StringReplace(Result, '''', '¡¯', [rfReplaceAll]);
+  Result := StringReplace(Result, ',', '£¬', [rfReplaceAll]);
+  Result := StringReplace(Result, '"', '¡±', [rfReplaceAll]);
+  Result := StringReplace(Result, '(', '£¨', [rfReplaceAll]);
+  Result := StringReplace(Result, ')', '£©', [rfReplaceAll]);
 end;
 
 end.

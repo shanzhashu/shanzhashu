@@ -54,6 +54,11 @@ type
     N17: TMenuItem;
     actQueryTaken: TAction;
     N18: TMenuItem;
+    actDeleteOrder: TAction;
+    actModifyOrder: TAction;
+    E1: TMenuItem;
+    E2: TMenuItem;
+    D1: TMenuItem;
     procedure actManageDesignExecute(Sender: TObject);
     procedure actManageFactoryExecute(Sender: TObject);
     procedure actExitExecute(Sender: TObject);
@@ -71,10 +76,13 @@ type
     procedure actQueryAfterRecvFromFactoryExecute(Sender: TObject);
     procedure actQueryNotTakenExecute(Sender: TObject);
     procedure actQueryTakenExecute(Sender: TObject);
+    procedure actModifyOrderExecute(Sender: TObject);
+    procedure actDeleteOrderExecute(Sender: TObject);
   private
     { Private declarations }
     procedure OnMsgOpenDataBase(var Msg: TMessage); message MSG_OPEN_DATABASE;
-    procedure QueryBuild(const Where: string; const Order: string = '');
+    procedure QueryBuild(const Where: string; const Order: string = '';
+      const DateColumn: string = ''; const DateDescription: string = '');
   public
     { Public declarations }
   end;
@@ -85,7 +93,8 @@ var
 implementation
 
 uses UnitDesignNames, UnitDataModule, UnitFactoryNames, UnitOrderDetail,
-  UnitSuite;
+  UnitSuite,
+  UnitQuery;
 
 {$R *.dfm}
 
@@ -129,27 +138,15 @@ begin
       cbbStatus.OnChange(cbbStatus);
 
     ShowModal;
+    if SaveSuc then
+      DataModuleMain.dsOrderForms.Requery;
     Free;
   end;
 end;
 
 procedure TFormMain.dbgrdOrdersDblClick(Sender: TObject);
 begin
-  if DataModuleMain.dsOrderForms.Eof then
-    Exit;
-
-  // 根据当前记录，编辑它
-  with TFormOrderDetail.Create(Application) do
-  begin
-    IsNew := False;
-    FillValues(DataModuleMain.dsOrderForms);
-
-    ShowModal;
-    if SaveSuc then
-      DataModuleMain.dsOrderForms.Requery;
-
-    Free;
-  end;
+  actModifyOrder.Execute;
 end;
 
 procedure TFormMain.actManageSuiteExecute(Sender: TObject);
@@ -173,7 +170,6 @@ begin
     if Assigned(cbbStatus.OnChange) then
       cbbStatus.OnChange(cbbStatus);
 
-
     ShowModal;
     Free;
   end;
@@ -181,6 +177,7 @@ end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
+  Application.Title := Caption;
   PostMessage(Handle, MSG_OPEN_DATABASE, 0, 0);
 end;
 
@@ -190,16 +187,59 @@ begin
   DataModuleMain.dsOrderForms.Active := True;
 end;
 
-procedure TFormMain.QueryBuild(const Where, Order: string);
+procedure TFormMain.QueryBuild(const Where, Order: string;
+  const DateColumn: string; const DateDescription: string);
 var
   Sql: string;
+  StartDate, EndDate: TDateTime;
+  hasWhere: Boolean;
 begin
+  StartDate := 0; EndDate := 0;
+  if (DateColumn <> '') and (DateDescription <> '') then
+  begin
+    with TFormQuery.Create(Application) do
+    begin
+      grpQuery.Caption := DateDescription;
+      if ShowModal = mrOK then
+      begin
+        StartDate := dtpStart.Date;
+        EndDate := dtpEnd.Date;
+        Free;
+      end
+      else
+      begin
+        Free;
+        Exit;
+      end;
+    end;
+  end;
+  
   DataModuleMain.dsOrderForms.Active := False;
+
   Sql := ORDER_FORM_SQL;
+  hasWhere := False;
   if Where <> '' then
+  begin
     Sql := Sql + ' WHERE ' + Where;
+    hasWhere := True;
+  end;
+
+  if DateColumn <> '' then
+  begin
+    if hasWhere then
+      Sql := Sql + ' AND ' + DateColumn + ' >= '
+        + FormatDateTime('#yyyy/mm/dd#', StartDate) + ' AND ' + DateColumn
+        + ' <= ' + FormatDateTime('#yyyy/mm/dd#', EndDate)
+    else
+      Sql := Sql + ' WHERE ' + DateColumn + ' >= '
+        + FormatDateTime('#yyyy/mm/dd#', StartDate) + ' AND ' + DateColumn
+        + ' <= ' + FormatDateTime('#yyyy/mm/dd#', EndDate);
+  end;
+  
   if Order <> '' then
     Sql := Sql + ' ORDER BY ' + Order
+  else if DateColumn <> '' then
+    Sql := Sql + ' ORDER BY ' + DateColumn
   else
     Sql := Sql + ' ORDER BY ' + DEFAULT_SORT_ORDER;
 
@@ -229,7 +269,7 @@ end;
 
 procedure TFormMain.actQueryAfterRecvFromDesignExecute(Sender: TObject);
 begin
-  QueryBuild('Status >= ' + IntToStr(Integer(osDesignOK)));
+  QueryBuild('Status >= ' + IntToStr(Integer(osDesignOK)), '', 'DesignReceiveDate', '设计完稿日期查询');
 end;
 
 procedure TFormMain.actQueryAfterSentToFactoryExecute(Sender: TObject);
@@ -239,7 +279,7 @@ end;
 
 procedure TFormMain.actQueryAfterRecvFromFactoryExecute(Sender: TObject);
 begin
-  QueryBuild('Status >= ' + IntToStr(Integer(osRecvFromFactory)));
+  QueryBuild('Status >= ' + IntToStr(Integer(osRecvFromFactory)), '', 'RecvFromFactoryDate', '工厂交货日期查询');
 end;
 
 procedure TFormMain.actQueryNotTakenExecute(Sender: TObject);
@@ -251,6 +291,38 @@ end;
 procedure TFormMain.actQueryTakenExecute(Sender: TObject);
 begin
   QueryBuild('Status = ' + IntToStr(Integer(osCustomerTaken)));
+end;
+
+procedure TFormMain.actModifyOrderExecute(Sender: TObject);
+begin
+  if DataModuleMain.dsOrderForms.Eof then
+    Exit;
+
+  // 根据当前记录，编辑它
+  with TFormOrderDetail.Create(Application) do
+  begin
+    IsNew := False;
+    FillValues(DataModuleMain.dsOrderForms);
+
+    ShowModal;
+    if SaveSuc then
+      DataModuleMain.dsOrderForms.Requery;
+
+    Free;
+  end;
+end;
+
+procedure TFormMain.actDeleteOrderExecute(Sender: TObject);
+begin
+  if DataModuleMain.dsOrderForms.Eof then
+    Exit;
+
+  if QueryDlg(Format('是否确定要删除当前 %s 的订单？删除后不可恢复！',
+    [VarToStr(DataModuleMain.dsOrderForms.FieldValues['BabyName'])])) then
+  begin
+    DataModuleMain.dsOrderForms.Delete;
+    DataModuleMain.dsOrderForms.Requery();
+  end;
 end;
 
 end.

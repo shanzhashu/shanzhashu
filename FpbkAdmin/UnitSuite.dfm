@@ -122,6 +122,19 @@ object FormSuite: TFormSuite
     Height = 25
     DataSource = dsPreContents
     VisibleButtons = [nbInsert, nbDelete, nbEdit, nbPost, nbCancel, nbRefresh]
+    Hints.Strings = (
+      'First record'
+      'Prior record'
+      'Next record'
+      'Last record'
+      #28155#21152#22871#39184
+      #21024#38500#22871#39184
+      #32534#36753#22871#39184#20869#23481
+      #20445#23384#22871#39184#20869#23481
+      #21462#28040#32534#36753#22871#39184#20869#23481
+      #37325#26032#36733#20837#22871#39184#20869#23481)
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 2
   end
   object btnClose: TButton
