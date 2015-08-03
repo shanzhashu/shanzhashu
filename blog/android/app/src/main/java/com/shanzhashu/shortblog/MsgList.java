@@ -1,6 +1,9 @@
 package com.shanzhashu.shortblog;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by LIUXIAO950 on 2015-08-03.
@@ -28,8 +31,18 @@ public class MsgList extends ArrayList<MsgBean> {
         }
     }
 
+    private class SortComparator implements Comparator {
+        public int compare(Object o1, Object o2) {
+            MsgBean s1 = (MsgBean) o1;
+            MsgBean s2 = (MsgBean) o2;
+
+            return s2.getTime().compareTo(s1.getTime());
+        }
+    }
+
     public void sortBeans() {
-        // TODO: 根据时间排序，新在前
+        // 根据时间排序，新在前
+        Collections.sort(this, new SortComparator());
     }
 
     public void removeBeanById(String id)
