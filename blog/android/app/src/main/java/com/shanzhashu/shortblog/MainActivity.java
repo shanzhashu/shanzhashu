@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -118,8 +119,8 @@ public class MainActivity extends Activity {
                                         if (s.startsWith("Success"))
                                         {
                                             showToast("发帖成功！");
-                                            mCurrentPage = 0;
-                                            loadItemByPage(mCurrentPage);
+                                            loadItemByPage(0, true);
+                                            draft = "";
                                         }
                                         else {
                                             showToast("发帖失败：" + s);
@@ -169,6 +170,16 @@ public class MainActivity extends Activity {
 
         lvList = (ListView)findViewById(R.id.listview_msg);
         lvList.setAdapter(mAdapter);
+        View footer = View.inflate(this, R.layout.foot_load_more, null);
+        lvList.addFooterView(footer);
+        Button btnLoad = (Button)footer.findViewById(R.id.button_load_more);
+        btnLoad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadItemByPage(mCurrentPage, false);
+            }
+        });
+        // lvList.setEmptyView();
 
         txtHead = (TextView)findViewById(R.id.head_title_text);
         txtHead.setClickable(true);
@@ -176,7 +187,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick to Load page " + mCurrentPage);
-                loadItemByPage(mCurrentPage);
+                loadItemByPage(0, true);
 
             }
         });
@@ -243,7 +254,7 @@ public class MainActivity extends Activity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             final ViewHolder holder;
-            Log.d(TAG, "getView " + position);
+            //Log.d(TAG, "getView " + position);
 
             if (convertView == null)
             {
@@ -336,9 +347,11 @@ public class MainActivity extends Activity {
         return BlogConst.SESSION_ID1 + BlogConst.SESSION_ID2;
     }
 
-    private void loadItemByPage(int page)
+    private void loadItemByPage(int page, final boolean fromHead)
     {
         String s = generateSeedSession();
+        if (fromHead)
+            page = 0;
         String url = BlogConst.URL_INDEX + "?session=" + s + "&page=" + page;
         //Log.d(TAG, "URL: " + url);
 
@@ -351,6 +364,16 @@ public class MainActivity extends Activity {
                 try {
                     JSONArray arr = new JSONArray(res);
                     Log.d(TAG, "Get Size " + arr.length());
+                    if (arr.length() > 0) {
+                        if (!fromHead)
+                            mCurrentPage++;
+                    }
+                    else
+                    {
+                        showToast("无更多数据。");
+                        return;
+                    }
+
                     int i;
                     for (i=0;i<arr.length();i++)
                     {
@@ -365,6 +388,7 @@ public class MainActivity extends Activity {
                     mList.sortBeans();
                     Log.d(TAG, "Got Msgs " + mList.size());
                     mAdapter.notifyDataSetChanged();
+
                 } catch (JSONException e) {
                     showToast("解析失败：" + res);
                 }

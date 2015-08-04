@@ -24,10 +24,25 @@ public class MsgList extends ArrayList<MsgBean> {
         return false;
     }
 
+    private MsgBean getMsgBeanById(String id)
+    {
+        for (MsgBean bean : this) {
+            if (bean.getId().equals(id))
+                return bean;
+        }
+        return null;
+    }
+
     public void insertBean(MsgBean bean) {
         if (bean != null) {
             if (!msgExists(bean))
                 add(bean);
+            else
+            {
+                MsgBean b = getMsgBeanById(bean.getId());
+                b.setTime(bean.getTime());
+                b.setContent(bean.getContent());
+            }
         }
     }
 
