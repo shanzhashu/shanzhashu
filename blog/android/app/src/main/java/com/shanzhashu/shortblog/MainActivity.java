@@ -79,6 +79,14 @@ public class MainActivity extends Activity {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
 
+    private void updateCaption(int count)
+    {
+        if (txtHead != null)
+        {
+            txtHead.setText("Short Blog (" + count + ")");
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -304,6 +312,7 @@ public class MainActivity extends Activity {
                                                 showToast("删除成功");
                                                 mList.removeBeanById(fdelid);
                                                 mAdapter.notifyDataSetChanged();
+                                                updateCaption(mList.size());
                                             } else
                                                 showToast("删除失败：#" + fdelid);
                                         }
@@ -388,6 +397,7 @@ public class MainActivity extends Activity {
                     mList.sortBeans();
                     Log.d(TAG, "Got Msgs " + mList.size());
                     mAdapter.notifyDataSetChanged();
+                    updateCaption(mList.size());
 
                 } catch (JSONException e) {
                     showToast("解析失败：" + res);
