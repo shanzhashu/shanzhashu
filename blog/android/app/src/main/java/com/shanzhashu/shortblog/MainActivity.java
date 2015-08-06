@@ -239,6 +239,7 @@ public class MainActivity extends Activity {
         public TextView tvTime;
         public TextView tvId;
         public TextView tvContent;
+        public TextView tvWeek;
         public ImageView imDelete;
     }
 
@@ -271,6 +272,7 @@ public class MainActivity extends Activity {
                 holder.tvId = (TextView) convertView.findViewById(R.id.textview_id);
                 holder.tvTime = (TextView)convertView.findViewById(R.id.textview_time);
                 holder.tvContent = (TextView)convertView.findViewById(R.id.textview_content);
+                holder.tvWeek = (TextView)convertView.findViewById(R.id.textview_week);
                 holder.imDelete = (ImageView)convertView.findViewById(R.id.imageview_delete);
 
                 convertView.setTag(holder);
@@ -285,6 +287,8 @@ public class MainActivity extends Activity {
             holder.tvTime.setText(s);
             s = mList.get(position).getContent();
             holder.tvContent.setText(s);
+            s = mList.get(position).getWeek();
+            holder.tvWeek.setText(s);
 
             holder.imDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -367,7 +371,7 @@ public class MainActivity extends Activity {
         Utf8StringRequest jar = new Utf8StringRequest(url, new Response.Listener<String>() {
             @Override
             public void onResponse(String res) {
-                Log.d(TAG, "onResponse " + res);
+                //Log.d(TAG, "onResponse " + res);
                 hideProgress();
 
                 try {

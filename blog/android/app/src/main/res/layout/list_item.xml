@@ -27,7 +27,8 @@
             android:id="@+id/textview_id"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/imageview_delete"
-            android:layout_toStartOf="@+id/imageview_delete" />
+            android:layout_toStartOf="@+id/imageview_delete"
+            android:textColor="@color/abc_primary_text_material_light" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -37,6 +38,17 @@
             android:layout_alignParentEnd="true"
             android:src="@drawable/delete_icon"
             android:padding="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="zhouyi"
+            android:id="@+id/textview_week"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/textview_time"
+            android:layout_toEndOf="@+id/textview_time"
+            android:paddingLeft="10dp" />
     </RelativeLayout>
 
     <TextView
