@@ -60,7 +60,7 @@ s=f.readlines()
 #print s
 f.close
 
-returnCode = subprocess.call('./zipmsg.py')
+returnCode = subprocess.call(os.path.realpath(sys.path[0]) +'/zipmsg.py')
 print 'returncode:', returnCode  
 
 time.sleep(5)
@@ -74,13 +74,13 @@ msg['From'] = 'shanzhashu@163.com'
 msg['To'] = 'liuxiaoshanzhashu@gmail.com'
 msg['Subject'] = 'Backup Package ' + today.strftime('%Y-%m-%d %H:%M:%S')
 
-f=open('./message.zip', 'rb')
+f=open(os.path.realpath(sys.path[0]) + '/message.zip', 'rb')
 s=f.read()
 #print s
 f.close
 
-fd = file('./message.zip',"rb")
-mimetype,mimeencoding = mimetypes.guess_type('./message.zip')
+fd = file(os.path.realpath(sys.path[0]) + '/message.zip',"rb")
+mimetype,mimeencoding = mimetypes.guess_type(os.path.realpath(sys.path[0]) + '/message.zip')
 if mimeencoding or (mimetype is None):
     mimetype = "application/octet-stream"
 maintype,subtype = mimetype.split("/")
@@ -94,9 +94,6 @@ else:
 att1.add_header("Content-Disposition","attachment",filename = "message.zip")
 fd.close()
 
-#att1 = MIMEText(open('./message.zip', 'rb').read(), 'base64', 'utf-8')
-#att1["Content-Type"] = 'application/octet-stream'
-#att1["Content-Disposition"] = 'attachment; filename="message.zip"'
 msg.attach(att1)
 
 smtp = smtplib.SMTP()
@@ -107,8 +104,8 @@ smtp.quit()
 #print msg.as_string()
 print "Mail send Success. Record MaxId"
 
-os.remove("message.txt")
-os.remove("message.zip")
+os.remove(os.path.realpath(sys.path[0]) + "/message.txt")
+os.remove(os.path.realpath(sys.path[0]) + "/message.zip")
 
 lf = open('id.txt', 'w');
 lf.write(str(MaxId));
