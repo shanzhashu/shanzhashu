@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -141,7 +142,7 @@ public class MainActivity extends Activity {
                                         hideProgress();
                                         Log.d(TAG, "onErrorResponse " + volleyError.toString());
                                         draft = addText.getText().toString();
-                                        showToast("倒霉，发帖失败");
+                                        showToast("倒霉，发帖失败：" + volleyError.toString());
                                     }
                                 }) {
                                     @Override
@@ -163,6 +164,10 @@ public class MainActivity extends Activity {
 
                                 showProgress();
                                 MyX509TrustManager.allowAllSSL();
+
+                                sr.setRetryPolicy(new DefaultRetryPolicy(BlogConst.TIME_OUT,
+                                                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                                                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                                 mQueue.add(sr);
                             }
                         })
