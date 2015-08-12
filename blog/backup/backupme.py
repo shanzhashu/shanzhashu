@@ -47,12 +47,13 @@ for i in range(count):
 curs.close()
 conn.close()
 
-f = open('message.txt', 'w')
+path=os.path.realpath(sys.path[0]) + '/message.txt'
+
+f = open(path, 'w')
 f.write(body)
 f.flush
 f.close
 
-path=os.path.realpath(sys.path[0]) + '/message.txt'
 print path
 
 f=open(path, 'rb')

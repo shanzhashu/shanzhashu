@@ -16,7 +16,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-z = zipfile.ZipFile('message.zip', 'w', zipfile.ZIP_DEFLATED)
+z = zipfile.ZipFile(os.path.realpath(sys.path[0]) + '/message.zip', 'w', zipfile.ZIP_DEFLATED)
 path=os.path.realpath(sys.path[0]) + '/message.txt'
 print path
 
