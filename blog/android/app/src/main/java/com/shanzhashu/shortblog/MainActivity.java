@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
@@ -335,6 +336,9 @@ public class MainActivity extends Activity {
 
                                     showProgress();
                                     MyX509TrustManager.allowAllSSL();
+                                    sr.setRetryPolicy(new DefaultRetryPolicy(BlogConst.TIME_OUT,
+                                            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                                     mQueue.add(sr);
                                 }
                             })
@@ -423,6 +427,9 @@ public class MainActivity extends Activity {
         });
         showProgress();
         MyX509TrustManager.allowAllSSL();
+        jar.setRetryPolicy(new DefaultRetryPolicy(BlogConst.TIME_OUT,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         mQueue.add(jar);
     }
 }
