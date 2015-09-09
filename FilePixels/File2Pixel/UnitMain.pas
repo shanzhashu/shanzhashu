@@ -42,8 +42,8 @@ var
 
 procedure TFormFile.FormCreate(Sender: TObject);
 begin
-  MAX_WIDTH := Screen.DesktopWidth - 200;
-  MAX_HEIGHT := Screen.DesktopHeight - 200;
+  MAX_WIDTH := Screen.DesktopWidth - 100;
+  MAX_HEIGHT := Screen.DesktopHeight - 150;
 
   if (MAX_WIDTH * MAX_HEIGHT) * 3 < MAX_FILESIZE then
     MAX_FILESIZE := (MAX_WIDTH * MAX_HEIGHT) * 3;

@@ -34,7 +34,7 @@ implementation
 const
   MIN_WIDTH = 120;
   MIN_HEIGHT = 100;
-  MARGIN = 2;
+  MARGIN = 0;
 
 procedure TFormPic.SetPicRect(W, H: Integer);
 begin
