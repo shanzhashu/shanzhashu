@@ -2,6 +2,8 @@ package com.shanzhashu.shortblog;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
@@ -296,6 +298,15 @@ public class MainActivity extends Activity {
             s = mList.get(position).getWeek();
             holder.tvWeek.setText(s);
 
+            holder.tvContent.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    ClipboardManager clipboardManager = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText(null, holder.tvContent.getText()));
+                    showToast("已复制到剪贴板");
+                    return false;
+                }
+            });
             holder.imDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
