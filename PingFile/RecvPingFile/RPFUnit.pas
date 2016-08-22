@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, StdCtrls, FileCtrl, Winsock2;
+  Dialogs, ComCtrls, StdCtrls, FileCtrl, WinSock2;
 
 const
   ICMPDLL = 'icmp.dll';
@@ -52,15 +52,14 @@ type
     Host: string;
   end;
 
-  TIP_NetType = (iptNone, iptANet, iptBNet, iptCNet, iptDNet, iptENet,
-    iptBroadCast, iptKeepAddr);
+  TIP_NetType = (iptNone, iptANet, iptBNet, iptCNet, iptDNet, iptENet, iptBroadCast, iptKeepAddr);
 
   TIPNotes = array[1..4] of Byte;
 
   TIP_Info = packed record
     IPAddress: Cardinal;                 // IP地址,此处用整形存储
     SubnetMask: Cardinal;                // 子网掩码,此处用整形存储
-    BroadCast: Cardinal;                 // 广播地址,此处用整形存储
+    Broadcast: Cardinal;                 // 广播地址,此处用整形存储
     HostName: array[0..255] of AnsiChar; // 主机名
     NetType: TIP_NetType;                // IP地址的网络类型
     Notes: TIPNotes;                     // IP地址的各子节点
@@ -98,6 +97,7 @@ const
   SEL_DIR_CAPTION = 'Select a Directory:';
   RECV_CAPTION = 'Recv!';
   STOP_CAPTION = 'Stop!';
+  SIO_RCVALL = IOC_IN or IOC_VENDOR or 1;
 
 var
   WSAIoctl: TWSAIoctl = nil;
@@ -204,8 +204,7 @@ begin
   end;
   if GetIPNotes(aIP, FNotes) then
   begin
-    Result := Result or FNotes[1] shl 24 or FNotes[2] shl 16 or FNotes[3] shl 8
-      or FNotes[4];
+    Result := Result or FNotes[1] shl 24 or FNotes[2] shl 16 or FNotes[3] shl 8 or FNotes[4];
   end;
 end;
 
@@ -234,7 +233,7 @@ begin
 
   WSAStartup($101, FWSAData);
   try
-    skLocal := Socket(AF_INET, SOCK_STREAM, 0); // Open a socket
+    skLocal := socket(AF_INET, SOCK_STREAM, 0); // Open a socket
     if (skLocal = INVALID_SOCKET) then
       Exit;
 
@@ -254,7 +253,7 @@ begin
           aLocalIP[iIP].SubnetMask := IPToInt({$IFDEF UNICODE}string{$ENDIF}(inet_ntoa
             (pAddrInet.sin_addr)));
           pAddrInet := Buffer[iIP].iiBroadCastAddress.AddressIn;
-          aLocalIP[iIP].BroadCast := IPToInt({$IFDEF UNICODE}string{$ENDIF}(inet_ntoa
+          aLocalIP[iIP].Broadcast := IPToInt({$IFDEF UNICODE}string{$ENDIF}(inet_ntoa
             (pAddrInet.sin_addr)));
           SetFlags := Buffer[iIP].iiFlags;
           aLocalIP[iIP].UpState := (SetFlags and IFF_UP) = IFF_UP;
@@ -265,9 +264,9 @@ begin
     except
       ;
     end;
-    CloseSocket(skLocal);
+    closesocket(skLocal);
   finally
-    WSACleanUp;
+    WSACleanup;
   end;
 end;
 
@@ -313,7 +312,7 @@ var
   aLocalIP: TIPGroup;
   I: Integer;
 begin
-  if (WSAStartup(MAKEWORD(2, 2), Wsa) <> 0) then
+  if (WSAStartup(MakeWord(2, 2), Wsa) <> 0) then
     raise Exception.Create('WSAStartup');
   InitWSAIoctl;
 
@@ -333,18 +332,60 @@ begin
 end;
 
 procedure TRPFForm.StartSniff;
+var
+  RecvTimeout: Integer;
+  Sa: TSockAddr;
+  Opt, Ret: Integer;
+  Buf: array[0..65535] of AnsiChar;
+  BytesRet, InBufLen: Cardinal;
+  CtlBuf: array[0..1023] of AnsiChar;
 begin
   if FRecving then
     Exit;
 
+  FSnifSock := socket(AF_INET, SOCK_RAW, IPPROTO_IP);
+  if FSnifSock = INVALID_SOCKET then
+    raise Exception.Create('Create Socket Fail.');
 
+  RecvTimeout := 1000;
+  if (setsockopt(FSnifSock, SOL_SOCKET, SO_RCVTIMEO, @RecvTimeout, SizeOf(RecvTimeout))
+    = SOCKET_ERROR) then
+  begin
+    Ret := WSAGetLastError;
+    closesocket(FSnifSock);
+    raise Exception.CreateFmt('Set Socketopt Fail. %d', [Ret]);
+  end;
+
+  Sa.sin_family := AF_INET;
+  Sa.sin_port := htons(0);
+  Sa.sin_addr.s_addr := inet_addr(PAnsiChar(cbbIP.Text));
+  if bind(FSnifSock, PSOCKADDR(@Sa), SizeOf(Sa)) = SOCKET_ERROR then
+  begin
+    Ret := WSAGetLastError;
+    closesocket(FSnifSock);
+    raise Exception.CreateFmt('Bind IP Fail. %d', [Ret]);
+  end;
+
+  InBufLen := 1;
+  if WSAIoctl(FSnifSock, SIO_RCVALL, @InBufLen, SizeOf(InBufLen), @CtlBuf[0],
+    SizeOf(CtlBuf), @BytesRet, nil, nil) = SOCKET_ERROR then
+  begin
+    Ret := WSAGetLastError;
+    closesocket(FSnifSock);
+    raise Exception.CreateFmt('WSAIoctl Fail. %d', [Ret]);
+  end;
+
+  FillChar(Buf[0], SizeOf(Buf), 0);
+  if recv(FSnifSock, Buf[0], SizeOf(Buf), 0) <> SOCKET_ERROR then
+  begin
+    // TODO: 解析 IP 包
+  end;
 end;
 
 procedure TRPFForm.StopSniff;
 begin
   if not FRecving then
     Exit;
-
 
 end;
 
