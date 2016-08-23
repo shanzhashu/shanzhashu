@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, StdCtrls, FileCtrl, WinSock2;
+  Dialogs, ComCtrls, StdCtrls, FileCtrl, WinSock2, Buttons;
 
 const
   ICMPDLL = 'icmp.dll';
@@ -32,10 +32,17 @@ type
     pbRecv: TProgressBar;
     lblRecvFrom: TLabel;
     cbbIP: TComboBox;
+    lblLocal: TLabel;
+    edtFromIp: TEdit;
+    lblTimeout: TLabel;
+    edtTimeout: TEdit;
+    udTimeout: TUpDown;
+    btnCopy: TSpeedButton;
     procedure btnBrowseClick(Sender: TObject);
     procedure btnRecvClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure btnCopyClick(Sender: TObject);
   private
     FRecving: Boolean;
     FSnifSock: Integer;
@@ -52,7 +59,8 @@ type
     Host: string;
   end;
 
-  TIP_NetType = (iptNone, iptANet, iptBNet, iptCNet, iptDNet, iptENet, iptBroadCast, iptKeepAddr);
+  TIP_NetType = (iptNone, iptANet, iptBNet, iptCNet, iptDNet, iptENet,
+    iptBroadCast, iptKeepAddr);
 
   TIPNotes = array[1..4] of Byte;
 
@@ -98,6 +106,21 @@ const
   RECV_CAPTION = 'Recv!';
   STOP_CAPTION = 'Stop!';
   SIO_RCVALL = IOC_IN or IOC_VENDOR or 1;
+
+type
+  TIPHeader = packed record
+    iph_verlen: Byte;           // 版本和长度
+    iph_tos: Byte;              // 服务类型
+    iph_length: Word;           // 总长度,2个无符号字节所以只能65535
+    iph_id: Word;               // 标识
+    iph_offset: Word;           // 标志和片偏移
+    iph_ttl: Byte;              // 生存时间
+    iph_protocol: Byte;         // 协议
+    iph_xsum: Word;             // 头校验和
+    iph_src: LongWord;          // 源地址
+    iph_dest: LongWord;         // 目的地址
+  end;
+  PIPHeader = ^TIPHeader;
 
 var
   WSAIoctl: TWSAIoctl = nil;
@@ -204,7 +227,8 @@ begin
   end;
   if GetIPNotes(aIP, FNotes) then
   begin
-    Result := Result or FNotes[1] shl 24 or FNotes[2] shl 16 or FNotes[3] shl 8 or FNotes[4];
+    Result := Result or FNotes[1] shl 24 or FNotes[2] shl 16 or FNotes[3] shl 8
+      or FNotes[4];
   end;
 end;
 
@@ -293,14 +317,12 @@ begin
   begin
     // Stop
     StopSniff;
-    FRecving := False;
     UpdateButtonState;
   end
   else
   begin
     // Start
     StartSniff;
-    FRecving := True;
     UpdateButtonState;
   end;
 
@@ -339,15 +361,24 @@ var
   Buf: array[0..65535] of AnsiChar;
   BytesRet, InBufLen: Cardinal;
   CtlBuf: array[0..1023] of AnsiChar;
+  DataLen, HdrLen, AllLen, SumLen, PackLen, Step: Integer;
+  PIP: PIPHeader;
+  ListeningIP, SrcIp: u_long;
+  IGMPBuf, PFileName: PAnsiChar;
+  PSeq, PLen, PFile: PCardinal;
+  Content, PContent: PAnsiChar;
+  AFileName: string;
+  Stream: TMemoryStream;
 begin
   if FRecving then
     Exit;
 
+  pbRecv.Position := 0;
   FSnifSock := socket(AF_INET, SOCK_RAW, IPPROTO_IP);
   if FSnifSock = INVALID_SOCKET then
     raise Exception.Create('Create Socket Fail.');
 
-  RecvTimeout := 1000;
+  RecvTimeout := udTimeout.Position;
   if (setsockopt(FSnifSock, SOL_SOCKET, SO_RCVTIMEO, @RecvTimeout, SizeOf(RecvTimeout))
     = SOCKET_ERROR) then
   begin
@@ -356,9 +387,12 @@ begin
     raise Exception.CreateFmt('Set Socketopt Fail. %d', [Ret]);
   end;
 
+  ListeningIP := inet_addr(PAnsiChar(cbbIP.Text));
+  SrcIp := inet_addr(PAnsiChar(edtFromIp.Text));
+
   Sa.sin_family := AF_INET;
   Sa.sin_port := htons(0);
-  Sa.sin_addr.s_addr := inet_addr(PAnsiChar(cbbIP.Text));
+  Sa.sin_addr.s_addr := ListeningIP;
   if bind(FSnifSock, PSOCKADDR(@Sa), SizeOf(Sa)) = SOCKET_ERROR then
   begin
     Ret := WSAGetLastError;
@@ -376,9 +410,97 @@ begin
   end;
 
   FillChar(Buf[0], SizeOf(Buf), 0);
-  if recv(FSnifSock, Buf[0], SizeOf(Buf), 0) <> SOCKET_ERROR then
-  begin
-    // TODO: 解析 IP 包
+  FRecving := True;
+  UpdateButtonState;
+  Content := nil;
+  Step := 0;
+  SumLen := 0;
+
+  Application.ProcessMessages;
+  try
+    while FRecving do
+    begin
+      DataLen := recv(FSnifSock, Buf[0], SizeOf(Buf), 0);
+      if (DataLen <> SOCKET_ERROR) and (DataLen > 0) then
+      begin
+        // 解析 IP 包
+        PIP := @Buf[0];
+        if PIP^.iph_verlen and $F0 <> $40 then // IP must V4
+          Continue;  
+        if PIP^.iph_dest <> ListeningIP then   // 只抓目标是自己的
+          Continue;
+        if PIP^.iph_protocol <> 1 then         // 只抓 ICMP 的
+          Continue;
+        if (SrcIp <> INADDR_NONE) and (PIP^.iph_src <> SrcIp) then // 只抓指定源的
+          Continue;
+
+        HdrLen := (PIP^.iph_verlen and $0F) * SizeOf(DWORD);
+        IGMPBuf := PAnsiChar(Integer(@Buf[0]) + HdrLen + 8); // 8 means IGMP Ping packet header len
+
+        PSeq := PCardinal(IGMPBuf);
+        PLen := PCardinal(Integer(IGMPBuf) + SizeOf(Cardinal));
+        PFile := PCardinal(Integer(PLen) + SizeOf(Cardinal));
+
+        if (PSeq^ = 0) and (Content = nil) then
+        begin
+          AllLen := PLen^;   // 总块数据量
+          Content := GetMemory(AllLen);
+          PContent := Content;
+          PFileName := PAnsiChar(PFile);
+          if StrLen(PFileName) < 128 then
+            AFileName := StrNew(PFileName)
+          else
+            AFileName := 'NoName.txt';
+          Step := 1;
+
+          pbRecv.Min := 0;
+          pbRecv.Max := AllLen;
+          //pbRecv.Invalidate;
+        end;
+
+        if PSeq^ = Step then // 需要的块来了
+        begin
+          PackLen := PLen^;  // 本块数据量
+
+          CopyMemory(PContent, PFile, PackLen); // 拼装文件内容
+
+          Inc(Step);
+          Inc(SumLen, PackLen);
+          pbRecv.Position := SumLen;
+          //pbRecv.Invalidate;
+
+          PContent := Pointer(Integer(PContent) + PackLen);
+        end;
+
+        if SumLen >= AllLen then // 数据满了
+        begin
+          // 保存 Content 到文件
+          Stream := TMemoryStream.Create;
+          Stream.Write(Content^, SumLen);
+          Stream.SaveToFile(IncludeTrailingPathDelimiter(edtDir.Text) + AFileName);
+          FreeMemory(Content);
+          Content := nil;
+          FRecving := False;
+          pbRecv.Position := 0;
+
+          ShowMessage('File ' + AFileName + ' Saved to ' + edtDir.Text);
+          Exit;
+        end;
+      end
+      else if DataLen = SOCKET_ERROR then
+      begin
+        Ret := WSAGetLastError;
+        if Ret <> 10060 then // 10060 是超时无数据，继续接收
+          raise Exception.CreateFmt('Recv Fail. %d', [Ret]);
+      end;
+
+      Application.ProcessMessages;
+    end;
+  finally
+    closesocket(FSnifSock);
+    if Content <> nil then
+      FreeMemory(Content);
+    UpdateButtonState;
   end;
 end;
 
@@ -386,7 +508,12 @@ procedure TRPFForm.StopSniff;
 begin
   if not FRecving then
     Exit;
+  FRecving := False;
+end;
 
+procedure TRPFForm.btnCopyClick(Sender: TObject);
+begin
+  edtFromIp.Text := cbbIP.Text;
 end;
 
 end.

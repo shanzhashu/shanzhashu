@@ -3,7 +3,7 @@ object FormPuf: TFormPuf
   Top = 107
   BorderStyle = bsDialog
   Caption = 'Ping Using File'
-  ClientHeight = 188
+  ClientHeight = 216
   ClientWidth = 473
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -44,6 +44,13 @@ object FormPuf: TFormPuf
     Height = 13
     Caption = 'Send To:'
   end
+  object lblDelay: TLabel
+    Left = 16
+    Top = 128
+    Width = 30
+    Height = 13
+    Caption = 'Delay:'
+  end
   object edtFile: TEdit
     Left = 48
     Top = 24
@@ -71,11 +78,11 @@ object FormPuf: TFormPuf
   end
   object btnSend: TButton
     Left = 48
-    Top = 136
+    Top = 168
     Width = 393
     Height = 25
     Caption = 'Send Ping Packets'
-    TabOrder = 3
+    TabOrder = 6
     OnClick = btnSendClick
   end
   object edtIP: TEdit
@@ -83,8 +90,26 @@ object FormPuf: TFormPuf
     Top = 88
     Width = 161
     Height = 21
-    TabOrder = 4
+    TabOrder = 3
     Text = '127.0.0.1'
+  end
+  object edtDelay: TEdit
+    Left = 96
+    Top = 128
+    Width = 81
+    Height = 21
+    TabOrder = 4
+    Text = '100'
+  end
+  object udDelay: TUpDown
+    Left = 177
+    Top = 128
+    Width = 15
+    Height = 21
+    Associate = edtDelay
+    Max = 1000
+    Position = 100
+    TabOrder = 5
   end
   object dlgOpen: TOpenDialog
     Left = 168

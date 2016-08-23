@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, WinSock;
+  Dialogs, StdCtrls, WinSock, ComCtrls;
 
 const
   ICMPDLL = 'icmp.dll';
@@ -35,6 +35,9 @@ type
     dlgOpen: TOpenDialog;
     lblIP: TLabel;
     edtIP: TEdit;
+    edtDelay: TEdit;
+    udDelay: TUpDown;
+    lblDelay: TLabel;
     procedure btnBrowseClick(Sender: TObject);
     procedure edtFileChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -452,6 +455,7 @@ var
   PSeq, PSize: PCardinal;
   Seq, ASize, FileSize: Integer;
   FileName: AnsiString;
+  Interval: Integer;
 begin
   if not FileExists(edtFile.Text) then
   begin
@@ -463,7 +467,7 @@ begin
     ShowMessage('Invalid IP.');
     Exit;
   end;
-
+  Interval := udDelay.Position;
   BufSize := StrToIntDef(edtSize.Text, 0);
   if BufSize < 256 then
     BufSize := 1024;
@@ -487,7 +491,7 @@ begin
       ShowMessage('Error Sending #' + IntToStr(Seq));
       Exit;
     end;
-    Sleep(0);
+    Sleep(Interval);
 
     while FileSize > 0 do
     begin
@@ -503,7 +507,7 @@ begin
         Exit;
       end;
 
-      Sleep(0);
+      Sleep(Interval);
       Dec(FileSize, ASize);
     end;
     ShowMessage('File Sent. Count ' + IntToStr(Seq));
