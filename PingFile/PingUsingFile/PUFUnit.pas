@@ -379,7 +379,7 @@ begin
       end
       else
       begin
-        Result := -2; // 没有响应
+        Result := GetLastError; // 没有响应
 //        if Assigned(FOnError) then
 //          FOnError(Self, aIP.IP, aIP.Host, IPOpt.TTL, IPOpt.TOS, SNoResponse);
       end;
@@ -449,7 +449,7 @@ procedure TFormPuf.btnSendClick(Sender: TObject);
 var
   Reply: string;
   Buf: PAnsiChar;
-  BufSize: Integer;
+  BufSize, Ret: Integer;
   aIP: TIpInfo;
   Stream: TFileStream;
   PSeq, PSize: PCardinal;
@@ -486,9 +486,10 @@ begin
     PSize^ := FileSize;
     CopyMemory(@Buf[8], @FileName[1], Length(FileName) + 1); // 包括末尾的 #0
 
-    if PingIP_Host(aIP, Buf[0], BufSize, Reply) <> 0 then
+    Ret := PingIP_Host(aIP, Buf[0], BufSize, Reply);
+    if Ret <> 0 then
     begin
-      ShowMessage('Error Sending #' + IntToStr(Seq));
+      ShowMessage('Error Sending #' + IntToStr(Seq) + ' : ' +IntToStr(Ret));
       Exit;
     end;
     Sleep(Interval);
@@ -501,9 +502,10 @@ begin
       ASize := Stream.Read(Buf[8], BufSize - 8);
       PSize^ := ASize;
 
-      if PingIP_Host(aIP, Buf[0], BufSize, Reply) <> 0 then
+      Ret := PingIP_Host(aIP, Buf[0], BufSize, Reply);
+      if Ret <> 0 then
       begin
-        ShowMessage('Error Sending #' + IntToStr(Seq));
+        ShowMessage('Error Sending #' + IntToStr(Seq) + ' : ' +IntToStr(Ret));
         Exit;
       end;
 
