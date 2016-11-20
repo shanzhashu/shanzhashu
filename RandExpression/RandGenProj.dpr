@@ -2,7 +2,7 @@ program RandGenProj;
 
 uses
   Forms,
-  RRandGen in 'RRandGen.pas' {Form1},
+  RandGen in 'RandGen.pas' {Form1},
   CnRandomExpression in 'CnRandomExpression.pas';
 
 {$R *.RES}
