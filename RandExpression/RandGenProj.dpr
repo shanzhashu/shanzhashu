@@ -2,13 +2,13 @@ program RandGenProj;
 
 uses
   Forms,
-  RandGen in 'RandGen.pas' {Form1},
+  RandGen in 'RandGen.pas' {FormGenRandom},
   CnRandomExpression in 'CnRandomExpression.pas';
 
 {$R *.RES}
 
 begin
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TFormGenRandom, FormGenRandom);
   Application.Run;
 end.

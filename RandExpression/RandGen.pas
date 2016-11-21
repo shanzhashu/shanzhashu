@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs;
 
 type
-  TForm1 = class(TForm)
+  TFormGenRandom = class(TForm)
   private
     { Private declarations }
   public
@@ -14,7 +14,7 @@ type
   end;
 
 var
-  Form1: TForm1;
+  FormGenRandom: TFormGenRandom;
 
 implementation
 

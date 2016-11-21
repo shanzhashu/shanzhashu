@@ -1,4 +1,4 @@
-object Form1: TForm1
+object FormGenRandom: TFormGenRandom
   Left = 192
   Top = 107
   Width = 696
