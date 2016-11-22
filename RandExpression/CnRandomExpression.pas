@@ -3,10 +3,11 @@ unit CnRandomExpression;
 interface
 
 uses
-  Classes, SysUtils, Windows, Contnrs;
+  Classes, SysUtils, Windows, Contnrs, Math;
 
 type
-  TCnRandomExpressionPreSet = (rep10Add2, rep20Add2, rep10Sub2, rep20Sub2);
+  TCnRandomExpressionPreSet = (rep10Add2, rep20Add2, rep10Sub2, rep20Sub2,
+    rep10AddSub2, rep20AddSub2);
 
   TCnExpressionElementType = (etFactor, etOperator, etBracket);
 
@@ -45,7 +46,8 @@ type
     procedure AddFactor(Factor: Integer);
     procedure AddOperator(Op: TCnOperatorType);
     procedure AddBracket(Bracket: TCnBracketType);
-  
+
+    procedure Clear;
     function ToString: string;
     function Equals(AnExpression: TCnIntegerExpression): Boolean;
 
@@ -56,14 +58,21 @@ type
   private
     FResults: TObjectList;
 
-    FAvoidZero: Boolean;
+    FAvoidZeroFactor: Boolean;
     FUniqueInterval: Integer;
     FMaxResult: Integer;
     FMaxFactor: Integer;
     FRangeType: TCnRangeType;
     FOperatorTypes: TCnOperatorTypes;
     FFactorCount: Integer;
+    FAvoidEqualSub: Boolean;
+    FHisExprs: TStrings;
     procedure SetPreSet(const Value: TCnRandomExpressionPreSet);
+
+    function RandIntIncludeLowHigh(ALow, AHigh: Integer): Integer;
+    function RandOneOperator: TCnOperatorType;
+    function CheckResult(Expr: TCnIntegerExpression): Boolean;
+    procedure UpdateHistory(Expr: TCnIntegerExpression);
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -73,7 +82,8 @@ type
 
     property FactorCount: Integer read FFactorCount write FFactorCount;
     property UniqueInterval: Integer read FUniqueInterval write FUniqueInterval;
-    property AvoidZero: Boolean read FAvoidZero write FAvoidZero;
+    property AvoidZeroFactor: Boolean read FAvoidZeroFactor write FAvoidZeroFactor;
+    property AvoidEqualSub: Boolean read FAvoidEqualSub write FAvoidEqualSub;
     property RangeType: TCnRangeType read FRangeType write FRangeType;
     property MaxFactor: Integer read FMaxFactor write FMaxFactor;
     property MaxResult: Integer read FMaxResult write FMaxResult;
@@ -94,22 +104,281 @@ const
   SCN_OPERATOR_WIDECHARS: array[Low(TCnOperatorType)..High(TCnOperatorType)] of string
     = ('＋', '－', '×', '÷');
 
+procedure SwapInt(var I1, I2: Integer);
+var
+  I: Integer;
+begin
+  I := I1;
+  I1 := I2;
+  I2 := I;
+end;
+
+function EvalSimpleExpression(const Value: string): Double;
+var
+  Code, Temp: string;
+  Loop, APos: Integer;
+  Opers, Consts: TStrings; // 操作符 // 操作数
+  AFlag: Boolean; // 标志上一个有用的字符是否是操作符
+begin
+  Result:= 0;
+  AFlag:= True;
+  Opers:= TStringList.Create;
+  Consts:= TStringList.Create;
+
+  try
+    Code:= UpperCase(Trim(Value)); // 取公式
+
+    while Trim(Code) <> '' do
+      case Code[1] of
+        '+', '-', '*', '/', '^': // 如果是操作符
+          begin
+            if not AFlag then
+            begin
+              Opers.Add(Code[1]);
+              Delete(Code, 1, 1);
+              Temp:= '';
+              AFlag:= True; // 添加了操作符以后，置标志为True
+            end
+            else
+            begin
+              Temp:= Code[1];
+              Delete(Code, 1, 1);
+              AFlag:= False; // 否则置标志为False
+            end;
+          end;
+
+        '0'..'9', '.': // 如果是操作数
+          begin
+            while Trim(Code) <> '' do
+              if Code[1] in ['0'..'9', '.'] then
+              begin
+                Temp:= Temp + Code[1];
+                Delete(Code, 1, 1);
+              end
+              else
+                Break;
+                
+            Consts.Add(Temp);
+            AFlag:= False; // 添加了操作数以后置标志为False
+          end;
+
+        '(':       // 如果带括号
+          begin
+            Delete(Code, 1, 1);  // 删除第一个左括号
+            APos:= 1;            // 括号配对数，正数为找到的左括号比右括号多
+            Temp:= '';
+            while Trim(Code) <> '' do
+              if (Pos(')', Code) > -1) and (APos > 0) then
+              begin
+                if Code[1] = '(' then // 如果找到的是左括号则记数加一
+                  Inc(APos)
+                else if Code[1] = ')' then // 如果找到右括号则记数减一
+                  Dec(APos);
+
+                Temp:= Temp + Code[1];
+                Delete(Code, 1, 1);
+              end
+              else
+                Break;
+
+            Temp:= Copy(Temp, 1, Length(Temp) - 1); // 删除最后一个右括号
+            Consts.Add(FloatToStr(EvalSimpleExpression(Temp))); // 递归调用函数本身优先计算括号内的值
+            Temp:= '';
+            AFlag:= False; // 添加括号以后置标志为False
+          end;
+
+        else // 忽略其它字符
+          Delete(Code, 1, 1);
+      end;
+
+    if Opers.Count = 0 then // 如果没有操作符
+    begin
+      if Consts.Count > 0 then // 如果有操作数
+        Result:= StrToFloat(Consts.Strings[0]);
+      Exit;
+    end
+    else if Consts.Count = 0 then // 如果没有操作数
+      Exit;
+
+    Loop:= 0;
+    while Opers.Count > 0 do
+    begin
+      if Opers.Strings[Loop] = '^' then // 如果操作符是乘方
+      begin
+        Consts.Strings[Loop]:= FloatToStr(Power(StrToFloat(Consts.Strings[Loop]), StrToFloat(Consts.Strings[Loop + 1])));
+        Consts.Delete(Loop + 1);
+        Opers.Delete(Loop);
+        Loop:= 0;
+      end
+      else if Opers.IndexOf('^') > -1 then // 如果不是次方但是还有计算次方操作符
+      begin
+        Inc(Loop);
+        Continue;
+      end
+      else if Opers.Strings[Loop][1] in ['*', '/'] then // 如果是乘/除法
+        case Opers.Strings[Loop][1] of
+          '*':
+            begin
+              Consts.Strings[Loop]:= FloatToStr(StrToFloat(Consts.Strings[Loop]) * StrToFloat(Consts.Strings[Loop + 1]));
+              Consts.Delete(Loop + 1);
+              Opers.Delete(Loop);
+              Loop:= 0;
+            end;
+
+          '/':
+            begin
+              Consts.Strings[Loop]:= FloatToStr(StrToFloat(Consts.Strings[Loop]) / StrToFloat(Consts.Strings[Loop + 1]));
+              Consts.Delete(Loop + 1);
+              Opers.Delete(Loop);
+              Loop:= 0;
+            end;
+        end
+      else if (Opers.IndexOf('*') > -1) or (Opers.IndexOf('/') > -1) then
+      begin
+        Inc(Loop);
+        Continue;
+      end
+      else if Opers.Strings[Loop][1] in ['+', '-'] then
+        case Opers.Strings[Loop][1] of
+          '+':
+            begin
+              Consts.Strings[Loop]:= FloatToStr(StrToFloat(Consts.Strings[Loop])
+                + StrToFloat(Consts.Strings[Loop + 1]));
+              Consts.Delete(Loop + 1);
+              Opers.Delete(Loop);
+              Loop:= 0;
+            end;
+
+          '-':
+            begin
+              Consts.Strings[Loop]:= FloatToStr(StrToFloat(Consts.Strings[Loop])
+                - StrToFloat(Consts.Strings[Loop + 1]));
+              Consts.Delete(Loop + 1);
+              Opers.Delete(Loop);
+              Loop:= 0;
+            end;
+        end
+      else
+        Inc(Loop);
+    end;
+
+    Result:= StrToFloat(Consts.Strings[0]);
+  finally
+    FreeAndNil(Consts);
+    FreeAndNil(Opers);
+  end;
+end;
+
 { TCnRandomExpression }
+
+function TCnRandomExpressionGenerator.CheckResult(
+  Expr: TCnIntegerExpression): Boolean;
+var
+  Res: Double;
+  S: string;
+begin
+  Result := False;
+  if Expr <> nil then
+  begin
+    S := Expr.ToString;
+    if FRangeType = rtResult then
+    begin
+      Res := EvalSimpleExpression(S);
+      if Res > FMaxResult then
+        Exit;
+    end;
+
+    if FHisExprs.IndexOf(S) >= 0 then
+      Exit;
+
+    Result := True;
+  end;
+end;
 
 constructor TCnRandomExpressionGenerator.Create;
 begin
   FResults := TObjectList.Create(True);
+  FHisExprs := TStringList.Create;
 end;
 
 destructor TCnRandomExpressionGenerator.Destroy;
 begin
+  FHisExprs.Free;
   FResults.Free;
   inherited;
 end;
 
 procedure TCnRandomExpressionGenerator.GenerateExpressions(Count: Integer);
-begin
+var
+  Cnt, MinFact, MaxFact: Integer;
+  Op: TCnOperatorType;
+  I, F1, F2: Integer;
+  AnExpr: TCnIntegerExpression;
 
+  procedure CleanExpression;
+  begin
+    if AnExpr <> nil then
+      AnExpr.Clear;
+    FreeAndNil(AnExpr);
+  end;
+
+begin
+  Randomize;
+
+  Cnt := 0;
+  FResults.Clear;
+  FHisExprs.Clear;
+  if FOperatorTypes = [] then
+    raise Exception.Create('No Operators.');
+  if FFactorCount < 2 then
+    raise Exception.Create('No Enough Factors.');
+
+  if FAvoidZeroFactor then
+    MinFact := 1
+  else
+    MinFact := 0;
+
+  MaxFact := FMaxFactor;
+
+  while True do
+  begin
+    AnExpr := TCnIntegerExpression.Create;
+    if FFactorCount = 2 then
+    begin
+      Op := RandOneOperator;
+      F1 := RandIntIncludeLowHigh(MinFact, MaxFact);
+      F2 := RandIntIncludeLowHigh(MinFact, MaxFact);
+      if (Op = otSub) and (F1 < F2) then
+        SwapInt(F1, F2);
+
+      AnExpr.AddFactor(F1);
+      AnExpr.AddOperator(Op);
+      AnExpr.AddFactor(F2);
+    end
+    else
+    begin
+      for I := 1 to FFactorCount - 1 do
+      begin
+        AnExpr.AddFactor(RandIntIncludeLowHigh(MinFact, MaxFact));
+        AnExpr.AddOperator(RandOneOperator);
+      end;
+      AnExpr.AddFactor(RandIntIncludeLowHigh(MinFact, MaxFact));
+    end;
+
+    // 检查生成的单个结果是否合格
+    if not CheckResult(AnExpr) then
+    begin
+      CleanExpression;
+      Continue;
+    end;
+
+    // 生成成功后
+    FResults.Add(AnExpr);
+    UpdateHistory(AnExpr);
+    Inc(Cnt);
+    if Cnt = Count then
+      Exit;
+  end;
 end;
 
 procedure TCnRandomExpressionGenerator.OutputExpressions(List: TStrings);
@@ -124,13 +393,42 @@ begin
   end;
 end;
 
+function TCnRandomExpressionGenerator.RandIntIncludeLowHigh(ALow,
+  AHigh: Integer): Integer;
+begin
+  if ALow > AHigh then
+    SwapInt(ALow, AHigh);
+
+  Result := ALow + Trunc(Random(AHigh + 1));
+  if Result > AHigh then
+    Result := AHigh;
+end;
+
+function TCnRandomExpressionGenerator.RandOneOperator: TCnOperatorType;
+var
+  Rnd: Integer;
+begin
+  if FOperatorTypes = [] then
+    raise Exception.Create('No Operators.');
+
+  repeat
+    Rnd := RandIntIncludeLowHigh(Ord(Low(TCnOperatorType)), Ord(High(TCnOperatorType)));
+    if TCnOperatorType(Rnd) in FOperatorTypes then
+      Break;
+  until False;
+
+  Result := TCnOperatorType(Rnd);
+end;
+
 procedure TCnRandomExpressionGenerator.SetPreSet(const Value: TCnRandomExpressionPreSet);
 begin
   UniqueInterval := 7;
+  FFactorCount := 2;
   case Value of
     rep10Add2, rep20Add2:
       begin
-        FAvoidZero := True;
+        FOperatorTypes := [otAdd];
+        FAvoidZeroFactor := True;
         FRangeType := rtResult;
         if Value = rep10Add2 then
           FMaxResult := 10
@@ -139,12 +437,29 @@ begin
       end;
     rep10Sub2, rep20Sub2:
       begin
-        FAvoidZero := True;
+        FOperatorTypes := [otSub];
+        FAvoidZeroFactor := True;
         FRangeType := rtFactor;
         if Value = rep10Sub2 then
           FMaxFactor := 10
         else
           FMaxFactor := 20;
+      end;
+    rep10AddSub2, rep20AddSub2:
+      begin
+        FOperatorTypes := [otAdd, otSub];
+        FAvoidZeroFactor := True;
+        FRangeType := rtResult;
+        if Value = rep10AddSub2 then
+        begin
+          FMaxResult := 10;
+          FMaxFactor := 10;
+        end
+        else
+        begin
+          FMaxFactor := 20;
+          FMaxResult := 20;
+        end;
       end;
   end;
 end;
@@ -179,6 +494,11 @@ begin
   Ele.ElementType := etOperator;
   Ele.OperatorType := Op;
   FExpressionElements.Add(Ele);
+end;
+
+procedure TCnIntegerExpression.Clear;
+begin
+  FExpressionElements.Clear;
 end;
 
 constructor TCnIntegerExpression.Create;
@@ -278,6 +598,21 @@ begin
     etBracket:
       Result := SCN_BRACKET_CHARS[FBracketType];
   end;
+end;
+
+procedure TCnRandomExpressionGenerator.UpdateHistory(
+  Expr: TCnIntegerExpression);
+var
+  I: Integer;
+begin
+  if (Expr = nil) or (FUniqueInterval <= 0) then
+    Exit;
+
+  if FHisExprs.Count >= FUniqueInterval then
+    for I := 0 to FHisExprs.Count - FUniqueInterval do
+      FHisExprs.Delete(FHisExprs.Count - 1);
+
+  FHisExprs.Add(Expr.ToString);
 end;
 
 end.
