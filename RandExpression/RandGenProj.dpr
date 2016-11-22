@@ -3,7 +3,8 @@ program RandGenProj;
 uses
   Forms,
   RandGen in 'RandGen.pas' {FormGenRandom},
-  CnRandomExpression in 'CnRandomExpression.pas';
+  CnRandomExpression in 'CnRandomExpression.pas',
+  UnitResult in 'UnitResult.pas' {FormResult};
 
 {$R *.RES}
 

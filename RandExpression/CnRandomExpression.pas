@@ -26,7 +26,7 @@ type
     FElementType: TCnExpressionElementType;
     FBracketType: TCnBracketType;
   public
-    function ToString: string;
+    function ToString(WideFormat: Boolean = False): string;
     function Equals(AnEle: TCnExpressionElement): Boolean;
     
     property OperatorType: TCnOperatorType read FOperatorType write FOperatorType;
@@ -48,7 +48,7 @@ type
     procedure AddBracket(Bracket: TCnBracketType);
 
     procedure Clear;
-    function ToString: string;
+    function ToString(WideFormat: Boolean = False): string;
     function Equals(AnExpression: TCnIntegerExpression): Boolean;
 
     property Length: Integer read GetLength;
@@ -67,6 +67,7 @@ type
     FFactorCount: Integer;
     FAvoidEqualSub: Boolean;
     FHisExprs: TStrings;
+    FAppendEqual: Boolean;
     procedure SetPreSet(const Value: TCnRandomExpressionPreSet);
 
     function RandIntIncludeLowHigh(ALow, AHigh: Integer): Integer;
@@ -78,7 +79,7 @@ type
     destructor Destroy; override;
     
     procedure GenerateExpressions(Count: Integer);
-    procedure OutputExpressions(List: TStrings);
+    procedure OutputExpressions(List: TStrings; WideFormat: Boolean = False);
 
     property FactorCount: Integer read FFactorCount write FFactorCount;
     property UniqueInterval: Integer read FUniqueInterval write FUniqueInterval;
@@ -88,6 +89,7 @@ type
     property MaxFactor: Integer read FMaxFactor write FMaxFactor;
     property MaxResult: Integer read FMaxResult write FMaxResult;
     property OperatorTypes: TCnOperatorTypes read FOperatorTypes write FOperatorTypes;
+    property AppendEqual: Boolean read FAppendEqual write FAppendEqual;
 
     property PreSet: TCnRandomExpressionPreSet write SetPreSet;
   end;
@@ -323,7 +325,7 @@ var
   end;
 
 begin
-  Randomize;
+  // Randomize;
 
   Cnt := 0;
   FResults.Clear;
@@ -381,15 +383,27 @@ begin
   end;
 end;
 
-procedure TCnRandomExpressionGenerator.OutputExpressions(List: TStrings);
+procedure TCnRandomExpressionGenerator.OutputExpressions(List: TStrings;
+  WideFormat: Boolean);
 var
   I: Integer;
+  S: string;
 begin
   if List <> nil then
   begin
     List.Clear;
     for I := 0 to FResults.Count - 1 do
-      List.Add(TCnIntegerExpression(FResults[I]).ToString);
+    begin
+      S := TCnIntegerExpression(FResults[I]).ToString(WideFormat);
+      if FAppendEqual then
+      begin
+        if WideFormat then
+          S := S + '£½'
+        else
+          S := S + '=';
+      end;
+      List.Add(S);
+    end;
   end;
 end;
 
@@ -543,7 +557,7 @@ begin
   Result := FExpressionElements.Count;
 end;
 
-function TCnIntegerExpression.ToString: string;
+function TCnIntegerExpression.ToString(WideFormat: Boolean): string;
 var
   I: Integer;
   Ele: TCnExpressionElement;
@@ -552,7 +566,7 @@ begin
   for I := 0 to FExpressionElements.Count - 1 do
   begin
     Ele := TCnExpressionElement(FExpressionElements[I]);
-    Result := Result + Ele.ToString;
+    Result := Result + Ele.ToString(WideFormat);
   end;
 end;
 
@@ -587,14 +601,17 @@ begin
   Result := True;
 end;
 
-function TCnExpressionElement.ToString: string;
+function TCnExpressionElement.ToString(WideFormat: Boolean): string;
 begin
   Result := '';
   case FElementType of
     etFactor:
       Result := IntToStr(FFactor);
     etOperator:
-      Result := SCN_OPERATOR_CHARS[FOperatorType];
+      if WideFormat then
+        Result := SCN_OPERATOR_WIDECHARS[FOperatorType]
+      else
+        Result := SCN_OPERATOR_CHARS[FOperatorType];
     etBracket:
       Result := SCN_BRACKET_CHARS[FBracketType];
   end;

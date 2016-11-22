@@ -15,15 +15,16 @@ object FormGenRandom: TFormGenRandom
   TextHeight = 13
   object btnPreset: TButton
     Left = 16
-    Top = 24
+    Top = 16
     Width = 75
     Height = 25
     Caption = 'Preset'
     TabOrder = 0
+    OnClick = btnPresetClick
   end
   object btnGen: TButton
-    Left = 568
-    Top = 24
+    Left = 584
+    Top = 16
     Width = 75
     Height = 25
     Caption = 'Éú³É'
@@ -31,12 +32,10 @@ object FormGenRandom: TFormGenRandom
     OnClick = btnGenClick
   end
   object mmoRes: TMemo
-    Left = 24
-    Top = 64
+    Left = 16
+    Top = 56
     Width = 641
     Height = 369
-    Lines.Strings = (
-      'mmoRes')
     TabOrder = 2
   end
 end
