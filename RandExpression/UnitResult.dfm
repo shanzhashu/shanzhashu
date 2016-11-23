@@ -30,7 +30,7 @@ object FormResult: TFormResult
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
-    Font.Name = 'Courier New'
+    Font.Name = 'ËÎÌו'
     Font.Style = [fsBold]
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine]
     ParentFont = False

@@ -100,11 +100,17 @@ const
   SCN_BRACKET_CHARS: array[Low(TCnBracketType)..High(TCnBracketType)] of Char
     = ('(', ')');
 
+  SCN_BRACKET_WIDECHARS: array[Low(TCnBracketType)..High(TCnBracketType)] of string
+    = ('£¨', '£©');
+
   SCN_OPERATOR_CHARS: array[Low(TCnOperatorType)..High(TCnOperatorType)] of Char
     = ('+', '-', '*', '/');
 
   SCN_OPERATOR_WIDECHARS: array[Low(TCnOperatorType)..High(TCnOperatorType)] of string
     = ('£«', '£­', '¡Á', '¡Â');
+
+  SCN_NUMBER_WIDECHARS: array[0..9] of string =
+    ('£°', '£±', '£²', '£³', '£´', '£µ','£¶', '£·', '£¸', '£¹');
 
 procedure SwapInt(var I1, I2: Integer);
 var
@@ -448,6 +454,7 @@ begin
           FMaxResult := 10
         else
           FMaxResult := 20;
+        FMaxFactor := FMaxResult;
       end;
     rep10Sub2, rep20Sub2:
       begin
@@ -458,6 +465,7 @@ begin
           FMaxFactor := 10
         else
           FMaxFactor := 20;
+        FMaxResult := FMaxFactor;
       end;
     rep10AddSub2, rep20AddSub2:
       begin
@@ -465,15 +473,10 @@ begin
         FAvoidZeroFactor := True;
         FRangeType := rtResult;
         if Value = rep10AddSub2 then
-        begin
-          FMaxResult := 10;
-          FMaxFactor := 10;
-        end
+          FMaxResult := 10
         else
-        begin
-          FMaxFactor := 20;
           FMaxResult := 20;
-        end;
+        FMaxFactor := FMaxResult;
       end;
   end;
 end;
@@ -602,18 +605,35 @@ begin
 end;
 
 function TCnExpressionElement.ToString(WideFormat: Boolean): string;
+var
+  I: Integer;
 begin
   Result := '';
-  case FElementType of
-    etFactor:
-      Result := IntToStr(FFactor);
-    etOperator:
-      if WideFormat then
-        Result := SCN_OPERATOR_WIDECHARS[FOperatorType]
-      else
+  if WideFormat then
+  begin
+    case FElementType of
+      etFactor:
+        begin
+          Result := IntToStr(FFactor);
+          for I := 0 to 9 do
+            Result := StringReplace(Result, IntToStr(I), SCN_NUMBER_WIDECHARS[I], [rfReplaceAll]);
+        end;
+      etOperator:
+        Result := SCN_OPERATOR_WIDECHARS[FOperatorType];
+      etBracket:
+        Result := SCN_BRACKET_WIDECHARS[FBracketType];
+    end;
+  end
+  else
+  begin
+    case FElementType of
+      etFactor:
+        Result := IntToStr(FFactor);
+      etOperator:
         Result := SCN_OPERATOR_CHARS[FOperatorType];
-    etBracket:
-      Result := SCN_BRACKET_CHARS[FBracketType];
+      etBracket:
+        Result := SCN_BRACKET_CHARS[FBracketType];
+    end;
   end;
 end;
 
