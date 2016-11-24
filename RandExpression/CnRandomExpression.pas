@@ -9,9 +9,14 @@ type
   TCnRandomExpressionPreSet = (rep10Add2, rep20Add2, rep10Sub2, rep20Sub2,
     rep10AddSub2, rep20AddSub2);
 
+  TCnRandomComparePreSet = (rcp10Add2vs1, rcp20Add2vs1, rcp10Sub2vs1, rcp20Sub2vs1,
+    rep10AddSub2vs1, rep20AddSub2vs1);
+
   TCnExpressionElementType = (etFactor, etOperator, etBracket);
 
   TCnOperatorType = (otAdd, otSub, otMul, otDiv);
+
+  TCnCompareResult = (crGreaterThan, crEqual, crLessThan);
 
   TCnBracketType = (obLeftBracket, obRightBracket);
 
@@ -338,7 +343,7 @@ begin
   FHisExprs.Clear;
   if FOperatorTypes = [] then
     raise Exception.Create('No Operators.');
-  if FFactorCount < 2 then
+  if FFactorCount < 1 then
     raise Exception.Create('No Enough Factors.');
 
   if FAvoidZeroFactor then
@@ -351,7 +356,11 @@ begin
   while True do
   begin
     AnExpr := TCnIntegerExpression.Create;
-    if FFactorCount = 2 then
+    if FFactorCount = 1 then
+    begin
+      AnExpr.AddFactor(RandIntIncludeLowHigh(MinFact, MaxFact));
+    end
+    else if FFactorCount = 2 then
     begin
       Op := RandOneOperator;
       F1 := RandIntIncludeLowHigh(MinFact, MaxFact);
