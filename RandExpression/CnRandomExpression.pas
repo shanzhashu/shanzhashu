@@ -99,6 +99,29 @@ type
     property PreSet: TCnRandomExpressionPreSet write SetPreSet;
   end;
 
+  TCnCompareExpression = class
+  private
+    FLeft: TCnIntegerExpression;
+    FRight: TCnIntegerExpression;
+    FCompareOperator: TCnCompareResult;
+  public
+    property Left: TCnIntegerExpression read FLeft write FLeft;
+    property Right: TCnIntegerExpression read FRight write FRight;
+    property CompareOperator: TCnCompareResult read FCompareOperator write FCompareOperator;
+  end;
+
+  TCnCompareGenerator = class
+  private
+    FLeft: TCnRandomExpressionGenerator;
+    FRight: TCnRandomExpressionGenerator;
+    procedure SetPreSet(const Value: TCnRandomComparePreSet);
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+
+    property PreSet: TCnRandomComparePreSet write SetPreSet;
+  end;
+
 implementation
 
 const
@@ -659,6 +682,26 @@ begin
       FHisExprs.Delete(FHisExprs.Count - 1);
 
   FHisExprs.Add(Expr.ToString);
+end;
+
+{ TCnCompareGenerator }
+
+constructor TCnCompareGenerator.Create;
+begin
+  FLeft := TCnRandomExpressionGenerator.Create;
+  FRight := TCnRandomExpressionGenerator.Create;
+end;
+
+destructor TCnCompareGenerator.Destroy;
+begin
+  FLeft.Free;
+  FRight.Free;
+  inherited;
+end;
+
+procedure TCnCompareGenerator.SetPreSet(const Value: TCnRandomComparePreSet);
+begin
+
 end;
 
 end.
