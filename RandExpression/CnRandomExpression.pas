@@ -6,11 +6,11 @@ uses
   Classes, SysUtils, Windows, Contnrs, Math;
 
 type
-  TCnRandomExpressionPreSet = (rep10Add2, rep20Add2, rep10Sub2, rep20Sub2,
+  TCnRandomExpressionPreSet = (rep10, rep20, rep10Add2, rep20Add2, rep10Sub2, rep20Sub2,
     rep10AddSub2, rep20AddSub2);
 
   TCnRandomComparePreSet = (rcp10Add2vs1, rcp20Add2vs1, rcp10Sub2vs1, rcp20Sub2vs1,
-    rep10AddSub2vs1, rep20AddSub2vs1);
+    rcp10AddSub2vs1, rcp20AddSub2vs1);
 
   TCnExpressionElementType = (etFactor, etOperator, etBracket);
 
@@ -118,6 +118,9 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
+
+    procedure GenerateExpressions(Count: Integer);
+    procedure OutputExpressions(List: TStrings; WideFormat: Boolean = False);
 
     property PreSet: TCnRandomComparePreSet write SetPreSet;
   end;
@@ -364,10 +367,11 @@ begin
   Cnt := 0;
   FResults.Clear;
   FHisExprs.Clear;
-  if FOperatorTypes = [] then
-    raise Exception.Create('No Operators.');
   if FFactorCount < 1 then
     raise Exception.Create('No Enough Factors.');
+
+  if (FFactorCount > 1) and (FOperatorTypes = []) then
+    raise Exception.Create('No Operators.');
 
   if FAvoidZeroFactor then
     MinFact := 1
@@ -475,6 +479,16 @@ end;
 procedure TCnRandomExpressionGenerator.SetPreSet(const Value: TCnRandomExpressionPreSet);
 begin
   UniqueInterval := 7;
+  if Value in [rep10, rep20] then
+  begin
+    FFactorCount := 1;
+    if Value = rep10 then
+      FMaxFactor := 10
+    else
+      FMaxFactor := 20;
+    Exit;
+  end;
+
   FFactorCount := 2;
   case Value of
     rep10Add2, rep20Add2:
@@ -699,9 +713,74 @@ begin
   inherited;
 end;
 
+procedure TCnCompareGenerator.GenerateExpressions(Count: Integer);
+begin
+  FLeft.GenerateExpressions(Count);
+  FRight.GenerateExpressions(Count);
+end;
+
+procedure TCnCompareGenerator.OutputExpressions(List: TStrings;
+  WideFormat: Boolean);
+var
+  L1, L2: TStrings;
+  I: Integer;
+begin
+  if List = nil then
+    Exit;
+
+  L1 := nil;
+  L2 := nil;
+  try
+    L1 := TStringList.Create;
+    L2 := TStringList.Create;
+    FLeft.OutputExpressions(L1, WideFormat);
+    FRight.OutputExpressions(L2, WideFormat);
+    if L1.Count <> L2.Count then
+      raise Exception.Create('Generate Error.');
+
+    List.Clear;
+    for I := 0 to L1.Count - 1 do
+      List.Add(L1[I] + '  ' + L2[I]);
+  finally
+    L1.Free;
+    L2.Free;
+  end;
+end;
+
 procedure TCnCompareGenerator.SetPreSet(const Value: TCnRandomComparePreSet);
 begin
-
+  case Value of
+    rcp10Add2vs1:
+      begin
+        FLeft.SetPreSet(rep10Add2);
+        FRight.SetPreSet(rep10);
+      end;
+    rcp20Add2vs1:
+      begin
+        FLeft.SetPreSet(rep20Add2);
+        FRight.SetPreSet(rep20);
+      end;
+    rcp10Sub2vs1:
+      begin
+        FLeft.SetPreSet(rep10Sub2);
+        FRight.SetPreSet(rep10);
+      end;
+    rcp20Sub2vs1:
+      begin
+        FLeft.SetPreSet(rep20Sub2);
+        FRight.SetPreSet(rep20);
+      end;
+    rcp10AddSub2vs1:
+      begin
+        FLeft.SetPreSet(rep10AddSub2);
+        FRight.SetPreSet(rep10);
+      end;
+    rcp20AddSub2vs1:
+      begin
+        FLeft.SetPreSet(rep20AddSub2);
+        FRight.SetPreSet(rep20);
+      end;
+  end;
 end;
 
 end.

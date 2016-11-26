@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, CnRandomExpression;
+  StdCtrls, CnRandomExpression, ExtCtrls;
 
 type
   TFormGenRandom = class(TForm)
@@ -14,16 +14,21 @@ type
     btn10Sub2: TButton;
     btn20Add2: TButton;
     btn20Sub2: TButton;
+    bvl1: TBevel;
+    btnCompare10Add2vs1: TButton;
+    btnCompare20AddSub2vs1: TButton;
     procedure btn10AddSub2Click(Sender: TObject);
-    procedure GenPreSet(PreSet: TCnRandomExpressionPreSet);
     procedure btn20AddSub2Click(Sender: TObject);
     procedure btn10Add2Click(Sender: TObject);
     procedure btn10Sub2Click(Sender: TObject);
     procedure btn20Add2Click(Sender: TObject);
     procedure btn20Sub2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormClick(Sender: TObject);
+    procedure btnCompare10Add2vs1Click(Sender: TObject);
   private
-    { Private declarations }
+    procedure GenExpressionPreSet(PreSet: TCnRandomExpressionPreSet);
+    procedure GenComparePreSet(PreSet: TCnRandomComparePreSet);
   public
     { Public declarations }
   end;
@@ -38,7 +43,7 @@ uses
 
 {$R *.DFM}
 
-procedure TFormGenRandom.GenPreSet(PreSet: TCnRandomExpressionPreSet);
+procedure TFormGenRandom.GenExpressionPreSet(PreSet: TCnRandomExpressionPreSet);
 var
   I: Integer;
   G: TCnRandomExpressionGenerator;
@@ -62,37 +67,68 @@ end;
 
 procedure TFormGenRandom.btn10AddSub2Click(Sender: TObject);
 begin
-  GenPreSet(rep10AddSub2);
+  GenExpressionPreSet(rep10AddSub2);
 end;
 
 procedure TFormGenRandom.btn20AddSub2Click(Sender: TObject);
 begin
-  GenPreSet(rep20AddSub2);
+  GenExpressionPreSet(rep20AddSub2);
 end;
 
 procedure TFormGenRandom.btn10Add2Click(Sender: TObject);
 begin
-  GenPreSet(rep10Add2);
+  GenExpressionPreSet(rep10Add2);
 end;
 
 procedure TFormGenRandom.btn10Sub2Click(Sender: TObject);
 begin
-  GenPreSet(rep10Sub2);
+  GenExpressionPreSet(rep10Sub2);
 end;
 
 procedure TFormGenRandom.btn20Add2Click(Sender: TObject);
 begin
-  GenPreSet(rep20Add2);
+  GenExpressionPreSet(rep20Add2);
 end;
 
 procedure TFormGenRandom.btn20Sub2Click(Sender: TObject);
 begin
-  GenPreSet(rep20Sub2);
+  GenExpressionPreSet(rep20Sub2);
 end;
 
 procedure TFormGenRandom.FormCreate(Sender: TObject);
 begin
   Application.Title := Caption;
+end;
+
+procedure TFormGenRandom.FormClick(Sender: TObject);
+begin
+  // for test
+end;
+
+procedure TFormGenRandom.GenComparePreSet(PreSet: TCnRandomComparePreSet);
+var
+  G: TCnCompareGenerator;
+  I: Integer;
+begin
+  with TFormResult.Create(nil) do
+  begin
+    G := TCnCompareGenerator.Create;
+    G.PreSet := PreSet;
+    Randomize;
+
+    for I := 0 to StringGrid.ColCount - 1 do
+    begin
+      G.GenerateExpressions(StringGrid.RowCount);
+      G.OutputExpressions(StringGrid.Cols[I], False);
+    end;
+    ShowModal;
+    Free;
+  end;
+end;
+
+procedure TFormGenRandom.btnCompare10Add2vs1Click(Sender: TObject);
+begin
+  GenComparePreSet(rcp10AddSub2vs1);
 end;
 
 end.
