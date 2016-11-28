@@ -10,7 +10,7 @@ type
     rep10AddSub2, rep20AddSub2);
 
   TCnRandomComparePreSet = (rcp10Add2vs1, rcp20Add2vs1, rcp10Sub2vs1, rcp20Sub2vs1,
-    rcp10AddSub2vs1, rcp20AddSub2vs1);
+    rcp10AddSub2vs1, rcp20AddSub2vs1, rcp10AddSub2vs2, rcp20AddSub2vs2);
 
   TCnExpressionElementType = (etFactor, etOperator, etBracket);
 
@@ -74,10 +74,11 @@ type
     FHisExprs: TStrings;
     FAppendEqual: Boolean;
     procedure SetPreSet(const Value: TCnRandomExpressionPreSet);
-
+  protected
     function RandIntIncludeLowHigh(ALow, AHigh: Integer): Integer;
     function RandOneOperator: TCnOperatorType;
-    function CheckResult(Expr: TCnIntegerExpression): Boolean;
+    function CheckExpressionValid(Expr: TCnIntegerExpression): Boolean; virtual;
+    function CheckResult(Expr: TCnIntegerExpression; Idx: Integer): Boolean; virtual;
     procedure UpdateHistory(Expr: TCnIntegerExpression);
   public
     constructor Create; virtual;
@@ -99,6 +100,8 @@ type
     property PreSet: TCnRandomExpressionPreSet write SetPreSet;
   end;
 
+  TCnRandomExpressionGeneratorClass = class of TCnRandomExpressionGenerator;
+
   TCnCompareExpression = class
   private
     FLeft: TCnIntegerExpression;
@@ -115,14 +118,36 @@ type
     FLeft: TCnRandomExpressionGenerator;
     FRight: TCnRandomExpressionGenerator;
     procedure SetPreSet(const Value: TCnRandomComparePreSet);
+  protected
+    function GetRelationString(WideFormat: Boolean = False): string; virtual;
+    function GetLeftRandomExpressionGeneratorClass: TCnRandomExpressionGeneratorClass; virtual;
+    function GetRightRandomExpressionGeneratorClass: TCnRandomExpressionGeneratorClass; virtual;
   public
     constructor Create; virtual;
     destructor Destroy; override;
 
-    procedure GenerateExpressions(Count: Integer);
+    procedure GenerateExpressions(Count: Integer); virtual;
     procedure OutputExpressions(List: TStrings; WideFormat: Boolean = False);
 
     property PreSet: TCnRandomComparePreSet write SetPreSet;
+  end;
+
+  TCnFixedResultGenerator = class(TCnRandomExpressionGenerator)
+  private
+
+  protected
+    function CheckResult(Expr: TCnIntegerExpression; Idx: Integer): Boolean; override;
+  public
+    procedure GenerateExpressions(Count: Integer; FixedResults: array of Integer); reintroduce;
+  end;
+
+  TCnEqualGenerator = class(TCnCompareGenerator)
+  private
+  protected
+    function GetRightRandomExpressionGeneratorClass: TCnRandomExpressionGeneratorClass; override;
+    function GetRelationString(WideFormat: Boolean = False): string; override;
+  public
+    procedure GenerateExpressions(Count: Integer); override;
   end;
 
 implementation
@@ -310,7 +335,7 @@ end;
 
 { TCnRandomExpression }
 
-function TCnRandomExpressionGenerator.CheckResult(
+function TCnRandomExpressionGenerator.CheckExpressionValid(
   Expr: TCnIntegerExpression): Boolean;
 var
   Res: Double;
@@ -332,6 +357,12 @@ begin
 
     Result := True;
   end;
+end;
+
+function TCnRandomExpressionGenerator.CheckResult(
+  Expr: TCnIntegerExpression; Idx: Integer): Boolean;
+begin
+  Result := True;
 end;
 
 constructor TCnRandomExpressionGenerator.Create;
@@ -409,8 +440,8 @@ begin
       AnExpr.AddFactor(RandIntIncludeLowHigh(MinFact, MaxFact));
     end;
 
-    // 检查生成的单个结果是否合格
-    if not CheckResult(AnExpr) then
+    // 检查生成的单个表达式以及结果是否合格
+    if not CheckExpressionValid(AnExpr) or not CheckResult(AnExpr, Cnt) then
     begin
       CleanExpression;
       Continue;
@@ -701,9 +732,26 @@ end;
 { TCnCompareGenerator }
 
 constructor TCnCompareGenerator.Create;
+var
+  AClass: TCnRandomExpressionGeneratorClass;
 begin
-  FLeft := TCnRandomExpressionGenerator.Create;
-  FRight := TCnRandomExpressionGenerator.Create;
+  AClass := GetLeftRandomExpressionGeneratorClass;
+  if AClass = nil then
+    FLeft := TCnRandomExpressionGenerator.Create
+  else
+  begin
+    FLeft := TCnRandomExpressionGenerator(AClass.NewInstance);
+    FLeft.Create;
+  end;
+
+  AClass := GetRightRandomExpressionGeneratorClass;
+  if AClass = nil then
+    FRight := TCnRandomExpressionGenerator.Create
+  else
+  begin
+    FRight := TCnRandomExpressionGenerator(AClass.NewInstance);
+    FRight.Create;
+  end
 end;
 
 destructor TCnCompareGenerator.Destroy;
@@ -717,6 +765,24 @@ procedure TCnCompareGenerator.GenerateExpressions(Count: Integer);
 begin
   FLeft.GenerateExpressions(Count);
   FRight.GenerateExpressions(Count);
+end;
+
+function TCnCompareGenerator.GetLeftRandomExpressionGeneratorClass: TCnRandomExpressionGeneratorClass;
+begin
+  Result := nil;
+end;
+
+function TCnCompareGenerator.GetRelationString(WideFormat: Boolean): string;
+begin
+  if WideFormat then
+    Result := '  '
+  else
+    Result := ' ';
+end;
+
+function TCnCompareGenerator.GetRightRandomExpressionGeneratorClass: TCnRandomExpressionGeneratorClass;
+begin
+  Result := nil;
 end;
 
 procedure TCnCompareGenerator.OutputExpressions(List: TStrings;
@@ -740,7 +806,7 @@ begin
 
     List.Clear;
     for I := 0 to L1.Count - 1 do
-      List.Add(L1[I] + '  ' + L2[I]);
+      List.Add(L1[I] + GetRelationString + L2[I]);
   finally
     L1.Free;
     L2.Free;
@@ -780,7 +846,53 @@ begin
         FLeft.SetPreSet(rep20AddSub2);
         FRight.SetPreSet(rep20);
       end;
+    rcp10AddSub2vs2:
+      begin
+        FLeft.SetPreSet(rep10AddSub2);
+        FRight.SetPreSet(rep10AddSub2);
+      end;
+    rcp20AddSub2vs2:
+      begin
+        FLeft.SetPreSet(rep20AddSub2);
+        FRight.SetPreSet(rep20AddSub2);
+      end;
   end;
+end;
+
+{ TCnEqualGenerator }
+
+procedure TCnEqualGenerator.GenerateExpressions(Count: Integer);
+begin
+  FLeft.GenerateExpressions(Count);
+
+end;
+
+function TCnEqualGenerator.GetRightRandomExpressionGeneratorClass: TCnRandomExpressionGeneratorClass;
+begin
+  Result := TCnFixedResultGenerator;
+end;
+
+function TCnEqualGenerator.GetRelationString(WideFormat: Boolean): string;
+begin
+  if WideFormat then
+    Result := '＝'
+  else
+    Result := '=';
+end;
+
+{ TCnFixedResultGenerator }
+
+function TCnFixedResultGenerator.CheckResult(Expr: TCnIntegerExpression;
+  Idx: Integer): Boolean;
+begin
+  Result := True;
+  // TODO: Fixed Result
+end;
+
+procedure TCnFixedResultGenerator.GenerateExpressions(Count: Integer;
+  FixedResults: array of Integer);
+begin
+
 end;
 
 end.

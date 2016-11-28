@@ -17,6 +17,8 @@ type
     bvl1: TBevel;
     btnCompare10Add2vs1: TButton;
     btnCompare20AddSub2vs1: TButton;
+    btn10AddSub2vs2: TButton;
+    btn20AddSub2vs2: TButton;
     procedure btn10AddSub2Click(Sender: TObject);
     procedure btn20AddSub2Click(Sender: TObject);
     procedure btn10Add2Click(Sender: TObject);
@@ -26,6 +28,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormClick(Sender: TObject);
     procedure btnCompare10Add2vs1Click(Sender: TObject);
+    procedure btn10AddSub2vs2Click(Sender: TObject);
+    procedure btn20AddSub2vs2Click(Sender: TObject);
   private
     procedure GenExpressionPreSet(PreSet: TCnRandomExpressionPreSet);
     procedure GenComparePreSet(PreSet: TCnRandomComparePreSet);
@@ -129,6 +133,16 @@ end;
 procedure TFormGenRandom.btnCompare10Add2vs1Click(Sender: TObject);
 begin
   GenComparePreSet(rcp10AddSub2vs1);
+end;
+
+procedure TFormGenRandom.btn10AddSub2vs2Click(Sender: TObject);
+begin
+  GenComparePreSet(rcp10AddSub2vs2);
+end;
+
+procedure TFormGenRandom.btn20AddSub2vs2Click(Sender: TObject);
+begin
+  GenComparePreSet(rcp20AddSub2vs2);
 end;
 
 end.

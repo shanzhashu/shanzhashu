@@ -3,7 +3,7 @@ object FormGenRandom: TFormGenRandom
   Top = 134
   BorderStyle = bsDialog
   Caption = '随机生成运算题'
-  ClientHeight = 285
+  ClientHeight = 325
   ClientWidth = 440
   Color = clBtnFace
   Font.Charset = GB2312_CHARSET
@@ -95,5 +95,23 @@ object FormGenRandom: TFormGenRandom
     Caption = '生成 20 以内的二项加减法不等式 90 题'
     TabOrder = 7
     OnClick = btnCompare10Add2vs1Click
+  end
+  object btn10AddSub2vs2: TButton
+    Left = 16
+    Top = 280
+    Width = 193
+    Height = 25
+    Caption = '10 以内的双二项加减法不等式'
+    TabOrder = 8
+    OnClick = btn10AddSub2vs2Click
+  end
+  object btn20AddSub2vs2: TButton
+    Left = 232
+    Top = 280
+    Width = 193
+    Height = 25
+    Caption = '20 以内的双二项加减法不等式'
+    TabOrder = 9
+    OnClick = btn20AddSub2vs2Click
   end
 end
