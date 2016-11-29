@@ -19,6 +19,9 @@ type
     btnCompare20AddSub2vs1: TButton;
     btn10AddSub2vs2: TButton;
     btn20AddSub2vs2: TButton;
+    bvl2: TBevel;
+    btnEqual10AddSub2vs2: TButton;
+    btnEqual20AddSub2vs2: TButton;
     procedure btn10AddSub2Click(Sender: TObject);
     procedure btn20AddSub2Click(Sender: TObject);
     procedure btn10Add2Click(Sender: TObject);
@@ -30,9 +33,12 @@ type
     procedure btnCompare10Add2vs1Click(Sender: TObject);
     procedure btn10AddSub2vs2Click(Sender: TObject);
     procedure btn20AddSub2vs2Click(Sender: TObject);
+    procedure btnEqual20AddSub2vs2Click(Sender: TObject);
+    procedure btnEqual10AddSub2vs2Click(Sender: TObject);
   private
     procedure GenExpressionPreSet(PreSet: TCnRandomExpressionPreSet);
     procedure GenComparePreSet(PreSet: TCnRandomComparePreSet);
+    procedure GenEqualPreSet(PreSet: TCnRandomEqualPreset);
   public
     { Public declarations }
   end;
@@ -143,6 +149,38 @@ end;
 procedure TFormGenRandom.btn20AddSub2vs2Click(Sender: TObject);
 begin
   GenComparePreSet(rcp20AddSub2vs2);
+end;
+
+procedure TFormGenRandom.GenEqualPreSet(PreSet: TCnRandomEqualPreset);
+var
+  G: TCnEqualGenerator;
+  I: Integer;
+begin
+  with TFormResult.Create(nil) do
+  begin
+    G := TCnEqualGenerator.Create;
+    G.PreSet := PreSet;
+    Randomize;
+
+    for I := 0 to StringGrid.ColCount - 1 do
+    begin
+      G.GenerateExpressions(StringGrid.RowCount);
+      G.TrimRandomOneFactor;
+      G.OutputExpressions(StringGrid.Cols[I], False);
+    end;
+    ShowModal;
+    Free;
+  end;
+end;
+
+procedure TFormGenRandom.btnEqual20AddSub2vs2Click(Sender: TObject);
+begin
+  GenEqualPreSet(rqp10AddSub2vs2);
+end;
+
+procedure TFormGenRandom.btnEqual10AddSub2vs2Click(Sender: TObject);
+begin
+  GenEqualPreSet(rqp20AddSub2vs2);
 end;
 
 end.

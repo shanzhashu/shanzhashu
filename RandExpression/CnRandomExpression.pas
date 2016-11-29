@@ -12,6 +12,9 @@ type
   TCnRandomComparePreSet = (rcp10Add2vs1, rcp20Add2vs1, rcp10Sub2vs1, rcp20Sub2vs1,
     rcp10AddSub2vs1, rcp20AddSub2vs1, rcp10AddSub2vs2, rcp20AddSub2vs2);
 
+  TCnRandomEqualPreset = (rqp10Add2vs2, rqp20Add2vs2, rqp10Sub2vs2, rqp20Sub2vs2,
+    rqp10AddSub2vs2, rqp20AddSub2vs2);
+
   TCnExpressionElementType = (etFactor, etOperator, etBracket);
 
   TCnOperatorType = (otAdd, otSub, otMul, otDiv);
@@ -33,7 +36,7 @@ type
   public
     function ToString(WideFormat: Boolean = False): string;
     function Equals(AnEle: TCnExpressionElement): Boolean;
-    
+
     property OperatorType: TCnOperatorType read FOperatorType write FOperatorType;
     property Factor: Integer read FFactor write FFactor;
     property BracketType: TCnBracketType read FBracketType write FBracketType;
@@ -51,6 +54,7 @@ type
     procedure AddFactor(Factor: Integer);
     procedure AddOperator(Op: TCnOperatorType);
     procedure AddBracket(Bracket: TCnBracketType);
+    procedure SetFactor(Factor: Integer; Index: Integer);
 
     procedure Clear;
     function ToString(WideFormat: Boolean = False): string;
@@ -74,8 +78,9 @@ type
     FHisExprs: TStrings;
     FAppendEqual: Boolean;
     procedure SetPreSet(const Value: TCnRandomExpressionPreSet);
+    function GetResultsCount: Integer;
+    function GetResults(Index: Integer): TCnIntegerExpression;
   protected
-    function RandIntIncludeLowHigh(ALow, AHigh: Integer): Integer;
     function RandOneOperator: TCnOperatorType;
     function CheckExpressionValid(Expr: TCnIntegerExpression): Boolean; virtual;
     function CheckResult(Expr: TCnIntegerExpression; Idx: Integer): Boolean; virtual;
@@ -83,9 +88,11 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    
+
     procedure GenerateExpressions(Count: Integer);
     procedure OutputExpressions(List: TStrings; WideFormat: Boolean = False);
+    property ResultsCount: Integer read GetResultsCount;
+    property Results[Index: Integer]: TCnIntegerExpression read GetResults;
 
     property FactorCount: Integer read FFactorCount write FFactorCount;
     property UniqueInterval: Integer read FUniqueInterval write FUniqueInterval;
@@ -134,7 +141,7 @@ type
 
   TCnFixedResultGenerator = class(TCnRandomExpressionGenerator)
   private
-
+    FFixedResults: array of Integer;
   protected
     function CheckResult(Expr: TCnIntegerExpression; Idx: Integer): Boolean; override;
   public
@@ -143,11 +150,15 @@ type
 
   TCnEqualGenerator = class(TCnCompareGenerator)
   private
+    procedure SetPreSet(const Value: TCnRandomEqualPreset);
   protected
     function GetRightRandomExpressionGeneratorClass: TCnRandomExpressionGeneratorClass; override;
     function GetRelationString(WideFormat: Boolean = False): string; override;
   public
     procedure GenerateExpressions(Count: Integer); override;
+    procedure TrimRandomOneFactor;
+
+    property PreSet: TCnRandomEqualPreset write SetPreSet;
   end;
 
 implementation
@@ -168,6 +179,8 @@ const
   SCN_NUMBER_WIDECHARS: array[0..9] of string =
     ('０', '１', '２', '３', '４', '５','６', '７', '８', '９');
 
+  SCN_MAGIC_INVALID_FACTOR = $7FFFFFFF;
+
 procedure SwapInt(var I1, I2: Integer);
 var
   I: Integer;
@@ -175,6 +188,16 @@ begin
   I := I1;
   I1 := I2;
   I2 := I;
+end;
+
+function RandIntIncludeLowHigh(ALow, AHigh: Integer): Integer;
+begin
+  if ALow > AHigh then
+    SwapInt(ALow, AHigh);
+
+  Result := ALow + Trunc(Random(AHigh + 1));
+  if Result > AHigh then
+    Result := AHigh;
 end;
 
 function EvalSimpleExpression(const Value: string): Double;
@@ -221,7 +244,7 @@ begin
               end
               else
                 Break;
-                
+
             Consts.Add(Temp);
             AFlag:= False; // 添加了操作数以后置标志为False
           end;
@@ -456,6 +479,17 @@ begin
   end;
 end;
 
+function TCnRandomExpressionGenerator.GetResults(
+  Index: Integer): TCnIntegerExpression;
+begin
+  Result := TCnIntegerExpression(FResults[Index]);
+end;
+
+function TCnRandomExpressionGenerator.GetResultsCount: Integer;
+begin
+  Result := FResults.Count;
+end;
+
 procedure TCnRandomExpressionGenerator.OutputExpressions(List: TStrings;
   WideFormat: Boolean);
 var
@@ -478,17 +512,6 @@ begin
       List.Add(S);
     end;
   end;
-end;
-
-function TCnRandomExpressionGenerator.RandIntIncludeLowHigh(ALow,
-  AHigh: Integer): Integer;
-begin
-  if ALow > AHigh then
-    SwapInt(ALow, AHigh);
-
-  Result := ALow + Trunc(Random(AHigh + 1));
-  if Result > AHigh then
-    Result := AHigh;
 end;
 
 function TCnRandomExpressionGenerator.RandOneOperator: TCnOperatorType;
@@ -637,6 +660,24 @@ begin
   Result := FExpressionElements.Count;
 end;
 
+procedure TCnIntegerExpression.SetFactor(Factor, Index: Integer);
+var
+  I, Idx: Integer;
+  Ele: TCnExpressionElement;
+begin
+  Idx := 0;
+  for I := 0 to FExpressionElements.Count - 1 do
+  begin
+    Ele := TCnExpressionElement(FExpressionElements[I]);
+    if Ele.ElementType = etFactor then
+    begin
+      Inc(Idx);
+      if Idx = Index then
+        Ele.Factor := Factor;
+    end;
+  end;
+end;
+
 function TCnIntegerExpression.ToString(WideFormat: Boolean): string;
 var
   I: Integer;
@@ -691,9 +732,14 @@ begin
     case FElementType of
       etFactor:
         begin
-          Result := IntToStr(FFactor);
-          for I := 0 to 9 do
-            Result := StringReplace(Result, IntToStr(I), SCN_NUMBER_WIDECHARS[I], [rfReplaceAll]);
+          if FFactor = SCN_MAGIC_INVALID_FACTOR then
+            Result := '（ ）'
+          else
+          begin
+            Result := IntToStr(FFactor);
+            for I := 0 to 9 do
+              Result := StringReplace(Result, IntToStr(I), SCN_NUMBER_WIDECHARS[I], [rfReplaceAll]);
+          end;
         end;
       etOperator:
         Result := SCN_OPERATOR_WIDECHARS[FOperatorType];
@@ -705,7 +751,10 @@ begin
   begin
     case FElementType of
       etFactor:
-        Result := IntToStr(FFactor);
+        if FFactor = SCN_MAGIC_INVALID_FACTOR then
+          Result := '( )'
+        else
+          Result := IntToStr(FFactor);
       etOperator:
         Result := SCN_OPERATOR_CHARS[FOperatorType];
       etBracket:
@@ -862,9 +911,26 @@ end;
 { TCnEqualGenerator }
 
 procedure TCnEqualGenerator.GenerateExpressions(Count: Integer);
+var
+  I: Integer;
+  List: TStrings;
+  Res: array of Integer;
 begin
   FLeft.GenerateExpressions(Count);
+  List := nil;
+  try
+    List := TStringList.Create;
+    FLeft.OutputExpressions(List);
+    SetLength(Res, List.Count);
+    for I := 0 to List.Count - 1 do
+    begin
+      Res[I] := Trunc(EvalSimpleExpression(List[I]));
+      (FRight as TCnFixedResultGenerator).GenerateExpressions(Count, Res);
 
+    end;
+  finally
+    List.Free;
+  end;
 end;
 
 function TCnEqualGenerator.GetRightRandomExpressionGeneratorClass: TCnRandomExpressionGeneratorClass;
@@ -880,19 +946,93 @@ begin
     Result := '=';
 end;
 
+procedure TCnEqualGenerator.SetPreSet(const Value: TCnRandomEqualPreset);
+begin
+//  FLeft.FactorCount := 2;
+//  FRight.FactorCount := 2;
+  case Value of
+    rqp10Add2vs2:
+      begin
+        FLeft.SetPreSet(rep10Add2);
+        FRight.SetPreSet(rep10Add2);
+      end;
+    rqp20Add2vs2:
+      begin
+        FLeft.SetPreSet(rep20Add2);
+        FRight.SetPreSet(rep20Add2);
+      end;
+    rqp10Sub2vs2:
+      begin
+        FLeft.SetPreSet(rep10Sub2);
+        FRight.SetPreSet(rep10Sub2);
+      end;
+    rqp20Sub2vs2:
+      begin
+        FLeft.SetPreSet(rep20Sub2);
+        FRight.SetPreSet(rep20Sub2);
+      end;
+    rqp10AddSub2vs2:
+      begin
+        FLeft.SetPreSet(rep10AddSub2);
+        FRight.SetPreSet(rep10AddSub2);
+      end;
+    rqp20AddSub2vs2:
+      begin
+        FLeft.SetPreSet(rep20AddSub2);
+        FRight.SetPreSet(rep20AddSub2);
+      end;
+  end;
+end;
+
+procedure TCnEqualGenerator.TrimRandomOneFactor;
+var
+  I, H, F: Integer;
+  Expr: TCnIntegerExpression;
+begin
+  if FLeft.ResultsCount <> FRight.ResultsCount then
+    Exit;
+
+  H := FLeft.FactorCount + FRight.FactorCount;
+  for I := 0 to FLeft.ResultsCount - 1 do
+  begin
+    F := RandIntIncludeLowHigh(1, H);
+    if F <= FLeft.FactorCount then
+    begin
+      Expr := FLeft.Results[I];
+    end
+    else
+    begin
+      Expr := FRight.Results[I];
+      Dec(F, FLeft.FactorCount);
+    end;
+
+    Expr.SetFactor(SCN_MAGIC_INVALID_FACTOR, F);
+  end;
+end;
+
 { TCnFixedResultGenerator }
 
 function TCnFixedResultGenerator.CheckResult(Expr: TCnIntegerExpression;
   Idx: Integer): Boolean;
 begin
-  Result := True;
-  // TODO: Fixed Result
+  Result := inherited CheckResult(Expr, Idx);
+  if Result then
+    Result := FFixedResults[Idx] = EvalSimpleExpression(Expr.ToString);
 end;
 
 procedure TCnFixedResultGenerator.GenerateExpressions(Count: Integer;
   FixedResults: array of Integer);
+var
+  I: Integer;
 begin
+  if (Length(FixedResults) = 0) or (Count <= 0) then
+    Exit;
 
+  SetLength(FFixedResults, Length(FixedResults));
+  for I := Low(FixedResults) to High(FixedResults) do
+    FFixedResults[I] := FixedResults[I];
+
+  inherited GenerateExpressions(Count);
 end;
 
 end.
