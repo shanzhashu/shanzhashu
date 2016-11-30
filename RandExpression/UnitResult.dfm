@@ -38,4 +38,8 @@ object FormResult: TFormResult
     OnMouseWheelDown = StringGridMouseWheelDown
     OnMouseWheelUp = StringGridMouseWheelUp
   end
+  object dlgPnt: TPrintDialog
+    Left = 304
+    Top = 192
+  end
 end

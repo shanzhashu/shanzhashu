@@ -4,11 +4,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Grids;
+  Grids, Printers;
 
 type
   TFormResult = class(TForm)
     StringGrid: TStringGrid;
+    dlgPnt: TPrintDialog;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -17,7 +18,7 @@ type
     procedure StringGridMouseWheelDown(Sender: TObject; Shift: TShiftState;
       MousePos: TPoint; var Handled: Boolean);
   private
-    { Private declarations }
+    procedure PrintGrid;
   public
     { Public declarations }
   end;
@@ -53,7 +54,12 @@ procedure TFormResult.FormKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if Key = VK_ESCAPE then
-    Close;
+    Close
+  else if (Key = Ord('P')) and (ssCtrl in Shift) then
+  begin
+    if dlgPnt.Execute then
+      PrintGrid;
+  end;
 end;
 
 procedure TFormResult.StringGridMouseWheelUp(Sender: TObject;
@@ -70,6 +76,37 @@ begin
   if StringGrid.Font.Size <= 8 then
     Exit;
   StringGrid.Font.Size := StringGrid.Font.Size - 1;
+end;
+
+procedure TFormResult.PrintGrid;
+var
+  Ph, Pv, Ps: Integer;
+  R, C, W, H, RH, CW: Integer;
+begin
+  Printer.Orientation := poLandscape;
+
+  Ph := 300; // ×óÓÒ±ß¾à£¬ÏñËØ
+  Pv := 300; // ÉÏÏÂ±ß¾à£¬ÏñËØ
+
+  Ps := Trunc(GetDeviceCaps(Printer.Handle,LOGPIXELSX) / Screen.PixelsPerInch);
+
+  Printer.Title := 'ÌâÄ¿';
+  Printer.Canvas.Font.Size := 22;
+  Printer.BeginDoc;
+  try
+    W := Printer.PageWidth - 2 * Ph;
+    H := Printer.PageHeight - 2 * Pv;
+    RH := H div StringGrid.RowCount;
+    CW := W div StringGrid.ColCount;
+
+    for R := 0 to StringGrid.RowCount - 1 do
+    begin
+      for C := 0 to StringGrid.ColCount - 1 do
+        Printer.Canvas.TextOut(Ph + C * CW, Pv + R * RH, StringGrid.Cells[C, R]);
+    end;
+  finally
+    Printer.EndDoc;
+  end;
 end;
 
 end.
