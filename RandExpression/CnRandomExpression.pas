@@ -141,11 +141,13 @@ type
 
   TCnFixedResultGenerator = class(TCnRandomExpressionGenerator)
   private
-    FFixedResults: array of Integer;
+    FFixedExprsRef: array of TCnIntegerExpression;
   protected
     function CheckResult(Expr: TCnIntegerExpression; Idx: Integer): Boolean; override;
   public
-    procedure GenerateExpressions(Count: Integer; FixedResults: array of Integer); reintroduce;
+    destructor Destroy; override;
+
+    procedure GenerateExpressions(Count: Integer; FixedExprsRef: TObjectList); reintroduce;
   end;
 
   TCnEqualGenerator = class(TCnCompareGenerator)
@@ -925,8 +927,7 @@ begin
     for I := 0 to List.Count - 1 do
     begin
       Res[I] := Trunc(EvalSimpleExpression(List[I]));
-      (FRight as TCnFixedResultGenerator).GenerateExpressions(Count, Res);
-
+      (FRight as TCnFixedResultGenerator).GenerateExpressions(Count, FLeft.FResults);
     end;
   finally
     List.Free;
@@ -1014,23 +1015,38 @@ end;
 
 function TCnFixedResultGenerator.CheckResult(Expr: TCnIntegerExpression;
   Idx: Integer): Boolean;
+var
+  Compare: TCnIntegerExpression;
 begin
   Result := inherited CheckResult(Expr, Idx);
   if Result then
-    Result := FFixedResults[Idx] = EvalSimpleExpression(Expr.ToString);
+  begin
+    Compare := TCnIntegerExpression(FFixedExprsRef[Idx]);
+    if (EvalSimpleExpression(Compare.toString) <> EvalSimpleExpression(Expr.ToString))
+      or (Compare.Equals(Expr)) then
+      Result := False;
+  end;
+end;
+
+destructor TCnFixedResultGenerator.Destroy;
+begin
+  SetLength(FFixedExprsRef, 0);
+  inherited;
 end;
 
 procedure TCnFixedResultGenerator.GenerateExpressions(Count: Integer;
-  FixedResults: array of Integer);
+  FixedExprsRef: TObjectList);
 var
   I: Integer;
 begin
-  if (Length(FixedResults) = 0) or (Count <= 0) then
+  if FixedExprsRef = nil then
+    Exit;
+  if (FixedExprsRef.Count = 0) or (Count <= 0) then
     Exit;
 
-  SetLength(FFixedResults, Length(FixedResults));
-  for I := Low(FixedResults) to High(FixedResults) do
-    FFixedResults[I] := FixedResults[I];
+  SetLength(FFixedExprsRef, FixedExprsRef.Count);
+  for I := 0 to FixedExprsRef.Count - 1 do
+    FFixedExprsRef[I] := TCnIntegerExpression(FixedExprsRef[I]);
 
   inherited GenerateExpressions(Count);
 end;

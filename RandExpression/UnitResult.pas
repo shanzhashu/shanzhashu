@@ -80,7 +80,7 @@ end;
 
 procedure TFormResult.PrintGrid;
 var
-  Ph, Pv, Ps: Integer;
+  Ph, Pv: Integer;
   R, C, W, H, RH, CW: Integer;
 begin
   Printer.Orientation := poLandscape;
@@ -88,7 +88,7 @@ begin
   Ph := 300; // ×óÓÒ±ß¾à£¬ÏñËØ
   Pv := 300; // ÉÏÏÂ±ß¾à£¬ÏñËØ
 
-  Ps := Trunc(GetDeviceCaps(Printer.Handle,LOGPIXELSX) / Screen.PixelsPerInch);
+  // Ps := Trunc(GetDeviceCaps(Printer.Handle,LOGPIXELSX) / Screen.PixelsPerInch);
 
   Printer.Title := 'ÌâÄ¿';
   Printer.Canvas.Font.Size := 22;
