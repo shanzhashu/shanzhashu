@@ -101,7 +101,7 @@ object FormGenRandom: TFormGenRandom
     Height = 25
     Caption = '生成 20 以内的二项加减法不等式 90 题'
     TabOrder = 7
-    OnClick = btnCompare10Add2vs1Click
+    OnClick = btnCompare20AddSub2vs1Click
   end
   object btn10AddSub2vs2: TButton
     Left = 16

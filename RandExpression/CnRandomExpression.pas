@@ -828,7 +828,7 @@ begin
   if WideFormat then
     Result := '  '
   else
-    Result := ' ';
+    Result := '  ';
 end;
 
 function TCnCompareGenerator.GetRightRandomExpressionGeneratorClass: TCnRandomExpressionGeneratorClass;
