@@ -813,9 +813,22 @@ begin
 end;
 
 procedure TCnCompareGenerator.GenerateExpressions(Count: Integer);
+var
+  I, J, C, Idx, Res: Integer;
 begin
   FLeft.GenerateExpressions(Count);
   FRight.GenerateExpressions(Count);
+  // 根据 Left 的结果调整 Right 中的算式以多点儿等号
+  C := Count div 2;
+  for I := 1 to C do
+  begin
+    Idx := RandIntIncludeLowHigh(0, Count - 1);
+    Res := Trunc(EvalSimpleExpression(TCnIntegerExpression(FLeft.Results[Idx]).ToString));
+    for J := 0 to Count - 1 do
+      if (Trunc(EvalSimpleExpression(TCnIntegerExpression(FRight.Results[J]).ToString))
+        = Res) and (J <> Idx) then
+        FRight.FResults.Exchange(Idx, J);
+  end;
 end;
 
 function TCnCompareGenerator.GetLeftRandomExpressionGeneratorClass: TCnRandomExpressionGeneratorClass;
