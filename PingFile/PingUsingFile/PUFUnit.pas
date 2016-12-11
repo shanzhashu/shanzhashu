@@ -38,6 +38,7 @@ type
     edtDelay: TEdit;
     udDelay: TUpDown;
     lblDelay: TLabel;
+    chkSepProcess: TCheckBox;
     procedure btnBrowseClick(Sender: TObject);
     procedure edtFileChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -135,6 +136,73 @@ var
   IcmpDllHandle: THandle = 0;
   WS2_32DllHandle: THandle = 0;
   HICMP: THandle = 0;
+
+  SEP_PROCESS: Boolean = False;  // 本进程为主程序
+  SLAVE_PROCESS: Boolean = False; // 本进程为发包的自动化程序
+
+  // -s Sequence Start Number
+  // -l local ip address
+  // -i dest ip address
+  // -f file name
+  // -o file offset bytes
+  // -b block size bytes
+  // -c count
+  // -d delay milisec
+
+  CMD_SEQ_START: Integer;
+  CMD_LOCAL_IP: string;
+  CMD_DEST_IP: string;
+  CMD_FILE: string;
+  CMD_OFFSET: Integer = 0 ;
+  CMD_BLOCK_SIZE: Integer = 1024;
+  CMD_COUNT: Integer = 1;
+  CMD_DELAY_MILLISEC: Integer = 150;
+
+function WinExecAndWait32(FileName: string; Visibility: Integer;
+  ProcessMsg: Boolean): Integer;
+var
+  zAppName: array[0..512] of Char;
+  zCurDir: array[0..255] of Char;
+  WorkDir: string;
+  StartupInfo: TStartupInfo;
+  ProcessInfo: TProcessInformation;
+begin
+  StrPCopy(zAppName, FileName);
+  GetDir(0, WorkDir);
+  StrPCopy(zCurDir, WorkDir);
+  FillChar(StartupInfo, SizeOf(StartupInfo), #0);
+  StartupInfo.cb := SizeOf(StartupInfo);
+
+  StartupInfo.dwFlags := STARTF_USESHOWWINDOW;
+  StartupInfo.wShowWindow := Visibility;
+  if not CreateProcess(nil,
+    zAppName,                           { pointer to command line string }
+    nil,                                { pointer to process security attributes }
+    nil,                                { pointer to thread security attributes }
+    False,                              { handle inheritance flag }
+    CREATE_NEW_CONSOLE or               { creation flags }
+    NORMAL_PRIORITY_CLASS,
+    nil,                                { pointer to new environment block }
+    nil,                                { pointer to current directory name }
+    StartupInfo,                        { pointer to STARTUPINFO }
+    ProcessInfo) then
+    Result := -1                        { pointer to PROCESS_INF }
+  else
+  begin
+    if ProcessMsg then
+    begin
+      repeat
+        Application.ProcessMessages;
+        GetExitCodeProcess(ProcessInfo.hProcess, Cardinal(Result));
+      until (Result <> STILL_ACTIVE) or Application.Terminated;
+    end
+    else
+    begin
+      WaitforSingleObject(ProcessInfo.hProcess, INFINITE);
+      GetExitCodeProcess(ProcessInfo.hProcess, Cardinal(Result));
+    end;
+  end;
+end;
 
 function MyGetFileSize(const FileName: string): Integer;
 var
@@ -425,6 +493,16 @@ end;
 procedure TFormPuf.FormCreate(Sender: TObject);
 var
   aLocalIP: TIPGroup;
+  I: Integer;
+  HasError: Boolean;
+
+  procedure ShowError(Msg: string);
+  begin
+    HasError := True;
+    ShowMessage(Msg);
+    Application.Terminate;
+  end;
+
 begin
   InitIcmpFunctions;
   InitWSAIoctl;
@@ -432,9 +510,96 @@ begin
   if HICMP = INVALID_HANDLE_VALUE then
     raise Exception.Create('ICMP Error');
 
+  if ParamCount > 0 then
+    SLAVE_PROCESS := True;
+
   EnumLocalIP(aLocalIP);
   if Length(aLocalIP) > 0 then
     edtIP.Text := IntToIP(aLocalIP[0].IPAddress);
+
+  if SLAVE_PROCESS then
+  begin
+    // -s Sequence Start Number
+    // -l local ip address
+    // -i dest ip address
+    // -f file name
+    // -o file offset bytes
+    // -b block size bytes
+    // -c count
+    // -d delay milisec
+    HasError := False;
+    I := 1;
+    while I <= ParamCount do
+    begin
+      if ParamStr(I) = '-s' then
+      begin
+        Inc(I);
+        if I > ParamCount then
+          ShowError('No Params for -s');
+        CMD_SEQ_START := StrToIntDef(ParamStr(I), CMD_SEQ_START);
+        Inc(I);
+      end
+      else if ParamStr(I) = '-l' then
+      begin
+        Inc(I);
+        if I > ParamCount then
+          ShowError('No Params for -l');
+        CMD_LOCAL_IP := ParamStr(I);
+        Inc(I);
+      end
+      else if ParamStr(I) = '-i' then
+      begin
+        Inc(I);
+        if I > ParamCount then
+          ShowError('No Params for -i');
+        CMD_DEST_IP := ParamStr(I);
+        Inc(I);
+      end
+      else if ParamStr(I) = '-f' then
+      begin
+        Inc(I);
+        if I > ParamCount then
+          ShowError('No Params for -f');
+        CMD_FILE := ParamStr(I);
+        Inc(I);
+      end
+      else if ParamStr(I) = '-o' then
+      begin
+        Inc(I);
+        if I > ParamCount then
+          ShowError('No Params for -o');
+        CMD_OFFSET := StrToIntDef(ParamStr(I), CMD_OFFSET);
+        Inc(I);
+      end
+      else if ParamStr(I) = '-b' then
+      begin
+        Inc(I);
+        if I > ParamCount then
+          ShowError('No Params for -b');
+        CMD_BLOCK_SIZE := StrToIntDef(ParamStr(I), CMD_BLOCK_SIZE);
+        Inc(I);
+      end
+      else if ParamStr(I) = '-c' then
+      begin
+        Inc(I);
+        if I > ParamCount then
+          ShowError('No Params for -c');
+        CMD_COUNT := StrToIntDef(ParamStr(I), CMD_COUNT);
+        Inc(I);
+      end
+      else if ParamStr(I) = '-d' then
+      begin
+        Inc(I);
+        if I > ParamCount then
+          ShowError('No Params for -d');
+        CMD_DELAY_MILLISEC := StrToIntDef(ParamStr(I), CMD_DELAY_MILLISEC);
+        Inc(I);
+      end;
+    end;
+
+    // TODO: Send Packets using the Params
+    Application.Terminate;
+  end;
 end;
 
 procedure TFormPuf.FormDestroy(Sender: TObject);
@@ -456,6 +621,7 @@ var
   Seq, ASize, FileSize: Integer;
   FileName: AnsiString;
   Interval: Integer;
+  Cmd: string;
 begin
   if not FileExists(edtFile.Text) then
   begin
@@ -494,25 +660,46 @@ begin
     end;
     Sleep(Interval);
 
-    while FileSize > 0 do
+    if chkSepProcess.Checked then
     begin
-      // 后面的包，序号，本包的文件内容尺寸，数据
-      Inc(Seq);
-      PSeq^ := Seq;
-      ASize := Stream.Read(Buf[8], BufSize - 8);
-      PSize^ := ASize;
-
-      Ret := PingIP_Host(aIP, Buf[0], BufSize, Reply);
-      if Ret <> 0 then
+      while FileSize > 0 do
       begin
-        ShowMessage('Error Sending #' + IntToStr(Seq) + ' : ' +IntToStr(Ret));
-        Exit;
+        // Inc(Seq);         // 序列号起始
+        // Stream.Position;  // 文件偏移
+        // aIP.IP;           // 目标 IP
+        // Interval;         // 发包间隔时间
+        // BufSize;          // 缓冲区大小
+        // 10;               // 默认发 10 个
+        Cmd := Format('%s -s %d -f "%s" -i %s -d %d -o %d -b %d -c %d',
+          [ParamStr(0), Seq, edtFile.Text, aIP.IP, Interval, Stream.Position,
+          BufSize, 10]);
+        WinExecAndWait32(Cmd, SW_HIDE, False);
+        Stream.Seek(10 * BufSize, soFromCurrent);
+        Dec(FileSize, 10 * BufSize);
       end;
+    end
+    else
+    begin
+      while FileSize > 0 do
+      begin
+        // 后面的包，序号，本包的文件内容尺寸，数据
+        Inc(Seq);
+        PSeq^ := Seq;
+        ASize := Stream.Read(Buf[8], BufSize - 8);
+        PSize^ := ASize;
 
-      Sleep(Interval);
-      Dec(FileSize, ASize);
+        Ret := PingIP_Host(aIP, Buf[0], BufSize, Reply);
+        if Ret <> 0 then
+        begin
+          ShowMessage('Error Sending #' + IntToStr(Seq) + ' : ' +IntToStr(Ret));
+          Exit;
+        end;
+
+        Sleep(Interval);
+        Dec(FileSize, ASize);
+      end;
+      ShowMessage('File Sent. Count ' + IntToStr(Seq));
     end;
-    ShowMessage('File Sent. Count ' + IntToStr(Seq));
   finally
     FreeMemory(Buf);
     Stream.Free;

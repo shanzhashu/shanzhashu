@@ -111,6 +111,16 @@ object FormPuf: TFormPuf
     Position = 100
     TabOrder = 5
   end
+  object chkSepProcess: TCheckBox
+    Left = 280
+    Top = 128
+    Width = 161
+    Height = 17
+    Caption = 'Using Different Process'
+    Checked = True
+    State = cbChecked
+    TabOrder = 7
+  end
   object dlgOpen: TOpenDialog
     Left = 168
     Top = 24
