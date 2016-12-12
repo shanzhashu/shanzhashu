@@ -495,6 +495,14 @@ var
   aLocalIP: TIPGroup;
   I: Integer;
   HasError: Boolean;
+  Stream: TFileStream;
+  Buf: PAnsiChar;
+  PSeq: PCardinal;
+  PSize: PCardinal;
+  ASize: Integer;
+  aIP: TIpInfo;
+  Reply: string;
+  Ret: Integer;
 
   procedure ShowError(Msg: string);
   begin
@@ -598,6 +606,42 @@ begin
     end;
 
     // TODO: Send Packets using the Params
+    if not FileExists(CMD_FILE) then
+      ShowError('No File.');
+    if CMD_COUNT <= 0 then
+      ShowError('No Count.');
+    if not SetIP(CMD_DEST_IP, aIP) then
+      ShowError('Invalid IP.');
+
+    Buf := GetMemory(CMD_BLOCK_SIZE);
+    Stream := TFileStream.Create(CMD_FILE, fmOpenRead or fmShareDenyWrite);
+    Stream.Seek(CMD_OFFSET, soFromBeginning);
+    PSeq := PCardinal(@Buf[0]);
+    PSize := PCardinal(@Buf[4]);
+
+    try
+      for I := 1 to CMD_COUNT do
+      begin
+        PSeq^ := CMD_SEQ_START;
+        ASize := Stream.Read(Buf[8], CMD_BLOCK_SIZE - 8);
+        if ASize = 0 then // 文件没内容了
+          Break;
+
+        PSize^ := ASize;
+        Ret := PingIP_Host(aIP, Buf[0], CMD_BLOCK_SIZE, Reply);
+        if Ret <> 0 then
+        begin
+          ShowMessage('Error Sending #' + IntToStr(CMD_SEQ_START) + ' : ' +IntToStr(Ret));
+          Exit;
+        end;
+
+        Inc(CMD_SEQ_START);
+        Sleep(CMD_DELAY_MILLISEC);
+      end;
+    finally
+      FreeMemory(Buf);
+      Stream.Free;
+    end;
     Application.Terminate;
   end;
 end;
@@ -639,7 +683,7 @@ begin
     BufSize := 1024;
 
   Buf := GetMemory(BufSize);
-  Stream := TFileStream.Create(edtFile.Text, fmOpenRead);
+  Stream := TFileStream.Create(edtFile.Text, fmOpenRead or fmShareDenyWrite);
   PSeq := PCardinal(@Buf[0]);
   PSize := PCardinal(@Buf[4]);
   Seq := 0;
