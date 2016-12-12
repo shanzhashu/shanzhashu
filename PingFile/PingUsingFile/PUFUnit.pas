@@ -655,6 +655,8 @@ begin
 end;
 
 procedure TFormPuf.btnSendClick(Sender: TObject);
+const
+  BATCH_COUNT = 10;
 var
   Reply: string;
   Buf: PAnsiChar;
@@ -716,10 +718,12 @@ begin
         // 10;               // Ä¬ÈÏ·¢ 10 ¸ö
         Cmd := Format('%s -s %d -f "%s" -i %s -d %d -o %d -b %d -c %d',
           [ParamStr(0), Seq, edtFile.Text, aIP.IP, Interval, Stream.Position,
-          BufSize, 10]);
+          BufSize, BATCH_COUNT]);
+        // ShowMessage(Cmd);
         WinExecAndWait32(Cmd, SW_HIDE, False);
-        Stream.Seek(10 * BufSize, soFromCurrent);
-        Dec(FileSize, 10 * BufSize);
+        Stream.Seek(BATCH_COUNT * BufSize, soFromCurrent);
+        Dec(FileSize, BATCH_COUNT * BufSize);
+        Inc(Seq, BATCH_COUNT);
       end;
     end
     else
