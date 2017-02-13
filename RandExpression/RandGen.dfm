@@ -3,7 +3,7 @@ object FormGenRandom: TFormGenRandom
   Top = 41
   BorderStyle = bsDialog
   Caption = '随机生成运算题'
-  ClientHeight = 409
+  ClientHeight = 456
   ClientWidth = 440
   Color = clBtnFace
   Font.Charset = GB2312_CHARSET
@@ -138,5 +138,14 @@ object FormGenRandom: TFormGenRandom
     Caption = '生成 10 以内的二项加减法填空等式 90 题'
     TabOrder = 11
     OnClick = btnEqual20AddSub2vs2Click
+  end
+  object btnMulti10: TButton
+    Left = 16
+    Top = 408
+    Width = 409
+    Height = 25
+    Caption = '生成 10 以内的二项乘法 90 题'
+    TabOrder = 12
+    OnClick = btnMulti10Click
   end
 end

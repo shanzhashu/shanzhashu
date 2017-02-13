@@ -22,6 +22,7 @@ type
     bvl2: TBevel;
     btnEqual10AddSub2vs2: TButton;
     btnEqual20AddSub2vs2: TButton;
+    btnMulti10: TButton;
     procedure btn10AddSub2Click(Sender: TObject);
     procedure btn20AddSub2Click(Sender: TObject);
     procedure btn10Add2Click(Sender: TObject);
@@ -36,8 +37,9 @@ type
     procedure btnEqual20AddSub2vs2Click(Sender: TObject);
     procedure btnEqual10AddSub2vs2Click(Sender: TObject);
     procedure btnCompare20AddSub2vs1Click(Sender: TObject);
+    procedure btnMulti10Click(Sender: TObject);
   private
-    procedure GenExpressionPreSet(PreSet: TCnRandomExpressionPreSet);
+    procedure GenExpressionPreSet(PreSet: TCnRandomExpressionPreSet; WideFormat: Boolean = False);
     procedure GenComparePreSet(PreSet: TCnRandomComparePreSet);
     procedure GenEqualPreSet(PreSet: TCnRandomEqualPreset);
   public
@@ -54,7 +56,8 @@ uses
 
 {$R *.DFM}
 
-procedure TFormGenRandom.GenExpressionPreSet(PreSet: TCnRandomExpressionPreSet);
+procedure TFormGenRandom.GenExpressionPreSet(PreSet: TCnRandomExpressionPreSet;
+  WideFormat: Boolean);
 var
   I: Integer;
   G: TCnRandomExpressionGenerator;
@@ -69,7 +72,7 @@ begin
     for I := 0 to StringGrid.ColCount - 1 do
     begin
       G.GenerateExpressions(StringGrid.RowCount);
-      G.OutputExpressions(StringGrid.Cols[I], True);
+      G.OutputExpressions(StringGrid.Cols[I], WideFormat);
     end;
     ShowModal;
     Free;
@@ -187,6 +190,11 @@ end;
 procedure TFormGenRandom.btnCompare20AddSub2vs1Click(Sender: TObject);
 begin
   GenComparePreSet(rcp20AddSub2vs1);
+end;
+
+procedure TFormGenRandom.btnMulti10Click(Sender: TObject);
+begin
+  GenExpressionPreSet(rep10Multiple2, True);
 end;
 
 end.

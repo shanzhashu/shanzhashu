@@ -7,7 +7,7 @@ uses
 
 type
   TCnRandomExpressionPreSet = (rep10, rep20, rep10Add2, rep20Add2, rep10Sub2, rep20Sub2,
-    rep10AddSub2, rep20AddSub2);
+    rep10AddSub2, rep20AddSub2, rep10Multiple2);
 
   TCnRandomComparePreSet = (rcp10Add2vs1, rcp20Add2vs1, rcp10Sub2vs1, rcp20Sub2vs1,
     rcp10AddSub2vs1, rcp20AddSub2vs1, rcp10AddSub2vs2, rcp20AddSub2vs2);
@@ -66,7 +66,6 @@ type
   TCnRandomExpressionGenerator = class
   private
     FResults: TObjectList;
-
     FAvoidZeroFactor: Boolean;
     FUniqueInterval: Integer;
     FMaxResult: Integer;
@@ -430,7 +429,12 @@ begin
     raise Exception.Create('No Operators.');
 
   if FAvoidZeroFactor then
-    MinFact := 1
+  begin
+    if FOperatorTypes = [otMul] then
+      MinFact := 2
+    else
+      MinFact := 1;
+  end
   else
     MinFact := 0;
 
@@ -579,6 +583,13 @@ begin
         else
           FMaxResult := 20;
         FMaxFactor := FMaxResult;
+      end;
+    rep10Multiple2:
+      begin
+        FOperatorTypes := [otMul];
+        FAvoidZeroFactor := True;
+        FRangeType := rtFactor;
+        FMaxFactor := 9;
       end;
   end;
 end;
