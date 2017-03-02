@@ -1,4 +1,4 @@
-<?php 
+<?php
 header('Content-type:text/json');
 include("conn.php");
 
@@ -36,8 +36,15 @@ if ($gets['page'])
 
 $page *= 25;
 
+$query_word = str_replace('\'', ' ', $gets['query']);
+$query_word = str_replace('"', ' ', $query_word);
+
 // Now user and page got, do the query and output
-$query = 'SELECT f_id, f_time, f_content FROM my_content WHERE f_name = \''.$myuser.'\' ORDER BY f_time DESC LIMIT '.$page.', 25';
+$query = 'SELECT f_id, f_time, f_content FROM my_content WHERE f_name = \''.$myuser.'\'';
+if ($query_word) {
+	$query = $query.' AND f_content LIKE \'%'.$query_word.'%\'';
+}
+$query = $query.' ORDER BY f_time DESC LIMIT '.$page.', 25';
 //echo $query;
 
 $result = mysql_query($query);
@@ -55,6 +62,6 @@ while($row = mysql_fetch_object($result))
 
 // not good for chinese
 echo jsonRemoveUnicodeSequences($item);
-//phpinfo(); 
+//phpinfo();
 ?>
 
