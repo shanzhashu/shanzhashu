@@ -669,6 +669,7 @@ var
   FileName: AnsiString;
   Interval: Integer;
   Cmd: string;
+  RetryFlag: Boolean;
 begin
   if not FileExists(edtFile.Text) then
   begin
@@ -731,10 +732,14 @@ begin
     end
     else
     begin
+      RetryFlag := False;
       while FileSize > 0 do
       begin
         // 后面的包，序号，本包的文件内容尺寸，数据
-        Inc(Seq);
+        if not RetryFlag then
+          Inc(Seq);
+        RetryFlag := False;
+
         PSeq^ := Seq;
         ASize := Stream.Read(Buf[8], BufSize - 8);
         PSize^ := ASize;
@@ -748,6 +753,7 @@ begin
             lblProgress.Caption := IntToStr(Seq) + ' QOS Fail. Wait 4 Secs to Retry.';
             Application.ProcessMessages;
             Sleep(4000);
+            RetryFlag := True;
             Continue;
           end
           else
