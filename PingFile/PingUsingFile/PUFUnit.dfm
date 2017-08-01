@@ -3,7 +3,7 @@ object FormPuf: TFormPuf
   Top = 107
   BorderStyle = bsDialog
   Caption = 'Ping Using File'
-  ClientHeight = 216
+  ClientHeight = 251
   ClientWidth = 473
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -50,6 +50,12 @@ object FormPuf: TFormPuf
     Width = 30
     Height = 13
     Caption = 'Delay:'
+  end
+  object lblProgress: TLabel
+    Left = 48
+    Top = 216
+    Width = 3
+    Height = 13
   end
   object edtFile: TEdit
     Left = 48
@@ -99,7 +105,7 @@ object FormPuf: TFormPuf
     Width = 81
     Height = 21
     TabOrder = 4
-    Text = '100'
+    Text = '150'
   end
   object udDelay: TUpDown
     Left = 177
@@ -108,7 +114,7 @@ object FormPuf: TFormPuf
     Height = 21
     Associate = edtDelay
     Max = 1000
-    Position = 100
+    Position = 150
     TabOrder = 5
   end
   object chkSepProcess: TCheckBox
@@ -117,8 +123,6 @@ object FormPuf: TFormPuf
     Width = 161
     Height = 17
     Caption = 'Using Different Process'
-    Checked = True
-    State = cbChecked
     TabOrder = 7
   end
   object dlgOpen: TOpenDialog

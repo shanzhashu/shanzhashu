@@ -39,6 +39,7 @@ type
     udDelay: TUpDown;
     lblDelay: TLabel;
     chkSepProcess: TCheckBox;
+    lblProgress: TLabel;
     procedure btnBrowseClick(Sender: TObject);
     procedure edtFileChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -692,6 +693,8 @@ begin
   FileName := AnsiString(ExtractFileName(edtFile.Text));
   FileSize := Stream.Size;
 
+  lblProgress.Caption := '';
+
   try
     // 第一个包，序号，尺寸，文件名
     PSeq^ := 0;
@@ -739,12 +742,26 @@ begin
         Ret := PingIP_Host(aIP, Buf[0], BufSize, Reply);
         if Ret <> 0 then
         begin
-          ShowMessage('Error Sending #' + IntToStr(Seq) + ' : ' +IntToStr(Ret));
-          Exit;
+          if Ret = 11010 then
+          begin
+            // QOS fail, wait some time to retry.
+            lblProgress.Caption := IntToStr(Seq) + ' QOS Fail. Wait 4 Secs to Retry.';
+            Application.ProcessMessages;
+            Sleep(4000);
+            Continue;
+          end
+          else
+          begin
+            ShowMessage('Error Sending #' + IntToStr(Seq) + ' : ' +IntToStr(Ret));
+            Exit;
+          end;
         end;
 
         Sleep(Interval);
         Dec(FileSize, ASize);
+
+        lblProgress.Caption := IntToStr(Seq) + ' Sent.';
+        Application.ProcessMessages;
       end;
       ShowMessage('File Sent. Count ' + IntToStr(Seq));
     end;
