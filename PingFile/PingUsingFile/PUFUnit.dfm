@@ -80,7 +80,7 @@ object FormPuf: TFormPuf
     Width = 81
     Height = 21
     TabOrder = 2
-    Text = '1024'
+    Text = '4096'
   end
   object btnSend: TButton
     Left = 48
@@ -105,7 +105,7 @@ object FormPuf: TFormPuf
     Width = 81
     Height = 21
     TabOrder = 4
-    Text = '150'
+    Text = '50'
   end
   object udDelay: TUpDown
     Left = 177
@@ -114,7 +114,7 @@ object FormPuf: TFormPuf
     Height = 21
     Associate = edtDelay
     Max = 1000
-    Position = 150
+    Position = 50
     TabOrder = 5
   end
   object chkSepProcess: TCheckBox

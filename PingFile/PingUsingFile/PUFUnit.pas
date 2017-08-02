@@ -733,16 +733,24 @@ begin
     else
     begin
       RetryFlag := False;
+      ASize := 0;
       while FileSize > 0 do
       begin
         // 后面的包，序号，本包的文件内容尺寸，数据
         if not RetryFlag then
+        begin
           Inc(Seq);
+          PSeq^ := Seq;
+          ASize := Stream.Read(Buf[8], BufSize - 8);
+          PSize^ := ASize;
+        end
+        else
+        begin
+          // Retry. Do not read stream.
+          PSeq^ := Seq;
+          PSize^ := ASize; // Previous Size
+        end;
         RetryFlag := False;
-
-        PSeq^ := Seq;
-        ASize := Stream.Read(Buf[8], BufSize - 8);
-        PSize^ := ASize;
 
         Ret := PingIP_Host(aIP, Buf[0], BufSize, Reply);
         if Ret <> 0 then
@@ -766,7 +774,7 @@ begin
         Sleep(Interval);
         Dec(FileSize, ASize);
 
-        lblProgress.Caption := IntToStr(Seq) + ' Sent.';
+        lblProgress.Caption := IntToStr(Seq) + ' Sent. Remain Size: ' + IntToStr(FileSize);
         Application.ProcessMessages;
       end;
       ShowMessage('File Sent. Count ' + IntToStr(Seq));
