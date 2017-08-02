@@ -38,6 +38,7 @@ type
     edtTimeout: TEdit;
     udTimeout: TUpDown;
     btnCopy: TSpeedButton;
+    lblProgress: TLabel;
     procedure btnBrowseClick(Sender: TObject);
     procedure btnRecvClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -412,6 +413,7 @@ begin
   FillChar(Buf[0], SizeOf(Buf), 0);
   FRecving := True;
   UpdateButtonState;
+  lblProgress.Caption := '';
   Content := nil;
   Step := 0;
   SumLen := 0;
@@ -470,7 +472,11 @@ begin
           //pbRecv.Invalidate;
 
           PContent := Pointer(Integer(PContent) + PackLen);
-        end;
+
+          lblProgress.Caption := 'Got Seq: ' + IntToStr(Step - 1);
+        end
+        else
+          lblProgress.Caption := 'Got Unexpected: ' + IntToStr(PSeq^) + '. Lack of ' + IntToStr(Step);
 
         if SumLen >= AllLen then // สýพÝย๚มห
         begin

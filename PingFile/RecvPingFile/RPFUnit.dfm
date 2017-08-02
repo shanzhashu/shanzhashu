@@ -3,7 +3,7 @@ object RPFForm: TRPFForm
   Top = 236
   BorderStyle = bsDialog
   Caption = 'Receive File from Ping'
-  ClientHeight = 226
+  ClientHeight = 244
   ClientWidth = 411
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -53,6 +53,12 @@ object RPFForm: TRPFForm
     Flat = True
     OnClick = btnCopyClick
   end
+  object lblProgress: TLabel
+    Left = 16
+    Top = 216
+    Width = 3
+    Height = 13
+  end
   object edtDir: TEdit
     Left = 104
     Top = 16
@@ -84,6 +90,7 @@ object RPFForm: TRPFForm
     Top = 144
     Width = 369
     Height = 16
+    Smooth = True
     TabOrder = 3
   end
   object cbbIP: TComboBox
@@ -107,7 +114,7 @@ object RPFForm: TRPFForm
     Width = 49
     Height = 21
     TabOrder = 6
-    Text = '50'
+    Text = '20'
   end
   object udTimeout: TUpDown
     Left = 369
@@ -116,7 +123,7 @@ object RPFForm: TRPFForm
     Height = 21
     Associate = edtTimeout
     Max = 1000
-    Position = 50
+    Position = 20
     TabOrder = 7
   end
 end
