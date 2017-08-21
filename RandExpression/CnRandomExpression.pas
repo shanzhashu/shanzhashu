@@ -7,7 +7,7 @@ uses
 
 type
   TCnRandomExpressionPreSet = (rep10, rep20, rep10Add2, rep20Add2, rep10Sub2, rep20Sub2,
-    rep10AddSub2, rep20AddSub2, rep10Multiple2);
+    rep10AddSub2, rep20AddSub2, rep100AddSub2, rep10Multiple2);
 
   TCnRandomComparePreSet = (rcp10Add2vs1, rcp20Add2vs1, rcp10Sub2vs1, rcp20Sub2vs1,
     rcp10AddSub2vs1, rcp20AddSub2vs1, rcp10AddSub2vs2, rcp20AddSub2vs2);
@@ -573,15 +573,17 @@ begin
           FMaxFactor := 20;
         FMaxResult := FMaxFactor;
       end;
-    rep10AddSub2, rep20AddSub2:
+    rep10AddSub2, rep20AddSub2, rep100AddSub2:
       begin
         FOperatorTypes := [otAdd, otSub];
         FAvoidZeroFactor := True;
         FRangeType := rtResult;
         if Value = rep10AddSub2 then
           FMaxResult := 10
+        else if Value = rep20AddSub2 then
+          FMaxResult := 20
         else
-          FMaxResult := 20;
+          FMaxResult := 100;
         FMaxFactor := FMaxResult;
       end;
     rep10Multiple2:
