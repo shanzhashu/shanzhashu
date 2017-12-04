@@ -7,7 +7,7 @@ uses
 
 type
   TCnRandomExpressionPreSet = (rep10, rep20, rep10Add2, rep20Add2, rep10Sub2, rep20Sub2,
-    rep10AddSub2, rep20AddSub2, rep100AddSub2, rep10Multiple2);
+    rep10AddSub2, rep20AddSub2, rep100AddSub2, rep10Multiple2, rep10Div2, rep10MulDiv2);
 
   TCnRandomComparePreSet = (rcp10Add2vs1, rcp20Add2vs1, rcp10Sub2vs1, rcp20Sub2vs1,
     rcp10AddSub2vs1, rcp20AddSub2vs1, rcp10AddSub2vs2, rcp20AddSub2vs2);
@@ -26,6 +26,11 @@ type
   TCnOperatorTypes = set of TCnOperatorType;
 
   TCnRangeType = (rtFactor, rtResult);
+
+  TCnIntegerExpression = class;
+
+  TCnOnExpressionGeneratedEvent = procedure(Sender: TObject;
+    Expr: TCnIntegerExpression) of object;
 
   TCnExpressionElement = class
   private
@@ -47,6 +52,7 @@ type
   private
     FExpressionElements: TObjectList;
     function GetLength: Integer;
+    function GetElements(Index: Integer): TCnExpressionElement;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -61,6 +67,7 @@ type
     function Equals(AnExpression: TCnIntegerExpression): Boolean;
 
     property Length: Integer read GetLength;
+    property Elements[Index: Integer]: TCnExpressionElement read GetElements;
   end;
 
   TCnRandomExpressionGenerator = class
@@ -76,6 +83,8 @@ type
     FAvoidEqualSub: Boolean;
     FHisExprs: TStrings;
     FAppendEqual: Boolean;
+    FOnExpressionGenerated: TCnOnExpressionGeneratedEvent;
+    FPreSet: TCnRandomExpressionPreSet;
     procedure SetPreSet(const Value: TCnRandomExpressionPreSet);
     function GetResultsCount: Integer;
     function GetResults(Index: Integer): TCnIntegerExpression;
@@ -84,6 +93,7 @@ type
     function CheckExpressionValid(Expr: TCnIntegerExpression): Boolean; virtual;
     function CheckResult(Expr: TCnIntegerExpression; Idx: Integer): Boolean; virtual;
     procedure UpdateHistory(Expr: TCnIntegerExpression);
+    procedure DoExpressionGenerated(Expr: TCnIntegerExpression); virtual;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -103,7 +113,10 @@ type
     property OperatorTypes: TCnOperatorTypes read FOperatorTypes write FOperatorTypes;
     property AppendEqual: Boolean read FAppendEqual write FAppendEqual;
 
-    property PreSet: TCnRandomExpressionPreSet write SetPreSet;
+    property PreSet: TCnRandomExpressionPreSet read FPreSet write SetPreSet;
+
+    property OnExpressionGenerated: TCnOnExpressionGeneratedEvent
+      read FOnExpressionGenerated write FOnExpressionGenerated;
   end;
 
   TCnRandomExpressionGeneratorClass = class of TCnRandomExpressionGenerator;
@@ -161,6 +174,8 @@ type
 
     property PreSet: TCnRandomEqualPreset write SetPreSet;
   end;
+
+function EvalSimpleExpression(const Value: string): Double;
 
 implementation
 
@@ -402,6 +417,13 @@ begin
   inherited;
 end;
 
+procedure TCnRandomExpressionGenerator.DoExpressionGenerated(
+  Expr: TCnIntegerExpression);
+begin
+  if Assigned(FOnExpressionGenerated) then
+    FOnExpressionGenerated(Self, Expr);
+end;
+
 procedure TCnRandomExpressionGenerator.GenerateExpressions(Count: Integer);
 var
   Cnt, MinFact, MaxFact: Integer;
@@ -476,6 +498,8 @@ begin
       Continue;
     end;
 
+    DoExpressionGenerated(AnExpr); // 给外界一个变换的机会
+
     // 生成成功后
     FResults.Add(AnExpr);
     UpdateHistory(AnExpr);
@@ -538,6 +562,7 @@ end;
 
 procedure TCnRandomExpressionGenerator.SetPreSet(const Value: TCnRandomExpressionPreSet);
 begin
+  FPreSet := Value;
   UniqueInterval := 7;
   if Value in [rep10, rep20] then
   begin
@@ -586,7 +611,7 @@ begin
           FMaxResult := 100;
         FMaxFactor := FMaxResult;
       end;
-    rep10Multiple2:
+    rep10Multiple2, rep10Div2, rep10MulDiv2:
       begin
         FOperatorTypes := [otMul];
         FAvoidZeroFactor := True;
@@ -668,6 +693,13 @@ begin
       Exit;
   end;
   Result := True;
+end;
+
+function TCnIntegerExpression.GetElements(Index: Integer): TCnExpressionElement;
+begin
+  Result := nil;
+  if (Index >= 0) and (Index < FExpressionElements.Count) then
+    Result := TCnExpressionElement(FExpressionElements[Index]);
 end;
 
 function TCnIntegerExpression.GetLength: Integer;
@@ -977,6 +1009,7 @@ procedure TCnEqualGenerator.SetPreSet(const Value: TCnRandomEqualPreset);
 begin
 //  FLeft.FactorCount := 2;
 //  FRight.FactorCount := 2;
+  // FPreSet := Value;
   case Value of
     rqp10Add2vs2:
       begin

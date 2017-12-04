@@ -1,10 +1,10 @@
 object FormGenRandom: TFormGenRandom
-  Left = 297
-  Top = 41
+  Left = 233
+  Top = 72
   BorderStyle = bsDialog
   Caption = '随机生成运算题'
   ClientHeight = 456
-  ClientWidth = 440
+  ClientWidth = 882
   Color = clBtnFace
   Font.Charset = GB2312_CHARSET
   Font.Color = clWindowText
@@ -30,6 +30,13 @@ object FormGenRandom: TFormGenRandom
     Width = 409
     Height = 17
     Shape = bsTopLine
+  end
+  object bvl3: TBevel
+    Left = 440
+    Top = 16
+    Width = 9
+    Height = 417
+    Shape = bsLeftLine
   end
   object btn10AddSub2: TButton
     Left = 16
@@ -147,5 +154,23 @@ object FormGenRandom: TFormGenRandom
     Caption = '生成 10 以内的二项乘法 90 题'
     TabOrder = 12
     OnClick = btnMulti10Click
+  end
+  object btnDiv100: TButton
+    Left = 456
+    Top = 16
+    Width = 409
+    Height = 25
+    Caption = '生成 100 以内的二项除法 90 题'
+    TabOrder = 13
+    OnClick = btnDiv100Click
+  end
+  object btn10MulDiv2: TButton
+    Left = 456
+    Top = 56
+    Width = 409
+    Height = 25
+    Caption = '生成 100 以内的二项乘除法 90 题'
+    TabOrder = 14
+    OnClick = btn10MulDiv2Click
   end
 end

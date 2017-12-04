@@ -23,6 +23,9 @@ type
     btnEqual10AddSub2vs2: TButton;
     btnEqual20AddSub2vs2: TButton;
     btnMulti10: TButton;
+    bvl3: TBevel;
+    btnDiv100: TButton;
+    btn10MulDiv2: TButton;
     procedure btn10AddSub2Click(Sender: TObject);
     procedure btn20AddSub2Click(Sender: TObject);
     procedure btn10Add2Click(Sender: TObject);
@@ -38,10 +41,15 @@ type
     procedure btnEqual10AddSub2vs2Click(Sender: TObject);
     procedure btnCompare20AddSub2vs1Click(Sender: TObject);
     procedure btnMulti10Click(Sender: TObject);
+    procedure btnDiv100Click(Sender: TObject);
+    procedure btn10MulDiv2Click(Sender: TObject);
   private
     procedure GenExpressionPreSet(PreSet: TCnRandomExpressionPreSet; WideFormat: Boolean = False);
     procedure GenComparePreSet(PreSet: TCnRandomComparePreSet);
     procedure GenEqualPreSet(PreSet: TCnRandomEqualPreset);
+
+    procedure ExpressionGenerated(Sender: TObject; Expr: TCnIntegerExpression);
+    // 二项除法，实现是乘法，在这儿逆运算一次
   public
     { Public declarations }
   end;
@@ -67,6 +75,7 @@ begin
     G := TCnRandomExpressionGenerator.Create;
     G.PreSet := PreSet;
     G.AppendEqual := True;
+    G.OnExpressionGenerated := ExpressionGenerated;
     Randomize;
 
     for I := 0 to StringGrid.ColCount - 1 do
@@ -195,6 +204,39 @@ end;
 procedure TFormGenRandom.btnMulti10Click(Sender: TObject);
 begin
   GenExpressionPreSet(rep10Multiple2, True);
+end;
+
+procedure TFormGenRandom.ExpressionGenerated(Sender: TObject;
+  Expr: TCnIntegerExpression);
+var
+  S: string;
+  T: Integer;
+begin
+  if ((Sender as TCnRandomExpressionGenerator).PreSet = rep10Div2) or
+    (((Sender as TCnRandomExpressionGenerator).PreSet = rep10MulDiv2) and
+     ((Sender as TCnRandomExpressionGenerator).ResultsCount mod 2 = 1)) then
+  begin
+    if (Expr.Length = 3) and
+      (Expr.Elements[0].ElementType = etFactor) and
+      ((Expr.Elements[1].ElementType = etOperator) and (Expr.Elements[1].OperatorType = otMul))
+      and (Expr.Elements[2].ElementType = etFactor) then
+    begin
+      S := Expr.ToString;
+      T := Trunc(EvalSimpleExpression(S));
+      Expr.Elements[1].OperatorType := otDiv;
+      Expr.Elements[0].Factor := T;
+    end;
+  end;
+end;
+
+procedure TFormGenRandom.btnDiv100Click(Sender: TObject);
+begin
+  GenExpressionPreSet(rep10Div2, True);
+end;
+
+procedure TFormGenRandom.btn10MulDiv2Click(Sender: TObject);
+begin
+  GenExpressionPreSet(rep10MulDiv2, True);
 end;
 
 end.
