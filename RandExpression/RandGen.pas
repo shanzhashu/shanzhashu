@@ -26,6 +26,8 @@ type
     bvl3: TBevel;
     btnDiv100: TButton;
     btn10MulDiv2: TButton;
+    btn100AddSub2: TButton;
+    btn10DivMod2: TButton;
     procedure btn10AddSub2Click(Sender: TObject);
     procedure btn20AddSub2Click(Sender: TObject);
     procedure btn10Add2Click(Sender: TObject);
@@ -43,6 +45,8 @@ type
     procedure btnMulti10Click(Sender: TObject);
     procedure btnDiv100Click(Sender: TObject);
     procedure btn10MulDiv2Click(Sender: TObject);
+    procedure btn100AddSub2Click(Sender: TObject);
+    procedure btn10DivMod2Click(Sender: TObject);
   private
     procedure GenExpressionPreSet(PreSet: TCnRandomExpressionPreSet; WideFormat: Boolean = False);
     procedure GenComparePreSet(PreSet: TCnRandomComparePreSet);
@@ -237,6 +241,16 @@ end;
 procedure TFormGenRandom.btn10MulDiv2Click(Sender: TObject);
 begin
   GenExpressionPreSet(rep10MulDiv2, True);
+end;
+
+procedure TFormGenRandom.btn100AddSub2Click(Sender: TObject);
+begin
+  GenExpressionPreSet(rep100AddSub2, False);
+end;
+
+procedure TFormGenRandom.btn10DivMod2Click(Sender: TObject);
+begin
+  GenExpressionPreSet(rep10DivMod2, False);
 end;
 
 end.

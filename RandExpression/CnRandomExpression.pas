@@ -7,7 +7,8 @@ uses
 
 type
   TCnRandomExpressionPreSet = (rep10, rep20, rep10Add2, rep20Add2, rep10Sub2, rep20Sub2,
-    rep10AddSub2, rep20AddSub2, rep100AddSub2, rep10Multiple2, rep10Div2, rep10MulDiv2);
+    rep10AddSub2, rep20AddSub2, rep100AddSub2, rep10Multiple2, rep10Div2, rep10MulDiv2,
+    rep10DivMod2);
 
   TCnRandomComparePreSet = (rcp10Add2vs1, rcp20Add2vs1, rcp10Sub2vs1, rcp20Sub2vs1,
     rcp10AddSub2vs1, rcp20AddSub2vs1, rcp10AddSub2vs2, rcp20AddSub2vs2);
@@ -83,6 +84,7 @@ type
     FAvoidEqualSub: Boolean;
     FHisExprs: TStrings;
     FAppendEqual: Boolean;
+    FAppendMod: Boolean;
     FOnExpressionGenerated: TCnOnExpressionGeneratedEvent;
     FPreSet: TCnRandomExpressionPreSet;
     procedure SetPreSet(const Value: TCnRandomExpressionPreSet);
@@ -112,7 +114,7 @@ type
     property MaxResult: Integer read FMaxResult write FMaxResult;
     property OperatorTypes: TCnOperatorTypes read FOperatorTypes write FOperatorTypes;
     property AppendEqual: Boolean read FAppendEqual write FAppendEqual;
-
+    property AppendMod: Boolean read FAppendMod write FAppendMod;
     property PreSet: TCnRandomExpressionPreSet read FPreSet write SetPreSet;
 
     property OnExpressionGenerated: TCnOnExpressionGeneratedEvent
@@ -456,6 +458,9 @@ begin
       MinFact := 2
     else
       MinFact := 1;
+
+    if FOperatorTypes = [otDiv] then
+      MinFact := 2;
   end
   else
     MinFact := 0;
@@ -473,8 +478,11 @@ begin
     begin
       Op := RandOneOperator;
       F1 := RandIntIncludeLowHigh(MinFact, MaxFact);
-      F2 := RandIntIncludeLowHigh(MinFact, MaxFact);
-      if (Op = otSub) and (F1 < F2) then
+      if FOperatorTypes= [otDiv] then
+        F2 := RandIntIncludeLowHigh(MinFact, MaxFact div 10)
+      else
+        F2 := RandIntIncludeLowHigh(MinFact, MaxFact);
+      if (Op in [otSub, otDiv]) and (F1 < F2) then
         SwapInt(F1, F2);
 
       AnExpr.AddFactor(F1);
@@ -538,6 +546,8 @@ begin
           S := S + '£½'
         else
           S := S + '=';
+        if FAppendMod then
+          S := S + '  ...  '
       end;
       List.Add(S);
     end;
@@ -617,6 +627,14 @@ begin
         FAvoidZeroFactor := True;
         FRangeType := rtFactor;
         FMaxFactor := 9;
+      end;
+    rep10DivMod2:
+      begin
+        FOperatorTypes := [otDiv];
+        FAvoidZeroFactor := True;
+        FRangeType := rtFactor;
+        FMaxFactor := 100;
+        FAppendMod := True;
       end;
   end;
 end;
