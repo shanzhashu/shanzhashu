@@ -3,7 +3,7 @@ object FormFile: TFormFile
   Top = 235
   BorderStyle = bsDialog
   Caption = 'File to Pixels - Showing Bitmap '
-  ClientHeight = 161
+  ClientHeight = 198
   ClientWidth = 391
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -36,6 +36,13 @@ object FormFile: TFormFile
     Width = 3
     Height = 13
   end
+  object lblBlock: TLabel
+    Left = 24
+    Top = 116
+    Width = 30
+    Height = 13
+    Caption = 'Block:'
+  end
   object edtFile: TEdit
     Left = 56
     Top = 52
@@ -55,12 +62,32 @@ object FormFile: TFormFile
   end
   object btnToPixels: TButton
     Left = 56
-    Top = 112
+    Top = 160
     Width = 313
     Height = 25
     Caption = 'To Pixels      '
     TabOrder = 2
     OnClick = btnToPixelsClick
+  end
+  object edtBlock: TEdit
+    Left = 56
+    Top = 112
+    Width = 121
+    Height = 21
+    TabOrder = 3
+    Text = '5'
+  end
+  object udBlock: TUpDown
+    Left = 177
+    Top = 112
+    Width = 15
+    Height = 21
+    Associate = edtBlock
+    Min = 1
+    Max = 7
+    Position = 5
+    TabOrder = 4
+    OnChangingEx = udBlockChangingEx
   end
   object dlgOpen: TOpenDialog
     Left = 184
