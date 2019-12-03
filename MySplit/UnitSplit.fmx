@@ -1,0 +1,135 @@
+object FormSplit: TFormSplit
+  Left = 0
+  Top = 0
+  Caption = 'My Split Tool'
+  ClientHeight = 542
+  ClientWidth = 633
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 1
+  object lblSplit: TLabel
+    Position.X = 24.000000000000000000
+    Position.Y = 32.000000000000000000
+    Size.Width = 81.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Split File:'
+    TabOrder = 2
+  end
+  object edtFile: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 3
+    Position.X = 96.000000000000000000
+    Position.Y = 32.000000000000000000
+    Size.Width = 409.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object btnBrowse: TButton
+    Position.X = 528.000000000000000000
+    Position.Y = 32.000000000000000000
+    TabOrder = 4
+    Text = 'Browse'
+    OnClick = btnBrowseClick
+  end
+  object edtBlockSize: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 5
+    Text = '1024'
+    Position.X = 96.000000000000000000
+    Position.Y = 80.000000000000000000
+    OnChange = edtBlockSizeChange
+  end
+  object cbbUnit: TComboBox
+    Items.Strings = (
+      'K'
+      'M'
+      'G')
+    ItemIndex = 0
+    Position.X = 208.000000000000000000
+    Position.Y = 80.000000000000000000
+    Size.Width = 57.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 6
+    OnChange = cbbUnitChange
+    OnClick = cbbUnitChange
+  end
+  object lblBy: TLabel
+    Position.X = 24.000000000000000000
+    Position.Y = 80.000000000000000000
+    Size.Width = 65.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'By Size:'
+    TabOrder = 1
+  end
+  object lblTo: TLabel
+    Position.X = 280.000000000000000000
+    Position.Y = 80.000000000000000000
+    Size.Width = 225.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+  end
+  object lblSize: TLabel
+    Position.X = 96.000000000000000000
+    Position.Y = 56.000000000000000000
+    TabOrder = 8
+  end
+  object lblPick: TLabel
+    Position.X = 24.000000000000000000
+    Position.Y = 144.000000000000000000
+    Size.Width = 89.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Pick From'
+    TabOrder = 9
+  end
+  object edtStart: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 11
+    Position.X = 120.000000000000000000
+    Position.Y = 144.000000000000000000
+  end
+  object lblPickEnd: TLabel
+    Position.X = 248.000000000000000000
+    Position.Y = 144.000000000000000000
+    Size.Width = 49.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'To'
+    TabOrder = 12
+  end
+  object edtEnd: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 10
+    Position.X = 288.000000000000000000
+    Position.Y = 144.000000000000000000
+  end
+  object btnSave: TButton
+    Position.X = 424.000000000000000000
+    Position.Y = 144.000000000000000000
+    TabOrder = 13
+    Text = 'Save'
+    OnClick = btnSaveClick
+  end
+  object mmoResult: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Position.X = 24.000000000000000000
+    Position.Y = 200.000000000000000000
+    Size.Width = 577.000000000000000000
+    Size.Height = 313.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 14
+    Viewport.Width = 569.000000000000000000
+    Viewport.Height = 305.000000000000000000
+  end
+  object dlgOpen: TOpenDialog
+    Left = 392
+    Top = 32
+  end
+end
