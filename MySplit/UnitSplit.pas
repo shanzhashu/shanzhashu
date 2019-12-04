@@ -81,8 +81,11 @@ implementation
 
 {$R *.fmx}
 
+const
+  BUF_SIZE = 1024 * 1024;
+
 var
-  Buf: array[1..1024*1024] of Byte;
+  Buf: array[1..BUF_SIZE] of Byte;
 
 procedure TFormSplit.btnBrowse1Click(Sender: TObject);
 begin
@@ -115,8 +118,8 @@ var
   B1, B2: Byte;
   Equ: Boolean;
 begin
-  Off1 := StrToIntDef(edtOffset1.Text, 0);
-  Off2 := StrToIntDef(edtOffset2.Text, 0);
+  Off1 := StrToInt64Def(edtOffset1.Text, 0);
+  Off2 := StrToInt64Def(edtOffset2.Text, 0);
   CompareSize := StrToIntDef(edtCompareSize.Text, 0);
   case cbbCompareUnit.ItemIndex of
     0:
@@ -312,7 +315,7 @@ begin
   finally
     B.Free;
   end;
-  LogMsg('Write ' + IntToStr(C) + ' Bytes to ' + O);
+  LogMsg('Write ' + IntToStr(Sum) + ' Bytes to ' + O);
 end;
 
 procedure TFormSplit.UpdateBlockSize;

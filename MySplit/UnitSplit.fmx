@@ -15,7 +15,7 @@ object FormSplit: TFormSplit
     Size.Width = 665.000000000000000000
     Size.Height = 225.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 1
     TabPosition = PlatformDefault
     Sizes = (
@@ -154,7 +154,7 @@ object FormSplit: TFormSplit
       CustomIcon = <
         item
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 64.000000000000000000
       Size.Height = 27.000000000000000000
       Size.PlatformDefault = False
@@ -226,7 +226,7 @@ object FormSplit: TFormSplit
       CustomIcon = <
         item
         end>
-      IsSelected = False
+      IsSelected = True
       Size.Width = 79.000000000000000000
       Size.Height = 27.000000000000000000
       Size.PlatformDefault = False
