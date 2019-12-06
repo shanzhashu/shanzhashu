@@ -175,7 +175,8 @@ end;
 
 procedure TFormSplit.btnMergeClick(Sender: TObject);
 var
-  I, A, B, BufSize, C, Sum: Integer;
+  I, A, B, BufSize, C: Integer;
+  Sum: Int64;
   S: string;
   D, F: TFileStream;
 begin
