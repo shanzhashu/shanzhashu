@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #coding=utf-8
-import MySQLdb
+import pymysql
 import os
 import smtplib
 import email
@@ -16,14 +16,14 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-conn = MySQLdb.connect(host='localhost', user='root', passwd='96gong1.com', charset="utf8")
-curs = conn.cursor(cursorclass = MySQLdb.cursors.DictCursor)
+conn = pymysql.connect(host='localhost', user='root', passwd='mypassword', charset="utf8")
+curs = conn.cursor() #cursorclass = pymysql.cursors.DictCursor)
 curs.execute("SET NAMES utf8")
 conn.select_db('mydata')
 
 count = curs.execute('SELECT Max(f_id) as MaxId FROM my_content WHERE f_name = \'liuxiao\'')
 row = curs.fetchone()
-MaxId = row["MaxId"]
+MaxId = row[0]
 print "Max Id got %d" % (MaxId);
 
 oldMaxId = 0;
@@ -43,7 +43,7 @@ count = curs.execute('SELECT f_time, f_content FROM my_content WHERE f_name = \'
 body = '';
 for i in range(count):
   row = curs.fetchone()
-  body = body + '\r\n' + row["f_time"].strftime('%Y-%m-%d %H:%M:%S') + '\r\n' + row["f_content"].encode('utf-8')
+  body = body + '\r\n' + row[0].strftime('%Y-%m-%d %H:%M:%S') + '\r\n' + row[1].encode('utf-8')
 curs.close()
 conn.close()
 
