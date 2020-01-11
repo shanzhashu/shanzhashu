@@ -25,6 +25,8 @@ s=f.readlines()
 f.close
 
 z.write(path, 'message.txt')
+path=os.path.realpath(sys.path[0]) + '/mydata.sql'
+z.write(path, 'mydata.sql')
 z.setpassword('1233211234567')
 z.close
 

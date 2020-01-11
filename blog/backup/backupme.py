@@ -16,7 +16,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-conn = pymysql.connect(host='localhost', user='root', passwd='mypassword', charset="utf8")
+conn = pymysql.connect(host='localhost', user='root', passwd='Fyh43NpeTk', charset="utf8")
 curs = conn.cursor() #cursorclass = pymysql.cursors.DictCursor)
 curs.execute("SET NAMES utf8")
 conn.select_db('mydata')
@@ -61,8 +61,12 @@ s=f.readlines()
 #print s
 f.close
 
+returnCode = os.system('/usr/bin/mysqldump -u root -pFyh43NpeTk mydata > ' + os.path.realpath(sys.path[0]) + '/mydata.sql')
+print 'Dump reeturncode:', returnCode
+time.sleep(2)
+
 returnCode = subprocess.call(os.path.realpath(sys.path[0]) +'/zipmsg.py')
-print 'returncode:', returnCode  
+print 'Zip returncode:', returnCode  
 
 time.sleep(5)
 
@@ -71,7 +75,7 @@ today = datetime.date.today()
 #msg = MIMEText(body, 'plain', 'utf-8')
 msg = MIMEMultipart()
 
-msg['From'] = 'shanzhashu@163.com'
+msg['From'] = '21808552@qq.com'
 msg['To'] = 'liuxiaoshanzhashu@gmail.com'
 msg['Subject'] = 'Backup Package ' + today.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -97,10 +101,9 @@ fd.close()
 
 msg.attach(att1)
 
-smtp = smtplib.SMTP()
-smtp.connect("smtp.163.com", 25)
-smtp.login("shanzhashu@163.com", "mypassword")
-smtp.sendmail("shanzhashu@163.com", "liuxiaoshanzhashu@gmail.com", msg.as_string())
+smtp = smtplib.SMTP_SSL("smtp.qq.com:465")
+smtp.login("21808552@qq.com", "mypassword")
+smtp.sendmail("21808552@qq.com", "liuxiaoshanzhashu@gmail.com", msg.as_string())
 smtp.quit()
 #print msg.as_string()
 print "Mail send Success. Record MaxId"
