@@ -50,7 +50,7 @@ public class MyX509TrustManager implements X509TrustManager {
 
             @Override
             public boolean verify(String arg0, SSLSession arg1) {
-                // TODO Auto-generated method stub
+
                 return true;
             }
 

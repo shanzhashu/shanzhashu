@@ -56,9 +56,12 @@ public class MainActivity extends Activity {
     private ImageView btnAdd;
     private TextView txtHead;
     private ImageView btnBack;
+    private ImageView btnSearch;
+
     private ListView lvList;
 
     private String draft;
+    private String queryStr;
     private ProgressDialog mProgress;
 
     private void showProgress()
@@ -205,6 +208,34 @@ public class MainActivity extends Activity {
                 Log.d(TAG, "onClick to Load page " + mCurrentPage);
                 loadItemByPage(0, true);
 
+            }
+        });
+
+        btnSearch = (ImageView)findViewById(R.id.button_search);
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View dialog = View.inflate(MainActivity.this, R.layout.dialog_search, null);
+                final EditText searchText = (EditText)dialog.findViewById(R.id.search_content);
+
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("查找")
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .setView(dialog)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                queryStr = searchText.getText().toString();
+                                loadItemByPage(0, false);
+                            }
+                        })
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .show();
             }
         });
     }
@@ -386,6 +417,10 @@ public class MainActivity extends Activity {
         if (fromHead)
             page = 0;
         String url = BlogConst.URL_INDEX + "?session=" + s + "&page=" + page;
+        if (!TextUtils.isEmpty(queryStr)) {
+            url = url + "&q=" + queryStr;
+            // Log.d(TAG, "to Search " + queryStr);
+        }
         //Log.d(TAG, "URL: " + url);
 
         Utf8StringRequest jar = new Utf8StringRequest(url, new Response.Listener<String>() {
