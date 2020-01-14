@@ -226,6 +226,7 @@ public class MainActivity extends Activity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 queryStr = searchText.getText().toString();
+                                mList.clear();
                                 loadItemByPage(0, false);
                             }
                         })
@@ -418,7 +419,7 @@ public class MainActivity extends Activity {
             page = 0;
         String url = BlogConst.URL_INDEX + "?session=" + s + "&page=" + page;
         if (!TextUtils.isEmpty(queryStr)) {
-            url = url + "&q=" + queryStr;
+            url = url + "&query=" + queryStr;
             // Log.d(TAG, "to Search " + queryStr);
         }
         //Log.d(TAG, "URL: " + url);
