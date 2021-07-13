@@ -4,11 +4,32 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, Math;
+  Dialogs, ExtCtrls, Math, StdCtrls;
 
 type
+  THitMode = (hmLine, hmCurve); // 直线版和曲线版
+
   TFormHit = class(TForm)
     pbHit: TPaintBox;
+    rgHitMode: TRadioGroup;
+    grpParam: TGroupBox;
+    lblR: TLabel;
+    edtR: TEdit;
+    lblSita: TLabel;
+    edtSita: TEdit;
+    lblW: TLabel;
+    lblH: TLabel;
+    edtW: TEdit;
+    edtH: TEdit;
+    chkW: TCheckBox;
+    lblDegree: TLabel;
+    lblD: TLabel;
+    edtD: TEdit;
+    lblP: TLabel;
+    edtP: TEdit;
+    btnApply: TButton;
+    lblB: TLabel;
+    edtB: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure pbHitPaint(Sender: TObject);
@@ -20,15 +41,20 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure pbHitMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
+    procedure rgHitModeClick(Sender: TObject);
+    procedure btnApplyClick(Sender: TObject);
   private
     FPaintBmp: TBitmap;
-    R, H, W, D, P, SiTa: Double;
+    FHitMode: THitMode;
+
+    R, H, W, D, P, SiTa, B: Double;
     AFa, L: Double;
     DeltaX, DeltaY: Integer;
     CurPts: array of TPoint;
     OldX, OldY: Integer; // 上一个蓄力点的计算坐标，供擦除用
     FMouseLeftDown: Boolean;
     procedure ReCreateBmp;
+    procedure InitConsts;
     procedure CalcConstants;
     procedure DrawAxies;
 
@@ -39,6 +65,8 @@ type
 
     procedure DrawHitLine(X, Y: Integer; Erase: Boolean);
     // 画弹道曲线或擦除弹道曲线，参数为计算坐标，画时会更新 OldX、OldY
+
+    procedure ParamsToUI;
   public
     { Public declarations }
   end;
@@ -56,9 +84,15 @@ const
 procedure TFormHit.FormCreate(Sender: TObject);
 begin
   ReCreateBmp;
+  InitConsts;
   CalcConstants;
   DrawAxies;
   SetLength(CurPts, 3);
+
+  FHitMode := hmCurve;
+  rgHitMode.ItemIndex := Ord(FHitMode);
+
+  ParamsToUI;
 end;
 
 procedure TFormHit.ReCreateBmp;
@@ -85,18 +119,11 @@ end;
 
 procedure TFormHit.CalcConstants;
 begin
-  R := 100;
-  H := 150;
-  W := 250;
-  D := 100;
-  P := 50;
-  SiTa := 75 * Pi / 180; // 左右七十五度
-
   L := Sqrt((D + P + H) * (D + P + H) + (W * W / 4));
   AFa := Arctan2(W, (D + P) * 2);
 
   DeltaX := FPaintBmp.Width div 2;
-  DeltaY := Trunc(FPaintBmp.Height - R * 1.5);
+  DeltaY := Trunc(FPaintBmp.Height - R - B);
   OldX := 0;
   OldY := 0;
 end;
@@ -112,6 +139,7 @@ begin
   begin
     Brush.Color := clWhite;
     Brush.Style := bsSolid;
+    Pen.Mode := pmCopy;
     FillRect(Rc);
 
     Pen.Width := 1;
@@ -209,6 +237,7 @@ end;
 procedure TFormHit.FormResize(Sender: TObject);
 begin
   ReCreateBmp;
+  InitConsts;
   CalcConstants;
   DrawAxies;
   pbHit.Invalidate;
@@ -240,7 +269,11 @@ begin
     r1 := R;
 
   // 一次线性映射至落地点的极坐标
-  St2 := - St1 * AFa / Sita;
+  if FHitMode = hmCurve then
+    St2 := - St1 * AFa / Sita
+  else
+    St2 := -St1;
+
   r2 := D + r1 * (L - D) / R;
 
   XL := Trunc(r2 * Sin(St2));
@@ -263,26 +296,31 @@ begin
     ConvertCalcXYToPaintXY(X, Y);
     LineTo(X, Y);    // 画到原点
 
-    Pen.Color := clTeal;
-    ConvertCalcXYToPaintXY(XK, YK);
+    if FHitMode = hmCurve then
+    begin
+      Pen.Color := clTeal;
+      ConvertCalcXYToPaintXY(XK, YK);
 
-    LineTo(XK, YK);  // 画到控制点
-
-    MoveTo(X, Y);    // 又回到原点
+      LineTo(XK, YK);  // 画到控制点
+      MoveTo(X, Y);    // 又回到原点
+    end;
 
     Pen.Color := clGray;
     ConvertCalcXYToPaintXY(XL, YL);
     LineTo(XL, YL);  // 画到落地点
 
-    CurPts[0].X := XK;
-    CurPts[0].Y := YK;
-    CurPts[1].X := XK;
-    CurPts[1].Y := YK;
-    CurPts[2].X := XL;
-    CurPts[2].Y := YL;
+    if FHitMode = hmCurve then
+    begin
+      CurPts[0].X := XK;
+      CurPts[0].Y := YK;
+      CurPts[1].X := XK;
+      CurPts[1].Y := YK;
+      CurPts[2].X := XL;
+      CurPts[2].Y := YL;
 
-    MoveTo(X, Y);    // 又回到原点
-    PolyBezierTo(CurPts); // 贝塞尔曲线这里需要至少四个点
+      MoveTo(X, Y);    // 又回到原点
+      PolyBezierTo(CurPts); // 贝塞尔曲线这里需要至少四个点
+    end;
   end;
 end;
 
@@ -329,6 +367,53 @@ begin
 //      pbHit.Invalidate;
 //    end;
 //  end;
+end;
+
+procedure TFormHit.rgHitModeClick(Sender: TObject);
+begin
+  FHitMode := THitMode(rgHitMode.ItemIndex);
+  InitConsts;
+  CalcConstants;
+  DrawAxies;
+  pbHit.Invalidate;
+end;
+
+procedure TFormHit.ParamsToUI;
+begin
+  edtR.Text := FloatToStr(R);
+  edtW.Text := FloatToStr(W);
+  edtH.Text := FloatToStr(H);
+  edtP.Text := FloatToStr(P);
+  edtSita.Text := FloatToStr(Sita * 180 / Pi);
+  edtD.Text := FloatToStr(D);
+end;
+
+procedure TFormHit.InitConsts;
+begin
+  R := StrToInt(edtR.Text); // 100;
+  H := StrToInt(edtH.Text); // 150;
+  if chkW.Checked then
+    W := pbHit.Width
+  else
+    W := StrToInt(edtW.Text);
+
+  D := StrToInt(edtD.Text); // 100;
+  P := StrToInt(edtP.Text); // 50
+
+  B := StrToInt(edtB.Text); // 50
+
+  if FHitMode = hmCurve then
+    SiTa := StrToInt(edtSita.Text) * Pi / 180  // 左右七十五度
+  else
+    Sita := Pi / 2;        // 左右九十度
+end;
+
+procedure TFormHit.btnApplyClick(Sender: TObject);
+begin
+  InitConsts;
+  CalcConstants;
+  DrawAxies;
+  pbHit.Invalidate;
 end;
 
 end.
