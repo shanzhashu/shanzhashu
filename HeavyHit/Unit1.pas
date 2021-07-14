@@ -34,7 +34,6 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure pbHitPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    procedure pbHitClick(Sender: TObject);
     procedure pbHitMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure pbHitMouseUp(Sender: TObject; Button: TMouseButton;
@@ -51,7 +50,9 @@ type
     AFa, L: Double;
     DeltaX, DeltaY: Integer;
     CurPts: array of TPoint;
-    OldX, OldY: Integer; // 上一个蓄力点的计算坐标，供擦除用
+    PathPts: array of TPoint;
+    TypePts: array of Byte;
+    // OldX, OldY: Integer; // 上一个蓄力点的计算坐标，供擦除用
     FMouseLeftDown: Boolean;
     procedure ReCreateBmp;
     procedure InitConsts;
@@ -63,8 +64,8 @@ type
     procedure ConvertCalcXYToPaintXY(var X, Y: Integer);
     // 绘制坐标系到计算坐标系
 
-    procedure DrawHitLine(X, Y: Integer; Erase: Boolean);
-    // 画弹道曲线或擦除弹道曲线，参数为计算坐标，画时会更新 OldX、OldY
+    procedure DrawHitLine(X, Y: Integer; Path: Boolean = False);
+    // 画弹道曲线或擦除弹道曲线，参数为计算坐标
 
     procedure ParamsToUI;
   public
@@ -108,6 +109,8 @@ end;
 procedure TFormHit.FormDestroy(Sender: TObject);
 begin
   SetLength(CurPts, 0);
+  SetLength(PathPts, 0);
+  SetLength(TypePts, 0);
   FPaintBmp.Free;
 end;
 
@@ -124,8 +127,6 @@ begin
 
   DeltaX := FPaintBmp.Width div 2;
   DeltaY := Trunc(FPaintBmp.Height - R - B);
-  OldX := 0;
-  OldY := 0;
 end;
 
 procedure TFormHit.DrawAxies;
@@ -241,21 +242,17 @@ begin
   CalcConstants;
   DrawAxies;
   pbHit.Invalidate;
+
+  ParamsToUI;
 end;
 
-procedure TFormHit.DrawHitLine(X, Y: Integer; Erase: Boolean);
+procedure TFormHit.DrawHitLine(X, Y: Integer; Path: Boolean);
 var
   St1, St2, r1, r2: Double;
   XL, YL, XK, YK: Integer;
 begin
   if Y >= 0 then
     Exit;
-
-  if not Erase then
-  begin
-    OldX := X;
-    OldY := Y;
-  end;
 
   // 计算蓄力点的极坐标
   St1 := ArcTan2(X, -Y);
@@ -285,7 +282,7 @@ begin
   with FPaintBmp.Canvas do
   begin
     Pen.Style := psSolid;
-    Pen.Mode := pmXor;
+    // Pen.Mode := pmXor;
 
     Pen.Color := clRed;
     ConvertCalcXYToPaintXY(X, Y);
@@ -305,12 +302,18 @@ begin
       MoveTo(X, Y);    // 又回到原点
     end;
 
+    if Path and (FHitMode = hmLine) then
+      BeginPath(Handle);
     Pen.Color := clGray;
     ConvertCalcXYToPaintXY(XL, YL);
     LineTo(XL, YL);  // 画到落地点
+    if Path and (FHitMode = hmLine) then // 创建原点到落地点的直线 Path
+      EndPath(Handle);
 
     if FHitMode = hmCurve then
     begin
+      if Path then
+        BeginPath(Handle);
       CurPts[0].X := XK;
       CurPts[0].Y := YK;
       CurPts[1].X := XK;
@@ -320,19 +323,26 @@ begin
 
       MoveTo(X, Y);    // 又回到原点
       PolyBezierTo(CurPts); // 贝塞尔曲线这里需要至少四个点
+      if Path then
+        EndPath(Handle);    // 创建原点到落地点的贝塞尔曲线 Path
+    end;
+
+    if Path then
+    begin
+      FlattenPath(Handle);
+
+      XK := 0;
+      YK := 0;
+      XL := GetPath(Handle, XK, YK, 0);
+
+      if XL > 0 then
+      begin
+        SetLength(PathPts, XL);
+        SetLength(TypePts, XL);
+        GetPath(Handle, PathPts[0], TypePts[0], XL);
+      end;
     end;
   end;
-end;
-
-procedure TFormHit.pbHitClick(Sender: TObject);
-var
-  Pt: TPoint;
-begin
-  Pt := pbHit.ScreenToClient(Mouse.CursorPos);
-  ConvertPaintXYToCalcXY(Pt.x, Pt.y);
-  DrawHitLine(OldX, OldY, True);
-  DrawHitLine(Pt.x, Pt.y, False);
-  pbHit.Invalidate;
 end;
 
 procedure TFormHit.pbHitMouseDown(Sender: TObject; Button: TMouseButton;
@@ -342,7 +352,8 @@ begin
   begin
     FMouseLeftDown := True;
     ConvertPaintXYToCalcXY(X, Y);
-    DrawHitLine(OldX, OldY, True);
+    DrawAxies;
+
     DrawHitLine(X, Y, False);
     pbHit.Invalidate;
   end;
@@ -350,23 +361,67 @@ end;
 
 procedure TFormHit.pbHitMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
+var
+  I, O, K: Integer;
+  X1, Y1, X2, Y2: Integer;
 begin
   if Button = mbLeft then
+  begin
     FMouseLeftDown := False;
+
+    ConvertPaintXYToCalcXY(X, Y);
+    DrawAxies;
+    DrawHitLine(X, Y, True);
+
+    // DrawHitLine 里拿到 Path 了
+    FPaintBmp.Canvas.Brush.Style := bsSolid;
+    FPaintBmp.Canvas.Brush.Color := clRed;
+    FPaintBmp.Canvas.Pen.Style := psClear;
+
+    if High(PathPts) = 1 then
+    begin
+      // 是直线，需要插值至 17 个
+      X1 := PathPts[0].X;
+      Y1 := PathPts[0].Y;
+      X2 := PathPts[1].X;
+      Y2 := PathPts[1].Y;
+
+      SetLength(PathPts, 17);
+      PathPts[Low(PathPts)].X := X1;
+      PathPts[Low(PathPts)].Y := Y1;
+      PathPts[High(PathPts)].X := X2;
+      PathPts[High(PathPts)].Y := Y2;
+
+      for I := Low(PathPts) + 1 to High(PathPts) - 1 do
+      begin
+        PathPts[I].X := X1 + Trunc(I * (X2 - X1) / (High(PathPts) - Low(PathPts)));
+        PathPts[I].Y := Y1 + Trunc(I * (Y2 - Y1) / (High(PathPts) - Low(PathPts)));
+      end;
+    end;
+
+    K := High(PathPts) div 2;
+    for I := Low(PathPts) to High(PathPts) do
+    begin
+      O := Abs(I - K); // 越靠起始结束处越大
+      O := 3 + Abs(K - O);      // 越靠起始结束处越小
+
+      FPaintBmp.Canvas.Ellipse(PathPts[I].X - O, PathPts[I].Y - O,
+        PathPts[I].X + O, PathPts[I].Y + O);
+    end;
+    pbHit.Invalidate;
+  end;
 end;
 
 procedure TFormHit.pbHitMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 begin
-//  if FMouseLeftDown then
-//  begin
-//    if (X <> OldX) or (Y <> OldY) then
-//    begin
-//      DrawHitLine(OldX, OldY, True);
-//      DrawHitLine(X, Y, False);
-//      pbHit.Invalidate;
-//    end;
-//  end;
+  if FMouseLeftDown then
+  begin
+    ConvertPaintXYToCalcXY(X, Y);
+    DrawAxies;
+    DrawHitLine(X, Y, False);
+    pbHit.Invalidate;
+  end;
 end;
 
 procedure TFormHit.rgHitModeClick(Sender: TObject);
