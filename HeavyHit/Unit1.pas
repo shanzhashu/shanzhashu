@@ -364,7 +364,7 @@ end;
 procedure TFormHit.pbHitMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
-  I, O, K: Integer;
+  I: Integer;
   X1, Y1, X2, Y2: Integer;
 begin
   if Button = mbLeft then
