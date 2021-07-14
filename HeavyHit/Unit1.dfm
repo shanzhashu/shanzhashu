@@ -182,4 +182,11 @@ object FormHit: TFormHit
       Text = '50'
     end
   end
+  object tmr1: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = tmr1Timer
+    Left = 448
+    Top = 344
+  end
 end

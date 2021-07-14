@@ -30,6 +30,7 @@ type
     btnApply: TButton;
     lblB: TLabel;
     edtB: TEdit;
+    tmr1: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure pbHitPaint(Sender: TObject);
@@ -42,6 +43,7 @@ type
       Y: Integer);
     procedure rgHitModeClick(Sender: TObject);
     procedure btnApplyClick(Sender: TObject);
+    procedure tmr1Timer(Sender: TObject);
   private
     FPaintBmp: TBitmap;
     FHitMode: THitMode;
@@ -52,7 +54,7 @@ type
     CurPts: array of TPoint;
     PathPts: array of TPoint;
     TypePts: array of Byte;
-    // OldX, OldY: Integer; // 上一个蓄力点的计算坐标，供擦除用
+    FAnmiCount: Integer;
     FMouseLeftDown: Boolean;
     procedure ReCreateBmp;
     procedure InitConsts;
@@ -370,8 +372,9 @@ begin
     FMouseLeftDown := False;
 
     ConvertPaintXYToCalcXY(X, Y);
-    DrawAxies;
+
     DrawHitLine(X, Y, True);
+    DrawAxies;
 
     // DrawHitLine 里拿到 Path 了
     FPaintBmp.Canvas.Brush.Style := bsSolid;
@@ -399,15 +402,9 @@ begin
       end;
     end;
 
-    K := High(PathPts) div 2;
-    for I := Low(PathPts) to High(PathPts) do
-    begin
-      O := Abs(I - K); // 越靠起始结束处越大
-      O := 3 + Abs(K - O);      // 越靠起始结束处越小
-
-      FPaintBmp.Canvas.Ellipse(PathPts[I].X - O, PathPts[I].Y - O,
-        PathPts[I].X + O, PathPts[I].Y + O);
-    end;
+    // 插值完毕，开始画动画
+    FAnmiCount := 0;
+    tmr1.Enabled := True;
     pbHit.Invalidate;
   end;
 end;
@@ -468,6 +465,28 @@ begin
   InitConsts;
   CalcConstants;
   DrawAxies;
+  pbHit.Invalidate;
+end;
+
+procedure TFormHit.tmr1Timer(Sender: TObject);
+var
+  I, K, O: Integer;
+begin
+  if FAnmiCount = High(PathPts) then
+  begin
+    tmr1.Enabled := False;
+    Exit;
+  end;
+
+  K := High(PathPts) div 2;
+  I := FAnmiCount;
+  Inc(FAnmiCount);
+
+  O := Abs(I - K); // 越靠起始结束处越大
+  O := 3 + Abs(K - O);      // 越靠起始结束处越小
+
+  FPaintBmp.Canvas.Ellipse(PathPts[I].X - O, PathPts[I].Y - O,
+    PathPts[I].X + O, PathPts[I].Y + O);
   pbHit.Invalidate;
 end;
 
