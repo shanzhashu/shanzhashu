@@ -1,9 +1,9 @@
 object FormLucky: TFormLucky
-  Left = 206
-  Top = 118
+  Left = 147
+  Top = 111
   BorderStyle = bsNone
-  ClientHeight = 536
-  ClientWidth = 971
+  ClientHeight = 622
+  ClientWidth = 1192
   Color = clBtnFace
   Font.Charset = GB2312_CHARSET
   Font.Color = clBlack
@@ -14,102 +14,188 @@ object FormLucky: TFormLucky
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  DesignSize = (
+    1192
+    622)
   PixelsPerInch = 96
   TextHeight = 12
   object img1: TImage
     Left = 0
     Top = 0
-    Width = 971
-    Height = 536
+    Width = 1192
+    Height = 622
     Align = alClient
     Stretch = True
+    Transparent = True
   end
   object lblCount: TLabel
-    Left = 320
-    Top = 16
-    Width = 12
-    Height = 12
+    Left = 648
+    Top = 37
+    Width = 21
+    Height = 28
     Caption = #25277
+    Font.Charset = GB2312_CHARSET
+    Font.Color = clWhite
+    Font.Height = -21
+    Font.Name = #24494#36719#38597#40657
+    Font.Style = []
+    ParentFont = False
+    Transparent = True
   end
   object lblRen: TLabel
-    Left = 424
-    Top = 24
-    Width = 12
-    Height = 12
+    Left = 776
+    Top = 36
+    Width = 21
+    Height = 28
     Caption = #20154
+    Font.Charset = GB2312_CHARSET
+    Font.Color = clWhite
+    Font.Height = -21
+    Font.Name = #24494#36719#38597#40657
+    Font.Style = []
+    ParentFont = False
+    Transparent = True
   end
   object btnClose: TSpeedButton
-    Left = 936
+    Left = 1157
     Top = 16
     Width = 23
     Height = 22
+    Anchors = [akTop, akRight]
     Caption = 'X'
     Flat = True
     Font.Charset = GB2312_CHARSET
     Font.Color = clBlack
-    Font.Height = -12
-    Font.Name = #23435#20307
+    Font.Height = -16
+    Font.Name = #24494#36719#38597#40657
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = False
     OnClick = btnCloseClick
   end
-  object edtCount: TEdit
-    Left = 344
+  object btnMax: TSpeedButton
+    Left = 1133
     Top = 16
+    Width = 23
+    Height = 22
+    Anchors = [akTop, akRight]
+    Caption = #21475
+    Flat = True
+    Font.Charset = GB2312_CHARSET
+    Font.Color = clBlack
+    Font.Height = -16
+    Font.Name = #24494#36719#38597#40657
+    Font.Style = [fsBold]
+    ParentFont = False
+    Transparent = False
+    OnClick = btnMaxClick
+  end
+  object btnMin: TSpeedButton
+    Left = 1109
+    Top = 16
+    Width = 23
+    Height = 22
+    Anchors = [akTop, akRight]
+    Caption = '-'
+    Flat = True
+    Font.Charset = GB2312_CHARSET
+    Font.Color = clBlack
+    Font.Height = -20
+    Font.Name = #24494#36719#38597#40657
+    Font.Style = [fsBold]
+    ParentFont = False
+    Transparent = False
+    OnClick = btnMinClick
+  end
+  object edtCount: TEdit
+    Left = 680
+    Top = 32
     Width = 57
-    Height = 20
-    TabOrder = 0
+    Height = 36
+    Font.Charset = GB2312_CHARSET
+    Font.Color = clBlack
+    Font.Height = -21
+    Font.Name = #24494#36719#38597#40657
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 1
     Text = '3'
   end
   object udCount: TUpDown
-    Left = 401
-    Top = 16
-    Width = 15
-    Height = 20
+    Left = 737
+    Top = 32
+    Width = 24
+    Height = 36
     Associate = edtCount
     Min = 1
     Position = 3
-    TabOrder = 1
-  end
-  object btnImport: TButton
-    Left = 16
-    Top = 16
-    Width = 121
-    Height = 25
-    Caption = #23548#20837#25277#22870#20154#20204
     TabOrder = 2
   end
-  object btnChou: TButton
-    Left = 552
-    Top = 24
-    Width = 217
-    Height = 25
-    Caption = #25277#65281#65281#65281#25277#65281#65281#65281#25277#65281#65281#65281
+  object btnImport: TButton
+    Left = 40
+    Top = 32
+    Width = 169
+    Height = 41
+    Caption = #23548#20837#25277#22870#20154#20204
+    Font.Charset = GB2312_CHARSET
+    Font.Color = clBlack
+    Font.Height = -21
+    Font.Name = #24494#36719#38597#40657
+    Font.Style = []
+    ParentFont = False
     TabOrder = 3
+    OnClick = btnImportClick
+  end
+  object btnChou: TButton
+    Left = 816
+    Top = 32
+    Width = 217
+    Height = 41
+    Caption = #24320#22987#33988#21147#8230#8230
+    Font.Charset = GB2312_CHARSET
+    Font.Color = clBlack
+    Font.Height = -21
+    Font.Name = #24494#36719#38597#40657
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 0
     OnClick = btnChouClick
   end
   object pnlScroll: TPanel
     Left = 40
-    Top = 72
-    Width = 881
-    Height = 97
+    Top = 96
+    Width = 1102
+    Height = 145
+    Anchors = [akLeft, akTop, akRight]
     BevelOuter = bvLowered
     Color = clCream
     Font.Charset = GB2312_CHARSET
     Font.Color = clBlack
     Font.Height = -29
-    Font.Name = #23435#20307
+    Font.Name = #24494#36719#38597#40657
     Font.Style = []
     ParentFont = False
     TabOrder = 4
   end
   object mmoResult: TMemo
-    Left = 48
-    Top = 368
-    Width = 873
-    Height = 113
+    Left = 40
+    Top = 360
+    Width = 1102
+    Height = 201
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Color = clInfoBk
+    Font.Charset = GB2312_CHARSET
+    Font.Color = clBlack
+    Font.Height = -21
+    Font.Name = #24494#36719#38597#40657
+    Font.Style = []
+    ParentFont = False
     ReadOnly = True
+    ScrollBars = ssVertical
     TabOrder = 5
+  end
+  object dlgOpen1: TOpenDialog
+    Left = 232
+    Top = 24
   end
 end

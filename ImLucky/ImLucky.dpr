@@ -2,8 +2,7 @@ program ImLucky;
 
 uses
   Forms,
-  UnitImLucky in 'UnitImLucky.pas' {FormLucky},
-  CnRandom in 'CnRandom.pas';
+  UnitImLucky in 'UnitImLucky.pas' {FormLucky};
 
 {$R *.res}
 
