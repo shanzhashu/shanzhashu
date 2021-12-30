@@ -195,9 +195,11 @@ begin
         PickLuckyNames(udCount.Position, Names);
         S := JoinNames(Names);
         Inc(FCount);
-        S := Format('第%d轮抽中%d人: ', [FCount, udCount.Position]) + S;
+        S := Format('第%d轮抽中%d人: ', [FCount, udCount.Position]) + #13#10 + S;
         LuckyLog(S);
+
         mmoResult.Lines.Add(S);
+        mmoResult.Lines.Add('');
       finally
         Names.Free;
       end;
@@ -377,8 +379,14 @@ var
 begin
   Result := '';
   if Names.Count > 0 then
+  begin
     for I := 0 to Names.Count - 1 do
+    begin
       Result := Result + '  ' + Names[I];
+      if (I > 0) and (I < Names.Count - 1) and ((I + 1) mod 3 = 0) then
+        Result := Result + #13#10;
+    end;
+  end;
 end;
 
 procedure TFormLucky.btnCloseClick(Sender: TObject);

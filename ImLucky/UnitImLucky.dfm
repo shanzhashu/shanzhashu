@@ -1,9 +1,8 @@
 object FormLucky: TFormLucky
   Left = 147
   Top = 111
-  BorderStyle = bsNone
-  ClientHeight = 622
-  ClientWidth = 1192
+  Width = 1200
+  Height = 649
   Color = clBtnFace
   Font.Charset = GB2312_CHARSET
   Font.Color = clBlack
@@ -71,6 +70,7 @@ object FormLucky: TFormLucky
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = False
+    Visible = False
     OnClick = btnCloseClick
   end
   object btnMax: TSpeedButton
@@ -88,6 +88,7 @@ object FormLucky: TFormLucky
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = False
+    Visible = False
     OnClick = btnMaxClick
   end
   object btnMin: TSpeedButton
@@ -105,6 +106,7 @@ object FormLucky: TFormLucky
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = False
+    Visible = False
     OnClick = btnMinClick
   end
   object edtCount: TEdit
@@ -165,7 +167,7 @@ object FormLucky: TFormLucky
     Left = 40
     Top = 96
     Width = 1102
-    Height = 145
+    Height = 177
     Anchors = [akLeft, akTop, akRight]
     BevelOuter = bvLowered
     Color = clCream
@@ -179,9 +181,9 @@ object FormLucky: TFormLucky
   end
   object mmoResult: TMemo
     Left = 40
-    Top = 360
+    Top = 280
     Width = 1102
-    Height = 201
+    Height = 281
     Anchors = [akLeft, akTop, akRight, akBottom]
     Color = clInfoBk
     Font.Charset = GB2312_CHARSET
