@@ -2,10 +2,6 @@
 header('Content-type:text/json');
 include("conn.php");
 
-function jsonRemoveUnicodeSequences($struct) {
-   return preg_replace("/\\\\u([a-f0-9]{4})/e", "iconv('UCS-4LE','UTF-8',pack('V', hexdec('U$1')))", json_encode($struct));
-}
-
 parse_str($_SERVER['QUERY_STRING'], $gets);
 //print_r($gets);
 
@@ -14,12 +10,12 @@ $session = str_replace('"', ' ', $session);
 
 $query = 'SELECT * FROM my_user WHERE f_key = \''.$session.'\'';
 
-$result = mysql_query($query);
+$result = mysqli_query($conn, $query);
 if (!$result) {
-  die('Query User Error.');
+  die('Query User Error.'.$query);
 }
 
-$row = mysql_fetch_array($result);
+$row = mysqli_fetch_array($result);
 if (!$row) {
   die('Query No Result.');
 }
@@ -47,21 +43,21 @@ if ($query_word) {
 $query = $query.' ORDER BY f_time DESC LIMIT '.$page.', 25';
 //echo $query;
 
-$result = mysql_query($query);
+$result = mysqli_query($conn,$query);
 if (!$result) {
   die('Query Content Error.');
 }
 
 $item = array();
 
-while($row = mysql_fetch_object($result))
+while($row = mysqli_fetch_object($result))
 {
   array_push($item, $row);
   //echo $row['f_content'];
 }
 
 // not good for chinese
-echo jsonRemoveUnicodeSequences($item);
+echo json_encode($item,JSON_UNESCAPED_UNICODE);
 //phpinfo();
 ?>
 

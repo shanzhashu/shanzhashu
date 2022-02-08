@@ -18,12 +18,12 @@ if (!$session) {
 
 $query = 'SELECT * FROM my_user WHERE f_key = \''.$session.'\'';
 
-$result = mysql_query($query);
+$result = mysqli_query($conn,$query);
 if (!$result) {
   die('Query User Error.');
 }
 
-$row = mysql_fetch_array($result);
+$row = mysqli_fetch_array($result);
 if (!$row) {
   die('Query No Result.');
 }
@@ -42,7 +42,7 @@ if (!$post) {
 // Now user and page got, do the query and output
 $ins = 'INSERT INTO my_content (f_id, f_time, f_name, f_content) VALUES (NULL , NOW( ) , \'' . $myuser . '\', \'' . ($post) . '\');';
 
-$result = mysql_query($ins);
+$result = mysqli_query($conn,$ins);
 if (!$result) {
   die('Query Content Error.');
 }

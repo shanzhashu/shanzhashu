@@ -16,7 +16,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-conn = pymysql.connect(host='localhost', user='root', passwd='Fyh43NpeTk', charset="utf8")
+conn = pymysql.connect(host='localhost', user='root', passwd='', charset="utf8")
 curs = conn.cursor() #cursorclass = pymysql.cursors.DictCursor)
 curs.execute("SET NAMES utf8")
 conn.select_db('mydata')
@@ -26,9 +26,11 @@ row = curs.fetchone()
 MaxId = row[0]
 print "Max Id got %d" % (MaxId);
 
+idpath=os.path.realpath(sys.path[0]) + '/id.txt'
+
 oldMaxId = 0;
-if os.path.exists("id.txt"):
-  lf = open('id.txt' )
+if os.path.exists(idpath):
+  lf = open(idpath)
   oldMaxId= int(lf.readline());
   print "Old Max Id %d" % (oldMaxId);
 
@@ -61,7 +63,7 @@ s=f.readlines()
 #print s
 f.close
 
-returnCode = os.system('/usr/bin/mysqldump -u root -pFyh43NpeTk mydata > ' + os.path.realpath(sys.path[0]) + '/mydata.sql')
+returnCode = os.system('/usr/bin/mysqldump -u root -p123 mydata > ' + os.path.realpath(sys.path[0]) + '/mydata.sql')
 print 'Dump reeturncode:', returnCode
 time.sleep(2)
 
@@ -111,7 +113,7 @@ print "Mail send Success. Record MaxId"
 os.remove(os.path.realpath(sys.path[0]) + "/message.txt")
 os.remove(os.path.realpath(sys.path[0]) + "/message.zip")
 
-lf = open('id.txt', 'w');
+lf = open(idpath, 'w');
 lf.write(str(MaxId));
 lf.close;
 print "Backup Success."
