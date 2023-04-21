@@ -1,0 +1,74 @@
+object FormDualMap: TFormDualMap
+  Left = 0
+  Top = 0
+  Caption = 'Dual Mapping'
+  ClientHeight = 480
+  ClientWidth = 781
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 0
+  object lblLeftPort: TLabel
+    Position.X = 16.000000000000000000
+    Position.Y = 16.000000000000000000
+    Size.Width = 89.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Left Port:'
+    TabOrder = 0
+  end
+  object lblRightPort: TLabel
+    Position.X = 392.000000000000000000
+    Position.Y = 16.000000000000000000
+    Text = 'Right Port:'
+    TabOrder = 2
+  end
+  object edtLeftPort: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 1
+    Text = '3857'
+    Position.X = 72.000000000000000000
+    Position.Y = 16.000000000000000000
+  end
+  object edtRightPort: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 3
+    Text = '5738'
+    Position.X = 456.000000000000000000
+    Position.Y = 16.000000000000000000
+  end
+  object btnMapping: TButton
+    Position.X = 680.000000000000000000
+    Position.Y = 16.000000000000000000
+    TabOrder = 4
+    Text = 'Start'
+    OnClick = btnMappingClick
+  end
+  object mmoLeft: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    ReadOnly = True
+    Position.X = 16.000000000000000000
+    Position.Y = 64.000000000000000000
+    Size.Width = 361.000000000000000000
+    Size.Height = 401.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 6
+    Viewport.Width = 357.000000000000000000
+    Viewport.Height = 397.000000000000000000
+  end
+  object mmoRight: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    ReadOnly = True
+    Position.X = 392.000000000000000000
+    Position.Y = 64.000000000000000000
+    Size.Width = 369.000000000000000000
+    Size.Height = 401.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 5
+    Viewport.Width = 365.000000000000000000
+    Viewport.Height = 397.000000000000000000
+  end
+end
