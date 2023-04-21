@@ -5,7 +5,8 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, CnThreadingTCPServer,
-  FMX.StdCtrls, FMX.Edit, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo;
+  FMX.StdCtrls, FMX.Edit, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo,
+  FMX.Memo.Types;
 
 type
   TFormDualMap = class(TForm)
@@ -24,6 +25,8 @@ type
   protected
     procedure LeftAccept(Sender: TObject; ClientSocket: TCnClientSocket);
     procedure RightAccept(Sender: TObject; ClientSocket: TCnClientSocket);
+    procedure LeftError(Sender: TObject; SocketError: Integer);
+    procedure RightError(Sender: TObject; SocketError: Integer);
   public
     procedure LogLeft(const Msg: string);
     procedure LogRight(const Msg: string);
@@ -76,6 +79,9 @@ begin
 
   FLeft.OnAccept := LeftAccept;
   FRight.OnAccept := RightAccept;
+
+  FLeft.OnError := LeftError;
+  FRight.OnError := RightError;
 end;
 
 procedure TFormDualMap.LeftAccept(Sender: TObject;
@@ -102,6 +108,7 @@ begin
     Exit;
   end;
 
+  LogLeft('桥接完成，开始转发');
   while FLeft.Active do
   begin
     Ret := ClientSocket.Recv(Buf, SizeOf(Buf));
@@ -128,11 +135,16 @@ begin
   end;
 end;
 
+procedure TFormDualMap.LeftError(Sender: TObject; SocketError: Integer);
+begin
+  LogLeft('*** Socket Error ***' + IntToStr(SocketError));
+end;
+
 procedure TFormDualMap.LogLeft(const Msg: string);
 begin
   TThread.Synchronize(nil, procedure
     begin
-      mmoLeft.Lines.Add(Msg);
+      mmoLeft.Lines.Add(FormatDateTime('hh:MM:ss', Time) + ' ' + Msg);
     end);
 end;
 
@@ -140,7 +152,7 @@ procedure TFormDualMap.LogRight(const Msg: string);
 begin
   TThread.Synchronize(nil, procedure
     begin
-      mmoRight.Lines.Add(Msg);
+      mmoRight.Lines.Add(FormatDateTime('hh:MM:ss', Time) + ' ' + Msg);
     end);
 end;
 
@@ -168,6 +180,7 @@ begin
     Exit;
   end;
 
+  LogRight('桥接完成，开始转发');
   while FRight.Active do
   begin
     Ret := ClientSocket.Recv(Buf, SizeOf(Buf));
@@ -192,6 +205,11 @@ begin
     else
       LogRight('数据发送到左边：' + IntToStr(Ret));
   end;
+end;
+
+procedure TFormDualMap.RightError(Sender: TObject; SocketError: Integer);
+begin
+  LogRight('*** Socket Error ***' + IntToStr(SocketError));
 end;
 
 end.

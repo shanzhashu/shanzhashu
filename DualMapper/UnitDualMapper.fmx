@@ -1,7 +1,7 @@
 object FormDualMap: TFormDualMap
   Left = 0
   Top = 0
-  Caption = 'Dual Mapping'
+  Caption = 'Dual Mapping 0.0.1'
   ClientHeight = 480
   ClientWidth = 781
   FormFactor.Width = 320
