@@ -20,7 +20,7 @@ type
     procedure btnMappingClick(Sender: TObject);
   private
     FLeft, FRight: TCnThreadingTCPServer;
-    FRunning: Boolean;
+    FRunning, FShutting: Boolean;
   protected
     procedure LeftAccept(Sender: TObject; ClientSocket: TCnClientSocket);
     procedure RightAccept(Sender: TObject; ClientSocket: TCnClientSocket);
@@ -43,8 +43,13 @@ procedure TFormDualMap.btnMappingClick(Sender: TObject);
 begin
   if FRunning then
   begin
-    FLeft.Active := False;
-    FRight.Active := False;
+    FShutting := True;
+    try
+      FLeft.Active := False;
+      FRight.Active := False;
+    finally
+      FShutting := False;
+    end;
     FRunning := False;
 
     btnMapping.Text := 'Start';
@@ -82,49 +87,49 @@ procedure TFormDualMap.LeftAccept(Sender: TObject;
   ClientSocket: TCnClientSocket);
 var
   Buf: array[0..BUF_SIZE - 1] of Byte;
-  Ret: Integer;
+  Ret1, Ret2: Integer;
 begin
   LogLeft('有左鱼上钩了。' + ClientSocket.RemoteIP + ': ' + IntToStr(ClientSocket.RemotePort));
   if FRight.ClientCount < 1 then
     LogLeft('等右鱼……');
 
   // 等待 FRight 有连接
-  while FLeft.Active do
+  while FLeft.Active and not FLeft.Closing do
   begin
     Sleep(0);
     if FRight.ClientCount = 1 then
       Break;
   end;
 
-  if not FLeft.Active then
+  if not FLeft.Active or FLeft.Closing then
   begin
     LogLeft('用户取消左边了');
     Exit;
   end;
 
-  while FLeft.Active do
+  while FLeft.Active and not FLeft.Closing do
   begin
-    Ret := ClientSocket.Recv(Buf, SizeOf(Buf));
-    if Ret <= 0 then
+    Ret1 := ClientSocket.Recv(Buf, SizeOf(Buf));
+    if Ret1 <= 0 then
     begin
       LogLeft('左边接收数据出错，停工');
       ClientSocket.Shutdown;
-      FRight.Close;
+      if not FShutting and not FRight.Closing then
+        FRight.Close;
       Exit;
-    end
-    else
-      LogLeft('左边接收到数据：' + IntToStr(Ret));
+    end;
 
-    Ret := FRight.Clients[0].Send(Buf, Ret);
-    if Ret <= 0 then
+    Ret2 := FRight.Clients[0].Send(Buf, Ret1);
+    if Ret2 <= 0 then
     begin
       LogLeft('数据发送到右边出错，停工');
       ClientSocket.Shutdown;
-      FRight.Close;
+      if not FShutting and not FRight.Closing then
+        FRight.Close;
       Exit;
-    end
-    else
-      LogLeft('数据发送到右边：' + IntToStr(Ret));
+    end;
+
+    LogLeft(Format('左边收到 %d 数据发送到右边 %d', [Ret1, Ret2]));
   end;
 end;
 
@@ -148,49 +153,49 @@ procedure TFormDualMap.RightAccept(Sender: TObject;
   ClientSocket: TCnClientSocket);
 var
   Buf: array[0..BUF_SIZE - 1] of Byte;
-  Ret: Integer;
+  Ret1, Ret2: Integer;
 begin
   // 等待 FLeft 有连接
   LogRight('有右鱼上钩了。' + ClientSocket.RemoteIP + ': ' + IntToStr(ClientSocket.RemotePort));
   if FLeft.ClientCount < 1 then
     LogRight('等左鱼……');
 
-  while FRight.Active do
+  while FRight.Active and not FRight.Closing do
   begin
     Sleep(0);
     if FLeft.ClientCount = 1 then
       Break;
   end;
 
-  if not FRight.Active then
+  if not FRight.Active or FRight.Closing then
   begin
     LogLeft('用户取消右边了');
     Exit;
   end;
 
-  while FRight.Active do
+  while FRight.Active and not FRight.Closing do
   begin
-    Ret := ClientSocket.Recv(Buf, SizeOf(Buf));
-    if Ret <= 0 then
+    Ret1 := ClientSocket.Recv(Buf, SizeOf(Buf));
+    if Ret1 <= 0 then
     begin
       LogRight('右边接收数据出错，停工');
       ClientSocket.Shutdown;
-      FLeft.Close;
+      if not FShutting and not FLeft.Closing then
+        FLeft.Close;
       Exit;
-    end
-    else
-      LogRight('右边接收到数据：' + IntToStr(Ret));
+    end;
 
-    Ret := FLeft.Clients[0].Send(Buf, Ret);
-    if Ret <= 0 then
+    Ret2 := FLeft.Clients[0].Send(Buf, Ret1);
+    if Ret2 <= 0 then
     begin
       LogRight('数据发送到左边出错，停工');
       ClientSocket.Shutdown;
-      FLeft.Close;
+      if not FShutting and not FLeft.Closing then
+        FLeft.Close;
       Exit;
-    end
-    else
-      LogRight('数据发送到左边：' + IntToStr(Ret));
+    end;
+
+    LogRight(Format('右边收到 %d 数据发送到左边 %d', [Ret1, Ret2]));
   end;
 end;
 
