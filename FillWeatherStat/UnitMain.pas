@@ -13,7 +13,6 @@ type
     pgcMain: TPageControl;
     ts1: TTabSheet;
     fcpSheet1: TFlexCelPreviewer;
-    rg1HeGe: TRadioGroup;
     lbl1BiaoZhunQi: TLabel;
     cbb1BiaoZhunQi: TComboBox;
     edt1QiWen: TEdit;
@@ -26,6 +25,12 @@ type
     dlgSave1: TSaveDialog;
     btnToggleVisible: TSpeedButton;
     img1bk: TImage;
+    cbb1HeGe: TComboBox;
+    edt1JiaoZhunShiJian: TEdit;
+    cbb1BeiHeCha: TComboBox;
+    lbl1BeiHeCha: TLabel;
+    cbb1WaiGuanHeGe: TComboBox;
+    cbb1FuHeYaoQiu: TComboBox;
     procedure FormCreate(Sender: TObject);
     procedure btnPDFClick(Sender: TObject);
     procedure edtChange1(Sender: TObject);
@@ -34,7 +39,6 @@ type
     FFileName: string;
     FXls: TExcelFile;
     FImgExport: TFlexCelImgExport;
-    procedure CreateComponents;
   public
     procedure UpdateSheet1; // 温度
     procedure UpdateSheet2; // 湿度
@@ -53,6 +57,7 @@ implementation
 
 const
   S_F_XLS = 'DY.xlsx';
+  S_ARR_HEGE: array[0..1] of string = ('合格', '不合格');
 
 procedure TFormMain.btnPDFClick(Sender: TObject);
 var
@@ -79,17 +84,11 @@ begin
   begin
     if (fcpSheet1.Controls[I] is TEdit) or (fcpSheet1.Controls[I] is TComboBox) or
       (fcpSheet1.Controls[I] is TRadioGroup) then
+    begin
       fcpSheet1.Controls[I].Visible := not fcpSheet1.Controls[I].Visible;
+    end;
   end;
-
 end;
-
-procedure TFormMain.CreateComponents;
-begin
-//  //FcpSheet1
-//  FcpSheet1 := TFlexCelPreviewer.Create(Self);
-end;
-
 
 procedure TFormMain.edtChange1(Sender: TObject);
 begin
@@ -98,8 +97,6 @@ end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  CreateComponents;
-
   FFileName := ExtractFilePath(Application.ExeName) + S_F_XLS;
   if not FileExists(FFileName) then
     FFileName := ExtractFilePath(Application.ExeName) + '..\..\' + S_F_XLS;
@@ -116,6 +113,8 @@ begin
   FcpSheet1.Document := FImgExport;
 
   FcpSheet1.InvalidatePreview;
+
+  edt1JiaoZhunShiJian.Text := FormatDateTime('yyyy年MM月dd日', Now());
 end;
 
 procedure TFormMain.UpdateSheet1;
@@ -126,13 +125,23 @@ begin
     [edt1QiWen.Text, edt1ShiDu.Text, edt1FengSu.Text]);
   FXls.SetCellValue(4, 2, S);
 
-  if rg1HeGe.ItemIndex = 0 then
+  if cbb1WaiGuanHeGe.ItemIndex = 0 then
     S := Format('%s合格                  %s 不合格', [#$2611, #$25A1])
   else
     S := Format('%s合格                  %s 不合格', [#$25A1, #$2611]);
   FXls.SetCellValue(8, 2, S);
 
+  FXls.SetCellValue(5, 2, edt1KaiShiShiJian.Text);
+  FXls.SetCellValue(5, 5, edt1JieShuShiJian.Text);
 
+  FXls.SetCellValue(19, 3, S_ARR_HEGE[cbb1HeGe.ItemIndex]);
+  if cbb1FuHeYaoQiu.ItemIndex = 0 then
+    S := Format('%s 是        %s 否', [#$2611, #$25A1])
+  else
+    S := Format('%s 是        %s 否', [#$25A1, #$2611]);
+  FXls.SetCellValue(21, 3, S);
+
+  FXls.SetCellValue(22, 5, edt1JiaoZhunShiJian.Text);
   //FXls.Save(FFileName);
   FcpSheet1.InvalidatePreview;
 end;

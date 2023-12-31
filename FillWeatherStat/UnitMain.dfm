@@ -4611,21 +4611,13 @@ object FormMain: TFormMain
           Visible = False
           ExplicitTop = -1
         end
-        object rg1HeGe: TRadioGroup
-          Left = 198
-          Top = 389
-          Width = 345
-          Height = 28
-          Color = clWhite
-          Columns = 2
-          ItemIndex = 0
-          Items.Strings = (
-            #21512#26684
-            #19981#21512#26684)
-          ParentBackground = False
-          ParentColor = False
-          TabOrder = 0
-          OnClick = edtChange1
+        object lbl1BeiHeCha: TLabel
+          Left = 331
+          Top = 176
+          Width = 72
+          Height = 12
+          Caption = #34987#26680#26597#22120#20855#65306
+          Transparent = True
         end
         object cbb1BiaoZhunQi: TComboBox
           Left = 198
@@ -4633,7 +4625,8 @@ object FormMain: TFormMain
           Width = 115
           Height = 20
           Style = csDropDownList
-          TabOrder = 1
+          TabOrder = 0
+          OnChange = edtChange1
         end
         object edt1QiWen: TEdit
           Left = 226
@@ -4643,7 +4636,7 @@ object FormMain: TFormMain
           BevelEdges = []
           BevelInner = bvNone
           BevelOuter = bvNone
-          TabOrder = 2
+          TabOrder = 1
           Text = '23'
           OnChange = edtChange1
         end
@@ -4655,7 +4648,7 @@ object FormMain: TFormMain
           BevelEdges = []
           BevelInner = bvNone
           BevelOuter = bvNone
-          TabOrder = 3
+          TabOrder = 2
           Text = '42'
           OnChange = edtChange1
         end
@@ -4667,7 +4660,7 @@ object FormMain: TFormMain
           BevelEdges = []
           BevelInner = bvNone
           BevelOuter = bvNone
-          TabOrder = 4
+          TabOrder = 3
           Text = '2.0'
           OnChange = edtChange1
         end
@@ -4679,8 +4672,9 @@ object FormMain: TFormMain
           BevelEdges = []
           BevelInner = bvNone
           BevelOuter = bvNone
-          TabOrder = 5
+          TabOrder = 4
           Text = '13:10'
+          OnChange = edtChange1
         end
         object edt1JieShuShiJian: TEdit
           Left = 459
@@ -4690,15 +4684,75 @@ object FormMain: TFormMain
           BevelEdges = []
           BevelInner = bvNone
           BevelOuter = bvNone
-          TabOrder = 6
+          TabOrder = 5
           Text = '15:10'
+          OnChange = edtChange1
+        end
+        object cbb1HeGe: TComboBox
+          Left = 216
+          Top = 618
+          Width = 81
+          Height = 20
+          Style = csDropDownList
+          ItemIndex = 0
+          TabOrder = 6
+          Text = #21512#26684
+          OnChange = edtChange1
+          Items.Strings = (
+            #21512#26684
+            #19981#21512#26684)
+        end
+        object edt1JiaoZhunShiJian: TEdit
+          Left = 418
+          Top = 686
+          Width = 121
+          Height = 20
+          TabOrder = 7
+          Text = '2023'#24180'12'#26376'31'#26085
+        end
+        object cbb1BeiHeCha: TComboBox
+          Left = 398
+          Top = 169
+          Width = 115
+          Height = 20
+          Style = csDropDownList
+          TabOrder = 8
+          OnChange = edtChange1
+        end
+        object cbb1WaiGuanHeGe: TComboBox
+          Left = 120
+          Top = 397
+          Width = 81
+          Height = 20
+          Style = csDropDownList
+          ItemIndex = 0
+          TabOrder = 9
+          Text = #21512#26684
+          OnChange = edtChange1
+          Items.Strings = (
+            #21512#26684
+            #19981#21512#26684)
+        end
+        object cbb1FuHeYaoQiu: TComboBox
+          Left = 216
+          Top = 664
+          Width = 65
+          Height = 20
+          Style = csDropDownList
+          ItemIndex = 0
+          TabOrder = 10
+          Text = #26159
+          OnChange = edtChange1
+          Items.Strings = (
+            #26159
+            #21542)
         end
       end
     end
   end
   object pnlMain: TPanel
     Left = 422
-    Top = 810
+    Top = 806
     Width = 185
     Height = 20
     BevelOuter = bvNone
@@ -4708,6 +4762,19 @@ object FormMain: TFormMain
       Top = 0
       Width = 23
       Height = 22
+      Hint = #36755#20986#25104'PDF'#25991#20214
+      Flat = True
+      Glyph.Data = {
+        F6000000424DF600000000000000760000002800000010000000100000000100
+        0400000000008000000000000000000000001000000000000000000000000000
+        8000008000000080800080000000800080008080000080808000C0C0C0000000
+        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00FFFFFFFFFFFF
+        FFFFFFFF9999999999FFFFF98FFFFFFFF89FFFF9FFFFFFFFFF9FFFF9F897FFFF
+        FF9FFFF9F989FF899F9FFFF9F899999F9F9FFFF9FFF9F9998F9FFFF9FFF899FF
+        FF9FFFF9FFF999FFFF9FFFF9FFF989FFFF9FFFF9FFF898FFFF9FFFF9FFFFFFFF
+        F89FFFF9FFFFFFFF89FFFFF98FFFFFF898FFFFFF999999998FFF}
+      ParentShowHint = False
+      ShowHint = True
       OnClick = btnPDFClick
     end
     object btnToggleVisible: TSpeedButton
@@ -4715,6 +4782,19 @@ object FormMain: TFormMain
       Top = 0
       Width = 23
       Height = 22
+      Hint = #20999#25442#26174#31034#27169#24335
+      Flat = True
+      Glyph.Data = {
+        F6000000424DF600000000000000760000002800000010000000100000000100
+        0400000000008000000000000000000000001000000000000000000000000000
+        8000008000000080800080000000800080008080000080808000C0C0C0000000
+        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00FFFFFFF33FFF
+        FFFFFFFFFF3333FFFFFFFFFF33BBB333FFFFFFF3BBBBBBB33FFFFF3BB33BB33B
+        33FFF3BF3F3BB3F3B33FF3F3FF3BB3FF3B3FFF3FFF3BB3FFF3FFFFFFFF3BB3FF
+        FFFFFFFFFF3BB3FFFFFFFFFFFF3BB3FFFFFFFFFFF3FBFB3FFFFFFFFF3FB33BB3
+        FFFFFFFFF3FBFB3FFFFFFFFFFF3FB3FFFFFFFFFFFFF33FFFFFFF}
+      ParentShowHint = False
+      ShowHint = True
       OnClick = btnToggleVisibleClick
     end
   end
