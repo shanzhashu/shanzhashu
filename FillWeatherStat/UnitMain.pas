@@ -33,6 +33,8 @@ type
     cbb1WaiGuanHeGe: TComboBox;
     cbb1FuHeYaoQiu: TComboBox;
     btnSettings: TSpeedButton;
+    cbb1QuZhanHao: TComboBox;
+    lbl1QuZhanHao: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure btnPDFClick(Sender: TObject);
     procedure edtChange1(Sender: TObject);
@@ -43,6 +45,9 @@ type
     FSettingFile: string;
     FXls: TExcelFile;
     FImgExport: TFlexCelImgExport;
+
+    F1BiaoZhunQiNames, F1BiaoZhunQiValues: TStringList;
+    F1BeiHeChaQiJuNames, F1BeiHeChaQiJuValues: TStringList;
   public
     procedure UpdateSheet1; // 温度
     procedure UpdateSheet2; // 湿度
@@ -60,7 +65,7 @@ implementation
 {$R *.dfm}
 
 uses
-  UnitSettingForm, UnitSetting;
+  UnitSettingForm, UnitSetting, CnJSON;
 
 const
   S_F_XLS = 'DY.xlsx';
@@ -115,18 +120,23 @@ end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
+  // 初始化选项文件
   FSettingFile := ExtractFilePath(Application.ExeName) + S_F_SET;
   if FileExists(FSettingFile) then
+  begin
     FWSetting.LoadFromXML(FSettingFile);
+    TCnJSONWriter.SaveToFile(FWSetting, FSettingFile + 'json');
+  end;
 
+  // 初始化 Excel 文件
   FFileName := ExtractFilePath(Application.ExeName) + S_F_XLS;
   if not FileExists(FFileName) then
     FFileName := ExtractFilePath(Application.ExeName) + '..\..\' + S_F_XLS;
 
+  // 打开 Excel 文件并加载显示
   FXls := TXlsFile.Create(True);
 
   FXls.Open(FFileName);
-  // ShowMessage(IntToStr(FXls.ActiveSheet) + FXls.ActiveSheetByName);
   FXls.ActiveSheet := 1;
   Caption := FXls.ActiveSheetByName;
 
@@ -134,9 +144,21 @@ begin
   FImgExport.AllVisibleSheets := False;
   FcpSheet1.Document := FImgExport;
 
+  // 显示打印底图
   FcpSheet1.InvalidatePreview;
 
+  // 初始化填写元素，后面分页来
   edt1JiaoZhunShiJian.Text := FormatDateTime('yyyy年MM月dd日', Now());
+
+  F1BiaoZhunQiNames := TStringList.Create;
+  F1BiaoZhunQiValues := TStringList.Create;
+  FWSetting.GetType('标准器', F1BiaoZhunQiNames, F1BiaoZhunQiValues);
+  cbb1BiaoZhunQi.Items.Assign(F1BiaoZhunQiNames);
+
+  F1BeiHeChaQiJuNames := TStringList.Create;
+  F1BeiHeChaQiJuValues := TStringList.Create;
+  FWSetting.GetType('被核查器具', F1BeiHeChaQiJuNames, F1BeiHeChaQiJuValues);
+  cbb1BeiHeCha.Items.Assign(F1BeiHeChaQiJuNames);
 end;
 
 procedure TFormMain.UpdateSheet1;
@@ -155,6 +177,12 @@ begin
 
   FXls.SetCellValue(5, 2, edt1KaiShiShiJian.Text);
   FXls.SetCellValue(5, 5, edt1JieShuShiJian.Text);
+
+  if (cbb1BiaoZhunQi.ItemIndex >= 0) and (cbb1BiaoZhunQi.ItemIndex < F1BiaoZhunQiValues.Count) then
+    FXls.SetCellValue(7, 2, F1BiaoZhunQiValues[cbb1BiaoZhunQi.ItemIndex]);
+
+  if (cbb1BeiHeCha.ItemIndex >= 0) and (cbb1BeiHeCha.ItemIndex < F1BeiHeChaQiJuValues.Count) then
+    FXls.SetCellValue(7, 4, F1BeiHeChaQiJuValues[cbb1BeiHeCha.ItemIndex]);
 
   FXls.SetCellValue(19, 3, S_ARR_HEGE[cbb1HeGe.ItemIndex]);
   if cbb1FuHeYaoQiu.ItemIndex = 0 then

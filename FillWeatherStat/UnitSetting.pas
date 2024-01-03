@@ -3,7 +3,8 @@ unit UnitSetting;
 interface
 
 uses
-  System.SysUtils, System.Classes, OmniXML, OmniXMLUtils, OmniXMLPersistent;
+  System.SysUtils, System.Classes, OmniXML, OmniXMLUtils, OmniXMLPersistent,
+  CnJSON;
 
 type
   TFWSettingItem = class(TCollectionItem)
@@ -19,6 +20,7 @@ type
 
   TFWSettingCollectin = class(TCollection)
   private
+    FSettingVersion: Integer;
   public
     constructor Create; reintroduce;
     destructor Destroy; override;
@@ -29,6 +31,8 @@ type
 
     procedure SaveToXML(const XMLFile: string);
     procedure LoadFromXML(const XMLFile: string);
+  published
+    property SettingVersion: Integer read FSettingVersion write FSettingVersion;
   end;
 
 var
@@ -41,6 +45,7 @@ implementation
 constructor TFWSettingCollectin.Create;
 begin
   inherited Create(TFWSettingItem);
+  FSettingVersion := 1;
 end;
 
 procedure TFWSettingCollectin.DeleteType(const AType: string);

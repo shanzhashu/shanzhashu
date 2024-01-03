@@ -106,6 +106,7 @@ object FrameSetting: TFrameSetting
     ItemHeight = 13
     TabOrder = 0
     OnClick = lstNamesClick
+    OnDblClick = lstNamesDblClick
   end
   object mmoValues: TMemo
     Left = 168

@@ -4634,6 +4634,14 @@ object FormMain: TFormMain
             Caption = #34987#26680#26597#22120#20855#65306
             Transparent = True
           end
+          object lbl1QuZhanHao: TLabel
+            Left = 328
+            Top = 376
+            Width = 48
+            Height = 12
+            Caption = #21306#31449#21495#65306
+            Transparent = True
+          end
           object cbb1BiaoZhunQi: TComboBox
             Left = 198
             Top = 169
@@ -4652,7 +4660,7 @@ object FormMain: TFormMain
             BevelInner = bvNone
             BevelOuter = bvNone
             TabOrder = 1
-            Text = '23'
+            Text = '23.9'
             OnChange = edtChange1
           end
           object edt1ShiDu: TEdit
@@ -4736,7 +4744,7 @@ object FormMain: TFormMain
           end
           object cbb1WaiGuanHeGe: TComboBox
             Left = 128
-            Top = 397
+            Top = 396
             Width = 81
             Height = 20
             Style = csDropDownList
@@ -4761,6 +4769,16 @@ object FormMain: TFormMain
             Items.Strings = (
               #26159
               #21542)
+          end
+          object cbb1QuZhanHao: TComboBox
+            Left = 382
+            Top = 373
+            Width = 82
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 11
+            Items.Strings = (
+              #31449#28857)
           end
         end
       end

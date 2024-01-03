@@ -19,6 +19,7 @@ type
     procedure btnAddClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
     procedure mmoValuesChange(Sender: TObject);
+    procedure lstNamesDblClick(Sender: TObject);
   private
     FItemRefs: TObjectList;
     FSettingType: string;
@@ -152,6 +153,27 @@ begin
     Item := lstNames.Items.Objects[lstNames.ItemIndex] as TFWSettingItem;
     if Item <> nil then
       mmoValues.Lines.Text := Item.SettingValue;
+  end;
+end;
+
+procedure TFrameSetting.lstNamesDblClick(Sender: TObject);
+var
+  Item: TFWSettingItem;
+  S: string;
+begin
+  if lstNames.ItemIndex >= 0 then
+  begin
+    Item := lstNames.Items.Objects[lstNames.ItemIndex] as TFWSettingItem;
+    if Item <> nil then
+    begin
+      S := InputBox('ÐÞ¸Ä', 'ÐÂÃû³Æ£º', Item.SettingName);
+      if S <> '' then
+      begin
+        Item.SettingName := S;
+        UpdateFromOrigin;
+        ShowContents;
+      end;
+    end;
   end;
 end;
 
