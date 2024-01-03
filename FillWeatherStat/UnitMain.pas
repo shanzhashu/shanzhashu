@@ -37,8 +37,10 @@ type
     procedure btnPDFClick(Sender: TObject);
     procedure edtChange1(Sender: TObject);
     procedure btnToggleVisibleClick(Sender: TObject);
+    procedure btnSettingsClick(Sender: TObject);
   private
     FFileName: string;
+    FSettingFile: string;
     FXls: TExcelFile;
     FImgExport: TFlexCelImgExport;
   public
@@ -57,8 +59,12 @@ implementation
 
 {$R *.dfm}
 
+uses
+  UnitSettingForm, UnitSetting;
+
 const
   S_F_XLS = 'DY.xlsx';
+  S_F_SET = 'Setting.xml';
   S_ARR_HEGE: array[0..1] of string = ('合格', '不合格');
 
 procedure TFormMain.btnPDFClick(Sender: TObject);
@@ -75,6 +81,16 @@ begin
       Pdf.Free;
       Screen.Cursor := crDefault;
     end;
+  end;
+end;
+
+procedure TFormMain.btnSettingsClick(Sender: TObject);
+begin
+  with TFormSetting.Create(nil) do
+  begin
+    ShowModal;
+    FWSetting.SaveToXML(FSettingFile);
+    Free;
   end;
 end;
 
@@ -99,6 +115,10 @@ end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
+  FSettingFile := ExtractFilePath(Application.ExeName) + S_F_SET;
+  if FileExists(FSettingFile) then
+    FWSetting.LoadFromXML(FSettingFile);
+
   FFileName := ExtractFilePath(Application.ExeName) + S_F_XLS;
   if not FileExists(FFileName) then
     FFileName := ExtractFilePath(Application.ExeName) + '..\..\' + S_F_XLS;

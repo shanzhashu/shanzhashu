@@ -2,7 +2,10 @@ program FillExcel;
 
 uses
   Vcl.Forms,
-  UnitMain in 'UnitMain.pas' {FormMain};
+  UnitMain in 'UnitMain.pas' {FormMain},
+  UnitSetting in 'UnitSetting.pas',
+  UnitFrame in 'UnitFrame.pas' {FrameSetting: TFrame},
+  UnitSettingForm in 'UnitSettingForm.pas' {FormSetting};
 
 {$R *.res}
 

@@ -28,12 +28,8 @@ object FormMain: TFormMain
     Align = alClient
     TabOrder = 0
     TabPosition = tpBottom
-    ExplicitWidth = 633
-    ExplicitHeight = 826
     object ts1: TTabSheet
       Caption = #28201#24230
-      ExplicitWidth = 625
-      ExplicitHeight = 800
       object ScrollBox1: TScrollBox
         Left = 0
         Top = 0
@@ -45,7 +41,6 @@ object FormMain: TFormMain
         BevelOuter = bvNone
         BorderStyle = bsNone
         TabOrder = 0
-        ExplicitWidth = 623
         object fcpSheet1: TFlexCelPreviewer
           Left = 0
           Top = -2
@@ -4779,10 +4774,9 @@ object FormMain: TFormMain
     Anchors = [akRight, akBottom]
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitLeft = 422
     object btnPDF: TSpeedButton
       Left = 16
-      Top = 0
+      Top = -2
       Width = 23
       Height = 22
       Hint = #36755#20986#25104'PDF'#25991#20214
@@ -4802,7 +4796,7 @@ object FormMain: TFormMain
     end
     object btnToggleVisible: TSpeedButton
       Left = 45
-      Top = 0
+      Top = -2
       Width = 23
       Height = 22
       Hint = #20999#25442#26174#31034#27169#24335
@@ -4838,6 +4832,7 @@ object FormMain: TFormMain
         B33FFF333838B38333FFFFF3FF3BB3FF3FFFFFFFFF3333FFFFFF}
       ParentShowHint = False
       ShowHint = True
+      OnClick = btnSettingsClick
     end
   end
   object dlgSave1: TSaveDialog
