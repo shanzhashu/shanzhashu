@@ -1,7 +1,7 @@
 object FormMain: TFormMain
   Left = 0
   Top = 0
-  ClientHeight = 824
+  ClientHeight = 828
   ClientWidth = 629
   Color = clBtnFace
   Constraints.MaxWidth = 637
@@ -16,14 +16,14 @@ object FormMain: TFormMain
   OnCreate = FormCreate
   DesignSize = (
     629
-    824)
+    828)
   PixelsPerInch = 96
   TextHeight = 12
   object pgcMain: TPageControl
     Left = 0
     Top = 0
     Width = 629
-    Height = 824
+    Height = 828
     ActivePage = ts1
     Align = alClient
     TabOrder = 0
@@ -34,24 +34,28 @@ object FormMain: TFormMain
         Left = 0
         Top = 0
         Width = 621
-        Height = 798
+        Height = 802
         Align = alClient
         BevelInner = bvNone
         BevelOuter = bvNone
         BorderStyle = bsNone
         TabOrder = 0
+        DesignSize = (
+          621
+          802)
         object fcpSheet1: TFlexCelPreviewer
           Left = 0
           Top = 0
           Width = 603
-          Height = 796
+          Height = 800
           Margins.Top = 1
           HorzScrollBar.Range = 20
           HorzScrollBar.Tracking = True
-          VertScrollBar.Range = 806
+          VertScrollBar.Range = 810
           VertScrollBar.Tracking = True
           VertScrollBar.Visible = False
           Zoom = 0.700000000000000000
+          Anchors = [akLeft, akTop, akBottom]
           TabOrder = 0
           object lbl1BiaoZhunQi: TLabel
             Left = 144
@@ -65,7 +69,7 @@ object FormMain: TFormMain
             Left = 0
             Top = 0
             Width = 603
-            Height = 806
+            Height = 810
             Align = alClient
             Picture.Data = {
               0A544A504547496D61676516390200FFD8FFE000104A46494600010200006400
@@ -4795,7 +4799,7 @@ object FormMain: TFormMain
   end
   object pnlMain: TPanel
     Left = 400
-    Top = 806
+    Top = 810
     Width = 185
     Height = 20
     Anchors = [akRight, akBottom]

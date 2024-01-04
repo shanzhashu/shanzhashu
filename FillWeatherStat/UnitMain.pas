@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, VCL.FlexCel.Core, FlexCel.XlsAdapter, FlexCel.Pdf,
-  FlexCel.Render, FlexCel.Preview, Vcl.ComCtrls, Vcl.Imaging.pngimage,
+  FlexCel.Render, FlexCel.Preview, Vcl.ComCtrls, Vcl.Imaging.pngimage, _UMiscClasses.TImageProperties,
   Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.jpeg, Vcl.Buttons;
 
 type
@@ -42,14 +42,19 @@ type
     procedure btnToggleVisibleClick(Sender: TObject);
     procedure btnSettingsClick(Sender: TObject);
   private
-    FFileName: string;
+    FXlsFile: string;
     FSettingFile: string;
+    FStampFile: string;
+    FStampIndex: Integer;
+    FStampAdded: Boolean;
     FXls: TExcelFile;
     FImgExport: TFlexCelImgExport;
 
     F1BiaoZhunQiNames, F1BiaoZhunQiValues: TStringList;
     F1BeiHeChaQiJuNames, F1BeiHeChaQiJuValues: TStringList;
     F1HeChaYiJu, F1JiaoZhun, F1HeYan: TStringList;
+  protected
+    procedure InsertStamp;
   public
     procedure UpdateSheet1; // 温度
     procedure UpdateSheet2; // 湿度
@@ -72,6 +77,7 @@ uses
 const
   S_F_XLS = 'DY.xlsx';
   S_F_SET = 'Setting.xml';
+  S_F_STAMP = 'stamp.png';
   S_ARR_HEGE: array[0..1] of string = ('合格', '不合格');
 
 procedure TFormMain.btnPDFClick(Sender: TObject);
@@ -80,6 +86,8 @@ var
 begin
   if dlgSave1.Execute then
   begin
+    InsertStamp;
+
     Pdf := TFlexCelPdfExport.Create(FXls, True);
     Screen.Cursor := crHourGlass;
     try
@@ -104,6 +112,8 @@ end;
 procedure TFormMain.btnToggleVisibleClick(Sender: TObject);
 var
   I: Integer;
+  B: Boolean;
+  MP: IImageProperties;
 begin
   for I := 0 to fcpSheet1.ControlCount - 1 do
   begin
@@ -111,7 +121,22 @@ begin
       (fcpSheet1.Controls[I] is TRadioGroup) or (fcpSheet1.Controls[I] is TLabel) then
     begin
       fcpSheet1.Controls[I].Visible := not fcpSheet1.Controls[I].Visible;
+      B := fcpSheet1.Controls[I].Visible;
     end;
+  end;
+
+  if B then
+  begin
+    // 删除图像
+    FXls.DeleteImage(FStampIndex);
+    Dec(FStampIndex);
+    FStampAdded := False;
+
+    fcpSheet1.InvalidatePreview;
+  end
+  else
+  begin
+    InsertStamp;
   end;
 end;
 
@@ -130,15 +155,18 @@ begin
     TCnJSONWriter.SaveToFile(FWSetting, FSettingFile + 'json');
   end;
 
+  // 初始化公章文件
+  FStampFile := ExtractFilePath(Application.ExeName) + S_F_STAMP;
+
   // 初始化 Excel 文件
-  FFileName := ExtractFilePath(Application.ExeName) + S_F_XLS;
-  if not FileExists(FFileName) then
-    FFileName := ExtractFilePath(Application.ExeName) + '..\..\' + S_F_XLS;
+  FXlsFile := ExtractFilePath(Application.ExeName) + S_F_XLS;
+  if not FileExists(FXlsFile) then
+    FXlsFile := ExtractFilePath(Application.ExeName) + '..\..\' + S_F_XLS;
 
   // 打开 Excel 文件并加载显示
   FXls := TXlsFile.Create(True);
 
-  FXls.Open(FFileName);
+  FXls.Open(FXlsFile);
   FXls.ActiveSheet := 1;
   Caption := FXls.ActiveSheetByName;
 
@@ -180,6 +208,25 @@ begin
   cbb1HeChaYiJu.Items.Assign(F1HeChaYiJu);
   if cbb1HeChaYiJu.Items.Count > 0 then
     cbb1HeChaYiJu.ItemIndex := 0;
+end;
+
+procedure TFormMain.InsertStamp;
+var
+  MP: IImageProperties;
+begin
+  if not FStampAdded then
+  begin
+    // 插入图像
+    MP := TImageProperties.Create;
+    MP.Anchor := TClientAnchor.Create(TFlxAnchorType.MoveAndDontResize,
+          16, 0, 4, 50, 256, 236, FXls);
+
+    FXls.AddImage(FStampFile, MP);
+    Inc(FStampIndex);
+
+    fcpSheet1.InvalidatePreview;
+    FStampAdded := True;
+  end;
 end;
 
 procedure TFormMain.UpdateSheet1;
