@@ -33,8 +33,9 @@ type
     cbb1WaiGuanHeGe: TComboBox;
     cbb1FuHeYaoQiu: TComboBox;
     btnSettings: TSpeedButton;
-    cbb1QuZhanHao: TComboBox;
-    lbl1QuZhanHao: TLabel;
+    cbb1JiaoZhun: TComboBox;
+    cbb1HeYan: TComboBox;
+    cbb1HeChaYiJu: TComboBox;
     procedure FormCreate(Sender: TObject);
     procedure btnPDFClick(Sender: TObject);
     procedure edtChange1(Sender: TObject);
@@ -48,6 +49,7 @@ type
 
     F1BiaoZhunQiNames, F1BiaoZhunQiValues: TStringList;
     F1BeiHeChaQiJuNames, F1BeiHeChaQiJuValues: TStringList;
+    F1HeChaYiJu, F1JiaoZhun, F1HeYan: TStringList;
   public
     procedure UpdateSheet1; // 温度
     procedure UpdateSheet2; // 湿度
@@ -106,7 +108,7 @@ begin
   for I := 0 to fcpSheet1.ControlCount - 1 do
   begin
     if (fcpSheet1.Controls[I] is TEdit) or (fcpSheet1.Controls[I] is TComboBox) or
-      (fcpSheet1.Controls[I] is TRadioGroup) then
+      (fcpSheet1.Controls[I] is TRadioGroup) or (fcpSheet1.Controls[I] is TLabel) then
     begin
       fcpSheet1.Controls[I].Visible := not fcpSheet1.Controls[I].Visible;
     end;
@@ -159,6 +161,25 @@ begin
   F1BeiHeChaQiJuValues := TStringList.Create;
   FWSetting.GetType('被核查器具', F1BeiHeChaQiJuNames, F1BeiHeChaQiJuValues);
   cbb1BeiHeCha.Items.Assign(F1BeiHeChaQiJuNames);
+
+  F1JiaoZhun := TStringList.Create;
+  F1HeYan := TStringList.Create;
+  F1HeChaYiJu := TStringList.Create;
+  FWSetting.GetType('校准人', F1JiaoZhun, nil);
+  FWSetting.GetType('核验人', F1HeYan, nil);
+  FWSetting.GetType('核查依据', F1HeChaYiJu, nil);
+
+  cbb1JiaoZhun.Items.Assign(F1JiaoZhun);
+  if cbb1JiaoZhun.Items.Count > 0 then
+    cbb1JiaoZhun.ItemIndex := 0;
+
+  cbb1HeYan.Items.Assign(F1HeYan);
+  if cbb1HeYan.Items.Count > 0 then
+    cbb1HeYan.ItemIndex := 0;
+
+  cbb1HeChaYiJu.Items.Assign(F1HeChaYiJu);
+  if cbb1HeChaYiJu.Items.Count > 0 then
+    cbb1HeChaYiJu.ItemIndex := 0;
 end;
 
 procedure TFormMain.UpdateSheet1;
@@ -189,8 +210,12 @@ begin
     S := Format('%s 是        %s 否', [#$2611, #$25A1])
   else
     S := Format('%s 是        %s 否', [#$25A1, #$2611]);
+
+  FXls.SetCellValue(20, 3, cbb1HeChaYiJu.Items[cbb1HeChaYiJu.ItemIndex]);
   FXls.SetCellValue(21, 3, S);
 
+  FXls.SetCellValue(22, 1, '校准：' + cbb1JiaoZhun.Items[cbb1JiaoZhun.ItemIndex]);
+  FXls.SetCellValue(22, 3, '核验：' + cbb1HeYan.Items[cbb1HeYan.ItemIndex]);
   FXls.SetCellValue(22, 5, edt1JiaoZhunShiJian.Text);
   //FXls.Save(FFileName);
   FcpSheet1.InvalidatePreview;

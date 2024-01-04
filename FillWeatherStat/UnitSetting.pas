@@ -89,7 +89,8 @@ var
   Item: TFWSettingItem;
 begin
   Names.Clear;
-  Values.Clear;
+  if Values <> nil then
+    Values.Clear;
 
   for I := 0 to Count - 1 do
   begin
@@ -97,7 +98,8 @@ begin
     if (AType = '') or (Item.SettingType = AType) then
     begin
       Names.Add(Item.SettingName);
-      Values.Add(Item.SettingValue);
+      if Values <> nil then
+        Values.Add(Item.SettingValue);
     end;
   end;
 end;

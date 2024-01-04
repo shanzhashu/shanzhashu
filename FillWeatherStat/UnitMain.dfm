@@ -35,7 +35,6 @@ object FormMain: TFormMain
         Top = 0
         Width = 621
         Height = 798
-        VertScrollBar.Position = 2
         Align = alClient
         BevelInner = bvNone
         BevelOuter = bvNone
@@ -43,12 +42,13 @@ object FormMain: TFormMain
         TabOrder = 0
         object fcpSheet1: TFlexCelPreviewer
           Left = 0
-          Top = -2
+          Top = 0
           Width = 603
-          Height = 800
+          Height = 796
+          Margins.Top = 1
           HorzScrollBar.Range = 20
           HorzScrollBar.Tracking = True
-          VertScrollBar.Range = 810
+          VertScrollBar.Range = 806
           VertScrollBar.Tracking = True
           VertScrollBar.Visible = False
           Zoom = 0.700000000000000000
@@ -65,7 +65,7 @@ object FormMain: TFormMain
             Left = 0
             Top = 0
             Width = 603
-            Height = 810
+            Height = 806
             Align = alClient
             Picture.Data = {
               0A544A504547496D61676516390200FFD8FFE000104A46494600010200006400
@@ -4623,8 +4623,7 @@ object FormMain: TFormMain
               492470CFC07D96FFDA0008010203013F10FF00BA99FFDA0008010303013F10FF
               00BA99FFD9}
             Visible = False
-            ExplicitTop = -1
-            ExplicitWidth = 598
+            ExplicitHeight = 800
           end
           object lbl1BeiHeCha: TLabel
             Left = 331
@@ -4632,14 +4631,6 @@ object FormMain: TFormMain
             Width = 72
             Height = 12
             Caption = #34987#26680#26597#22120#20855#65306
-            Transparent = True
-          end
-          object lbl1QuZhanHao: TLabel
-            Left = 328
-            Top = 376
-            Width = 48
-            Height = 12
-            Caption = #21306#31449#21495#65306
             Transparent = True
           end
           object cbb1BiaoZhunQi: TComboBox
@@ -4712,7 +4703,7 @@ object FormMain: TFormMain
             OnChange = edtChange1
           end
           object cbb1HeGe: TComboBox
-            Left = 226
+            Left = 216
             Top = 618
             Width = 81
             Height = 20
@@ -4743,7 +4734,7 @@ object FormMain: TFormMain
             OnChange = edtChange1
           end
           object cbb1WaiGuanHeGe: TComboBox
-            Left = 128
+            Left = 123
             Top = 396
             Width = 81
             Height = 20
@@ -4757,7 +4748,7 @@ object FormMain: TFormMain
               #19981#21512#26684)
           end
           object cbb1FuHeYaoQiu: TComboBox
-            Left = 226
+            Left = 216
             Top = 664
             Width = 65
             Height = 20
@@ -4770,15 +4761,33 @@ object FormMain: TFormMain
               #26159
               #21542)
           end
-          object cbb1QuZhanHao: TComboBox
-            Left = 382
-            Top = 373
-            Width = 82
+          object cbb1JiaoZhun: TComboBox
+            Left = 96
+            Top = 684
+            Width = 65
             Height = 20
             Style = csDropDownList
             TabOrder = 11
-            Items.Strings = (
-              #31449#28857)
+            OnChange = edtChange1
+            OnClick = edtChange1
+          end
+          object cbb1HeYan: TComboBox
+            Left = 252
+            Top = 684
+            Width = 77
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 12
+            OnChange = edtChange1
+          end
+          object cbb1HeChaYiJu: TComboBox
+            Left = 216
+            Top = 640
+            Width = 323
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 13
+            OnChange = edtChange1
           end
         end
       end

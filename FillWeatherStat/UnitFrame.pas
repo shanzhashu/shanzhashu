@@ -15,11 +15,13 @@ type
     mmoValues: TMemo;
     btnAdd: TSpeedButton;
     btnDelete: TSpeedButton;
+    edtSearch: TEdit;
     procedure lstNamesClick(Sender: TObject);
     procedure btnAddClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
     procedure mmoValuesChange(Sender: TObject);
     procedure lstNamesDblClick(Sender: TObject);
+    procedure edtSearchChange(Sender: TObject);
   private
     FItemRefs: TObjectList;
     FSettingType: string;
@@ -74,7 +76,6 @@ begin
   begin
     AddNew(S, '');
     UpdateFromOrigin;
-    ShowContents;
   end;
 end;
 
@@ -98,10 +99,7 @@ begin
   end;
 
   if B and DeleteCurrent then
-  begin
     UpdateFromOrigin;
-    ShowContents;
-  end;
 end;
 
 constructor TFrameSetting.Create(AOwner: TComponent);
@@ -143,6 +141,24 @@ begin
   inherited;
 end;
 
+procedure TFrameSetting.edtSearchChange(Sender: TObject);
+var
+  I: Integer;
+begin
+  if edtSearch.Text = '' then
+    Exit;
+
+  for I := 0 to lstNames.Count - 1 do
+  begin
+    if Pos(edtSearch.Text, lstNames.Items[I]) > 0 then
+    begin
+      lstNames.ItemIndex := I;
+      lstNames.OnClick(lstNames);
+      Break;
+    end;
+  end;
+end;
+
 procedure TFrameSetting.lstNamesClick(Sender: TObject);
 var
   Item: TFWSettingItem;
@@ -171,7 +187,6 @@ begin
       begin
         Item.SettingName := S;
         UpdateFromOrigin;
-        ShowContents;
       end;
     end;
   end;
@@ -195,7 +210,6 @@ begin
   begin
     FSettingType := Value;
     UpdateFromOrigin;
-    ShowContents;
   end;
 end;
 
@@ -206,6 +220,7 @@ var
 begin
   lstNames.Clear;
   mmoValues.Clear;
+  edtSearch.Clear;
 
   for I := 0 to FItemRefs.Count - 1 do
   begin
@@ -228,6 +243,7 @@ begin
   for I := 0 to FWSetting.Count - 1 do
     if (FWSetting.Items[I] as TFWSettingItem).SettingType = FSettingType then
       FItemRefs.Add(FWSetting.Items[I]);
+  ShowContents;
 end;
 
 end.

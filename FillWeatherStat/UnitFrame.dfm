@@ -98,9 +98,9 @@ object FrameSetting: TFrameSetting
   end
   object lstNames: TListBox
     Left = 24
-    Top = 48
+    Top = 56
     Width = 121
-    Height = 257
+    Height = 249
     AutoComplete = False
     Anchors = [akLeft, akTop, akBottom]
     ItemHeight = 13
@@ -110,11 +110,19 @@ object FrameSetting: TFrameSetting
   end
   object mmoValues: TMemo
     Left = 168
-    Top = 48
+    Top = 56
     Width = 257
-    Height = 257
+    Height = 249
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 1
     OnChange = mmoValuesChange
+  end
+  object edtSearch: TEdit
+    Left = 24
+    Top = 35
+    Width = 121
+    Height = 21
+    TabOrder = 2
+    OnChange = edtSearchChange
   end
 end
