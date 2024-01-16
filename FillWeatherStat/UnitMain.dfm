@@ -5103,7 +5103,7 @@ object FormMain: TFormMain
     Top = 732
   end
   object dlgOpen1: TOpenDialog
-    Filter = 'JPG'#25110'PNG'#25991#20214'|*.jpg|*.png'
+    Filter = 'JPG'#25110'PNG'#25991#20214'|*.jpg;*.png|PNG'#25991#20214'|*.png'
     Left = 436
     Top = 748
   end

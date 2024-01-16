@@ -54,8 +54,8 @@ constructor TFWSettingCollectin.Create;
 begin
   inherited Create(TFWSettingItem);
   FSettingVersion := 1;
-  FStampTop := 300;
-  FStampLeft := 200;
+  FStampTop := 550;
+  FStampLeft := 100;
 end;
 
 procedure TFWSettingCollectin.DeleteType(const AType: string);

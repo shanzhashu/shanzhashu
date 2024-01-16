@@ -150,41 +150,50 @@ begin
   if not FileExists(FileName) then
     Exit;
 
-  // 创建文件流
-  FileStream := TFileStream.Create(FileName, fmOpenRead);
-
-  try
-    // 尝试加载JPEG图像
-    JpgImage := TJPEGImage.Create;
-    try
-      JpgImage.LoadFromStream(FileStream);
-      ImageWidth := JpgImage.Width;
-      ImageHeight := JpgImage.Height;
-      Bmp.Width := ImageWidth;
-      Bmp.Height := ImageHeight;
-      Bmp.Canvas.Draw(0, 0, JpgImage);
-      Result := True;
-    finally
-      JpgImage.Free;
-    end;
-  finally
-    FileStream.Free;
-  end;
-
-  if not Result then
+  if LowerCase(ExtractFileExt(FileName)) = '.jpg' then
   begin
-    // 如果不是JPEG，尝试加载PNG图像
-    PngImage := TPNGImage.Create;
+    // 创建文件流
+    FileStream := TFileStream.Create(FileName, fmOpenRead);
+
     try
-      PngImage.LoadFromStream(FileStream);
-      ImageWidth := PngImage.Width;
-      ImageHeight := PngImage.Height;
-      Bmp.Width := ImageWidth;
-      Bmp.Height := ImageHeight;
-      Bmp.Canvas.Draw(0, 0, PngImage);
-      Result := True;
+      // 加载JPEG图像
+      JpgImage := TJPEGImage.Create;
+      try
+        JpgImage.LoadFromStream(FileStream);
+        ImageWidth := JpgImage.Width;
+        ImageHeight := JpgImage.Height;
+        Bmp.Width := ImageWidth;
+        Bmp.Height := ImageHeight;
+        Bmp.Canvas.Draw(0, 0, JpgImage);
+        Result := True;
+      finally
+        JpgImage.Free;
+      end;
     finally
-      PngImage.Free;
+      FileStream.Free;
+    end;
+  end
+  else if LowerCase(ExtractFileExt(FileName)) = '.png' then
+  begin
+    // 创建文件流
+    FileStream := TFileStream.Create(FileName, fmOpenRead);
+
+    try
+      // 加载PNG图像
+      PngImage := TPNGImage.Create;
+      try
+        PngImage.LoadFromStream(FileStream);
+        ImageWidth := PngImage.Width;
+        ImageHeight := PngImage.Height;
+        Bmp.Width := ImageWidth;
+        Bmp.Height := ImageHeight;
+        Bmp.Canvas.Draw(0, 0, PngImage);
+        Result := True;
+      finally
+        PngImage.Free;
+      end;
+    finally
+      FileStream.Free;
     end;
   end;
 end;
@@ -244,7 +253,10 @@ begin
           FWSetting.StampTop) then
         begin
           if dlgSaveStamp.Execute then
+          begin
             SaveBitmapToJPG(Bmp, dlgSaveStamp.FileName);
+            Application.MessageBox('盖章成功！', '提示', MB_OK + MB_ICONINFORMATION);
+          end;
         end;
       end;
     finally
