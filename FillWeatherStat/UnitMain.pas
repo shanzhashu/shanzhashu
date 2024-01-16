@@ -240,7 +240,8 @@ begin
     try
       if LoadAndDrawImageFromFile(Bmp, dlgOpen1.FileName) then
       begin
-        if LoadAndDrawStamp(Bmp, FStampFile, 200, 400) then
+        if LoadAndDrawStamp(Bmp, FStampFile, FWSetting.StampLeft,
+          FWSetting.StampTop) then
         begin
           if dlgSaveStamp.Execute then
             SaveBitmapToJPG(Bmp, dlgSaveStamp.FileName);

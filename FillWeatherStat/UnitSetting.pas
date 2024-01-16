@@ -21,6 +21,8 @@ type
   TFWSettingCollectin = class(TCollection)
   private
     FSettingVersion: Integer;
+    FStampLeft: Integer;
+    FStampTop: Integer;
   public
     constructor Create; reintroduce;
     destructor Destroy; override;
@@ -36,6 +38,9 @@ type
     procedure LoadFromJSON(const JSONFile: string);
   published
     property SettingVersion: Integer read FSettingVersion write FSettingVersion;
+
+    property StampLeft: Integer read FStampLeft write FStampLeft;
+    property StampTop: Integer read FStampTop write FStampTop;
   end;
 
 var
@@ -49,6 +54,8 @@ constructor TFWSettingCollectin.Create;
 begin
   inherited Create(TFWSettingItem);
   FSettingVersion := 1;
+  FStampTop := 300;
+  FStampLeft := 200;
 end;
 
 procedure TFWSettingCollectin.DeleteType(const AType: string);
