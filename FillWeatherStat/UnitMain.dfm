@@ -1,6 +1,7 @@
 object FormMain: TFormMain
   Left = 0
   Top = 0
+  Caption = #27668#35937#26680#26597#25253#21578#19968#38190#24335#29983#25104#31995#32479
   ClientHeight = 828
   ClientWidth = 629
   Color = clBtnFace
@@ -29,7 +30,7 @@ object FormMain: TFormMain
     TabOrder = 0
     TabPosition = tpBottom
     object ts1: TTabSheet
-      Caption = #28201#24230
+      Caption = #27668#28201
       object ScrollBox1: TScrollBox
         Left = 0
         Top = 0
@@ -4721,7 +4722,7 @@ object FormMain: TFormMain
               #19981#21512#26684)
           end
           object edt1JiaoZhunShiJian: TEdit
-            Left = 418
+            Left = 419
             Top = 686
             Width = 121
             Height = 20
@@ -4729,11 +4730,10 @@ object FormMain: TFormMain
             Text = '2023'#24180'12'#26376'31'#26085
           end
           object cbb1BeiHeCha: TComboBox
-            Left = 398
+            Left = 396
             Top = 169
             Width = 115
             Height = 20
-            Style = csDropDownList
             TabOrder = 8
             OnChange = edtChange1
           end
@@ -4793,6 +4793,204 @@ object FormMain: TFormMain
             TabOrder = 13
             OnChange = edtChange1
           end
+        end
+      end
+    end
+    object ts2: TTabSheet
+      Caption = #28287#24230
+      ImageIndex = 1
+      object ScrollBox2: TScrollBox
+        Left = 0
+        Top = 0
+        Width = 621
+        Height = 802
+        Align = alClient
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        BorderStyle = bsNone
+        TabOrder = 0
+        DesignSize = (
+          621
+          802)
+        object fcpSheet2: TFlexCelPreviewer
+          Left = 0
+          Top = 0
+          Width = 603
+          Height = 800
+          Margins.Top = 1
+          HorzScrollBar.Range = 20
+          HorzScrollBar.Tracking = True
+          VertScrollBar.Range = 810
+          VertScrollBar.Tracking = True
+          VertScrollBar.Visible = False
+          Zoom = 0.700000000000000000
+          Anchors = [akLeft, akTop, akBottom]
+          TabOrder = 0
+        end
+      end
+    end
+    object ts3: TTabSheet
+      Caption = #39118#21521
+      ImageIndex = 1
+      object ScrollBox3: TScrollBox
+        Left = 0
+        Top = 0
+        Width = 621
+        Height = 802
+        Align = alClient
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        BorderStyle = bsNone
+        TabOrder = 0
+        DesignSize = (
+          621
+          802)
+        object fcpSheet3: TFlexCelPreviewer
+          Left = 0
+          Top = 0
+          Width = 603
+          Height = 800
+          Margins.Top = 1
+          HorzScrollBar.Range = 20
+          HorzScrollBar.Tracking = True
+          VertScrollBar.Range = 810
+          VertScrollBar.Tracking = True
+          VertScrollBar.Visible = False
+          Zoom = 0.700000000000000000
+          Anchors = [akLeft, akTop, akBottom]
+          TabOrder = 0
+        end
+      end
+    end
+    object ts4: TTabSheet
+      Caption = #39118#36895
+      ImageIndex = 1
+      object ScrollBox4: TScrollBox
+        Left = 0
+        Top = 0
+        Width = 621
+        Height = 802
+        Align = alClient
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        BorderStyle = bsNone
+        TabOrder = 0
+        DesignSize = (
+          621
+          802)
+        object fcpSheet4: TFlexCelPreviewer
+          Left = 0
+          Top = 0
+          Width = 603
+          Height = 800
+          Margins.Top = 1
+          HorzScrollBar.Range = 20
+          HorzScrollBar.Tracking = True
+          VertScrollBar.Range = 810
+          VertScrollBar.Tracking = True
+          VertScrollBar.Visible = False
+          Zoom = 0.700000000000000000
+          Anchors = [akLeft, akTop, akBottom]
+          TabOrder = 0
+        end
+      end
+    end
+    object ts5: TTabSheet
+      Caption = #27668#21387
+      ImageIndex = 1
+      object ScrollBox5: TScrollBox
+        Left = 0
+        Top = 0
+        Width = 621
+        Height = 802
+        Align = alClient
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        BorderStyle = bsNone
+        TabOrder = 0
+        DesignSize = (
+          621
+          802)
+        object fcpSheet5: TFlexCelPreviewer
+          Left = 0
+          Top = 0
+          Width = 603
+          Height = 800
+          Margins.Top = 1
+          HorzScrollBar.Range = 20
+          HorzScrollBar.Tracking = True
+          VertScrollBar.Range = 810
+          VertScrollBar.Tracking = True
+          VertScrollBar.Visible = False
+          Zoom = 0.700000000000000000
+          Anchors = [akLeft, akTop, akBottom]
+          TabOrder = 0
+        end
+      end
+    end
+    object ts6: TTabSheet
+      Caption = #38632#37327
+      ImageIndex = 1
+      object ScrollBox6: TScrollBox
+        Left = 0
+        Top = 0
+        Width = 621
+        Height = 802
+        Align = alClient
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        BorderStyle = bsNone
+        TabOrder = 0
+        DesignSize = (
+          621
+          802)
+        object fcpSheet6: TFlexCelPreviewer
+          Left = 0
+          Top = 0
+          Width = 603
+          Height = 800
+          Margins.Top = 1
+          HorzScrollBar.Range = 20
+          HorzScrollBar.Tracking = True
+          VertScrollBar.Range = 810
+          VertScrollBar.Tracking = True
+          VertScrollBar.Visible = False
+          Zoom = 0.700000000000000000
+          Anchors = [akLeft, akTop, akBottom]
+          TabOrder = 0
+        end
+      end
+    end
+    object ts7: TTabSheet
+      Caption = #21551#21160#39118
+      ImageIndex = 1
+      object ScrollBox7: TScrollBox
+        Left = 0
+        Top = 0
+        Width = 621
+        Height = 802
+        Align = alClient
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        BorderStyle = bsNone
+        TabOrder = 0
+        DesignSize = (
+          621
+          802)
+        object fcpSheet7: TFlexCelPreviewer
+          Left = 0
+          Top = 0
+          Width = 603
+          Height = 800
+          Margins.Top = 1
+          HorzScrollBar.Range = 20
+          HorzScrollBar.Tracking = True
+          VertScrollBar.Range = 810
+          VertScrollBar.Tracking = True
+          VertScrollBar.Visible = False
+          Zoom = 0.700000000000000000
+          Anchors = [akLeft, akTop, akBottom]
+          TabOrder = 0
         end
       end
     end

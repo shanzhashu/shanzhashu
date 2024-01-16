@@ -31,6 +31,9 @@ type
 
     procedure SaveToXML(const XMLFile: string);
     procedure LoadFromXML(const XMLFile: string);
+
+    procedure SaveToJSON(const JSONFile: string);
+    procedure LoadFromJSON(const JSONFile: string);
   published
     property SettingVersion: Integer read FSettingVersion write FSettingVersion;
   end;
@@ -104,9 +107,19 @@ begin
   end;
 end;
 
+procedure TFWSettingCollectin.LoadFromJSON(const JSONFile: string);
+begin
+  TCnJSONReader.LoadFromFile(Self, JSONFile);
+end;
+
 procedure TFWSettingCollectin.LoadFromXML(const XMLFile: string);
 begin
   TOmniXMLReader.LoadFromFile(Self, XMLFile);
+end;
+
+procedure TFWSettingCollectin.SaveToJSON(const JSONFile: string);
+begin
+  TCnJSONWriter.SaveToFile(Self, JSONFile);
 end;
 
 procedure TFWSettingCollectin.SaveToXML(const XMLFile: string);

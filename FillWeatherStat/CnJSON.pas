@@ -29,8 +29,12 @@ unit CnJSON;
 *           仅在无 System.JSON 的低版本中充当 JSON 解析与组装用
 *
 *           一段 JSON 是一个 JSONObject，包含一个或多个 Key Value 对，
-*           Key 是字符串，Value 则可以是普通值、JSONObject 或 JSONArray，
+*           Key 是双引号字符串，Value 则可以是普通值、JSONObject 或 JSONArray，
 *           JSONArray 是一排 JSONValue
+*
+*           JSONValue 设有 Count 及 [Integer] 缺省索引作为是 JSONArray 时的子项，
+*           设有 Count 及 Values[String] 非缺省索引作为是 JSONObject 时的子项，String 参数为 Key
+*           这样可以写 Obj['animals']['dog'].Values[0]['age'].AsInteger 的级联形式来访问
 *
 *           解析：
 *              调用函数 CnJSONParse，传入 UTF8 格式的 JSONString，返回 JSONObject 对象
@@ -40,10 +44,14 @@ unit CnJSON;
 *              需要数组时创建 TCnJSONArray 后调用其 AddValue 函数
 *              根 TCnJSONObject 调用 ToJSON 方法能生成 UTF8 格式的 JSON 字符串
 *
+*           TCnJSONReader.LoadFromJSON 与 TCnJSONWriter.SaveToJSON 能够将对象的属性流化至 JSON 字符串中
+*
 * 开发平台：PWin7 + Delphi 7
 * 兼容测试：PWin7 + Delphi 2009 ~
 * 本 地 化：该单元中的字符串均符合本地化处理方式
-* 修改记录：2023.09.15 V1.0
+* 修改记录：2024.01.11 V1.1
+*                 加入级联默认属性，加入 Reader 和 Writer
+*           2023.09.15 V1.0
 *                创建单元
 ================================================================================
 |</PRE>}
@@ -53,7 +61,8 @@ interface
 {$I CnPack.inc}
 
 uses
-  Classes, SysUtils, Variants, Contnrs, TypInfo, CnStrings;
+  Classes, SysUtils, {$IFNDEF COMPILER5} Variants, {$ENDIF} Contnrs, TypInfo,
+  CnNative, CnStrings;
 
 type
   ECnJSONException = class(Exception);
@@ -63,7 +72,7 @@ type
     jttNameValueSep, jttElementSep, jttNumber, jttString, jttNull, jttTrue,
     jttFalse, jttBlank, jttTerminated, jttUnknown);
   {* JSON 中的符号类型，对应左大括号、右大括号、左中括号、右中括号、分号、逗号、
-    数字、双引号字符串、null、true、false、空格回车、#0、未知等}
+    数字（包括整数和浮点）、双引号字符串、null、true、false、空格回车、#0、未知等}
 
   TCnJSONParser = class
   {* UTF8 格式的无注释的 JSON 字符串解析器}
@@ -144,6 +153,12 @@ type
     procedure SetContent(const Value: AnsiString);
   protected
     FUpdated: Boolean;
+
+    function GetName(Index: Integer): TCnJSONString; virtual;
+    function GetValueByName(const Name: string): TCnJSONValue; virtual;
+
+    function GetCount: Integer; virtual;
+    function GetValue(Index: Integer): TCnJSONValue; virtual;
   public
     constructor Create; virtual;
     {* 构造函数}
@@ -174,6 +189,18 @@ type
 
     property Content: AnsiString read FContent write SetContent;
     {* 普通值类型时代表原始 UTF8 格式的字符串内容}
+
+    // 是 Object 或 Array 时提供相关模拟的属性，由子类实现
+    property Names[Index: Integer]: TCnJSONString read GetName;
+    {* 名称对象索引}
+    property ValueByName[const Name: string]: TCnJSONValue read GetValueByName; default;
+    {* 根据名称获取值的实例}
+
+    property Count: Integer read GetCount;
+    {* 如果是数组，表示数组里的元素数量}
+
+    property Values[Index: Integer]: TCnJSONValue read GetValue;
+    {* 值对象索引，如果是数组则是数组元素，注意值可能是 TCnJSONValue 的不同子类实例}
   end;
 
 {
@@ -186,13 +213,14 @@ type
   {* 代表 JSON 中的对象值的类，也是 JSON 顶层类}
   private
     FPairs: TObjectList;
-    function GetCount: Integer;
-    function GetName(Index: Integer): TCnJSONString;
-    function GetValue(Index: Integer): TCnJSONValue;
-    function GetValueByName(const Name: string): TCnJSONValue;
+
   protected
     function AddChild(AChild: TCnJSONBase): TCnJSONBase; override;
     {* 供内部解析时添加 Pair}
+    function GetName(Index: Integer): TCnJSONString; override;
+    function GetValueByName(const Name: string): TCnJSONValue; override;
+    function GetCount: Integer; override;
+    function GetValue(Index: Integer): TCnJSONValue; override;
   public
     constructor Create; override;
     {* 构造函数}
@@ -303,11 +331,11 @@ type
   {* 代表 JSON 中的数组类}
   private
     FValues: TObjectList;
-    function GetCount: Integer;
-    function GetValues(Index: Integer): TCnJSONValue;
   protected
     function AddChild(AChild: TCnJSONBase): TCnJSONBase; override;
     {* 内部添加 Value 作为数组元素}
+    function GetCount: Integer; override;
+    function GetValue(Index: Integer): TCnJSONValue; override;
   public
     constructor Create; override;
     {* 构造函数}
@@ -333,7 +361,7 @@ type
 
     property Count: Integer read GetCount;
     {* 数组里的元素数量}
-    property Values[Index: Integer]: TCnJSONValue read GetValues;
+    property Values[Index: Integer]: TCnJSONValue read GetValue; default;
     {* 数组里的元素}
   end;
 
@@ -365,8 +393,15 @@ type
 
   TCnJSONReader = class
   private
+    // 以下系列，返回 False 表示 Name 在 JSON 中不存在，True 存在，Value 返回值
+    function ReadStringValue(Obj: TCnJSONObject; const Name: string; out Value: string): Boolean;
+    function ReadIntegerValue(Obj: TCnJSONObject; const Name: string; out Value: Integer): Boolean;
+    function ReadFloatValue(Obj: TCnJSONObject; const Name: string; out Value: Extended): Boolean;
+    function ReadBooleanValue(Obj: TCnJSONObject; const Name: string; out Value: Boolean): Boolean;
+    function ReadInt64Value(Obj: TCnJSONObject; const Name: string; out Value: Int64): Boolean;
+
+    procedure ReadProperty(Instance: TPersistent; PropInfo: PPropInfo; Obj: TCnJSONObject);
     procedure Read(Instance: TPersistent; Obj: TCnJSONObject);
-    procedure ReadCollection(Instance: TPersistent; Obj: TCnJSONObject);
   public
     class procedure LoadFromFile(Instance: TPersistent; const FileName: string);
     class procedure LoadFromJSON(Instance: TPersistent; const JSON: AnsiString);
@@ -374,13 +409,19 @@ type
 
   TCnJSONWriter = class
   private
-    procedure WriteNameValue(Obj: TCnJSONObject; const Name, Value: string);
+    procedure WriteStringValue(Obj: TCnJSONObject; const Name, Value: string);
+    procedure WriteIntegerValue(Obj: TCnJSONObject; const Name: string; Value: Integer);
+    procedure WriteFloatValue(Obj: TCnJSONObject; const Name: string; Value: Extended);
+    procedure WriteBooleanValue(Obj: TCnJSONObject; const Name: string; Value: Boolean);
+    procedure WriteInt64Value(Obj: TCnJSONObject; const Name: string; Value: Int64);
+    procedure WriteNullValue(Obj: TCnJSONObject; const Name: string);
+
     procedure WriteProperty(Instance: TPersistent; PropInfo: PPropInfo; Obj: TCnJSONObject);
     procedure Write(Instance: TPersistent; Obj: TCnJSONObject);
   public
     class procedure SaveToFile(Instance: TPersistent; const FileName: string;
       Utf8Bom: Boolean = True);
-    class function SaveToJSON(Instance: TPersistent): AnsiString;
+    class function SaveToJSON(Instance: TPersistent; UseFormat: Boolean = True): AnsiString;
   end;
 
 function CnJSONParse(const JsonStr: AnsiString): TCnJSONObject;
@@ -404,6 +445,8 @@ resourcestring
   SCnErrorJSONPair = 'JSON Pair Value Conflict';
   SCnErrorJSONTypeMismatch = 'JSON Value Type Mismatch';
   SCnErrorJSONStringParse = 'JSON String Parse Error';
+  SCnErrorJSONReadProperty = 'JSON Error Read Property %s';
+  SCnErrorJSONValueTypeNotImplementedFmt = 'NOT Implemented for this JSON Value Type %s';
 
 function JSONDateTimeToStr(Value: TDateTime): string;
 begin
@@ -535,7 +578,7 @@ begin
     JSONCheckToken(P, jttString);
 
     Pair := TCnJSONPair.Create;
-    Pair.Name.Content := P.Token;            // 设置　Pair 自有的 Name 的内容
+    Pair.Name.Content := P.Token;            // 设置 Pair 自有的 Name 的内容
     Result.AddChild(Pair);
 
     // 必须一个冒号
@@ -843,7 +886,7 @@ function TCnJSONObject.AddPair(const Name: string; Value: TCnJSONValue): TCnJSON
 begin
   Result := TCnJSONPair.Create;
   AddChild(Result);
-  Result.Name.Content := Name;
+  Result.Name.Value := Name;
   Result.Value := Value;
 end;
 
@@ -953,6 +996,7 @@ function TCnJSONObject.GetValueByName(const Name: string): TCnJSONValue;
 var
   I: Integer;
 begin
+  // TODO: 用散列来加速
   for I := 0 to FPairs.Count - 1 do
   begin
     if TCnJSONPair(FPairs[I]).Name.AsString = Name then
@@ -1086,6 +1130,26 @@ destructor TCnJSONValue.Destroy;
 begin
 
   inherited;
+end;
+
+function TCnJSONValue.GetCount: Integer;
+begin
+  raise ECnJSONException.CreateFmt(SCnErrorJSONValueTypeNotImplementedFmt, [ClassName]);
+end;
+
+function TCnJSONValue.GetName(Index: Integer): TCnJSONString;
+begin
+  raise ECnJSONException.CreateFmt(SCnErrorJSONValueTypeNotImplementedFmt, [ClassName]);
+end;
+
+function TCnJSONValue.GetValue(Index: Integer): TCnJSONValue;
+begin
+  raise ECnJSONException.CreateFmt(SCnErrorJSONValueTypeNotImplementedFmt, [ClassName]);
+end;
+
+function TCnJSONValue.GetValueByName(const Name: string): TCnJSONValue;
+begin
+  raise ECnJSONException.CreateFmt(SCnErrorJSONValueTypeNotImplementedFmt, [ClassName]);
 end;
 
 function TCnJSONValue.IsArray: Boolean;
@@ -1244,7 +1308,7 @@ begin
   Result := FValues.Count;
 end;
 
-function TCnJSONArray.GetValues(Index: Integer): TCnJSONValue;
+function TCnJSONArray.GetValue(Index: Integer): TCnJSONValue;
 begin
   Result := TCnJSONValue(FValues[Index]);
 end;
@@ -1610,8 +1674,30 @@ end;
 
 class procedure TCnJSONReader.LoadFromFile(Instance: TPersistent;
   const FileName: string);
+var
+  S: AnsiString;
+  F: TFileStream;
 begin
+  // 如有 UTF8Bom 则原始读入，无则直接读入，不处理 UTF16 格式也就碰到 UTF 16 会出错
+  F := TFileStream.Create(FileName, fmOpenRead);
+  try
+    if F.Size > 0 then
+    begin
+      SetLength(S, F.Size);
+      F.Read(S[1], F.Size);
 
+      // 去掉 UTF8 的 BOM 头
+      if Length(S) > SizeOf(SCN_BOM_UTF8) then
+      begin
+        if CompareMem(@S[1], @SCN_BOM_UTF8[0], SizeOf(SCN_BOM_UTF8)) then
+          Delete(S, 1, SizeOf(SCN_BOM_UTF8));
+      end;
+
+      LoadFromJSON(Instance, S);
+    end;
+  finally
+    F.Free;
+  end;
 end;
 
 class procedure TCnJSONReader.LoadFromJSON(Instance: TPersistent;
@@ -1627,10 +1713,7 @@ begin
     Obj := CnJSONParse(JSON);
     Reader := TCnJSONReader.Create;
 
-    if Instance is TCollection then
-      Reader.ReadCollection(Instance, Obj)
-    else
-      Reader.Read(Instance, Obj)
+    Reader.Read(Instance, Obj)
   finally
     Reader.Free;
     Obj.Free;
@@ -1638,13 +1721,245 @@ begin
 end;
 
 procedure TCnJSONReader.Read(Instance: TPersistent; Obj: TCnJSONObject);
+var
+  PropCount: Integer;
+  PropList: PPropList;
+  I: Integer;
+  PropInfo: PPropInfo;
+  Value: TCnJSONValue;
+  Arr: TCnJSONArray;
 begin
+  PropCount := GetTypeData(Instance.ClassInfo)^.PropCount;
+  if PropCount > 0 then
+  begin
+    GetMem(PropList, PropCount * SizeOf(Pointer));
+    try
+      GetPropInfos(Instance.ClassInfo, PropList);
+      for I := 0 to PropCount - 1 do
+      begin
+        PropInfo := PropList^[I];
+        if PropInfo = nil then
+          Break;
 
+        ReadProperty(Instance, PropInfo, Obj);
+      end;
+    finally
+      FreeMem(PropList, PropCount * SizeOf(Pointer));
+    end;
+  end;
+
+  if Instance is TCollection then
+  begin
+    Value := Obj.ValueByName['Items'];
+    if (Value <> nil) and (Value is TCnJSONArray) then
+    begin
+      Arr := Value as TCnJSONArray;
+      (Instance as TCollection).Clear;
+
+      for I := 0 to Arr.Count - 1 do
+      begin
+        Value := Arr.Values[I];
+        if Value is TCnJSONObject then
+          Read((Instance as TCollection).Add, Value as TCnJSONObject);
+      end;
+    end;
+  end;
 end;
 
-procedure TCnJSONReader.ReadCollection(Instance: TPersistent; Obj: TCnJSONObject);
+function TCnJSONReader.ReadBooleanValue(Obj: TCnJSONObject;
+  const Name: string; out Value: Boolean): Boolean;
+var
+  V: TCnJSONValue;
 begin
+  Result := False;
+  V := Obj.ValueByName[Name];
+  if V <> nil then
+  begin
+    if V is TCnJSONFalse then
+    begin
+      Value := False;
+      Result := True;
+    end
+    else if V is TCnJSONTrue then
+    begin
+      Value := True;
+      Result := True;
+    end;
+  end;
+end;
 
+function TCnJSONReader.ReadFloatValue(Obj: TCnJSONObject;
+  const Name: string; out Value: Extended): Boolean;
+var
+  V: TCnJSONValue;
+begin
+  Result := False;
+  V := Obj.ValueByName[Name];
+  if V <> nil then
+  begin
+    if V is TCnJSONNumber then
+    begin
+      Value := V.AsFloat;
+      Result := True;
+    end;
+  end;
+end;
+
+function TCnJSONReader.ReadInt64Value(Obj: TCnJSONObject;
+  const Name: string; out Value: Int64): Boolean;
+var
+  V: TCnJSONValue;
+begin
+  Result := False;
+  V := Obj.ValueByName[Name];
+  if V <> nil then
+  begin
+    if V is TCnJSONNumber then
+    begin
+      Value := V.AsInt64;
+      Result := True;
+    end;
+  end;
+end;
+
+function TCnJSONReader.ReadIntegerValue(Obj: TCnJSONObject;
+  const Name: string; out Value: Integer): Boolean;
+var
+  V: TCnJSONValue;
+begin
+  Result := False;
+  V := Obj.ValueByName[Name];
+  if V <> nil then
+  begin
+    if V is TCnJSONNumber then
+    begin
+      Value := V.AsInteger;
+      Result := True;
+    end;
+  end;
+end;
+
+function TCnJSONReader.ReadStringValue(Obj: TCnJSONObject;
+  const Name: string; out Value: string): Boolean;
+var
+  V: TCnJSONValue;
+begin
+  Result := False;
+  V := Obj.ValueByName[Name];
+  if V <> nil then
+  begin
+    if V is TCnJSONString then
+    begin
+      Value := V.AsString;
+      Result := True;
+    end;
+  end;
+end;
+
+procedure TCnJSONReader.ReadProperty(Instance: TPersistent;
+  PropInfo: PPropInfo; Obj: TCnJSONObject);
+var
+  PropType: PTypeInfo;
+
+  procedure ReadStrProp;
+  var
+    Value: string;
+  begin
+    if ReadStringValue(Obj, string(PropInfo^.Name), Value) then
+      SetStrProp(Instance, PropInfo, Value);
+  end;
+
+  procedure ReadInt64Prop;
+  var
+    Value: Int64;
+  begin
+    if ReadInt64Value(Obj, string(PropInfo^.Name), Value) then
+      SetInt64Prop(Instance, PropInfo, Value);
+  end;
+
+  procedure ReadFloatProp;
+  var
+    Value: Extended;
+  begin
+    if ReadFloatValue(Obj, string(PropInfo^.Name), Value) then
+      SetFloatProp(Instance, PropInfo, Value);
+  end;
+
+  procedure ReadOrdProp;
+  var
+    VI: Integer;
+    VS: string;
+    VB: Boolean;
+  begin
+    case PropType^.Kind of
+      tkInteger:
+        begin
+          if ReadIntegerValue(Obj, string(PropInfo^.Name), VI) then
+            SetOrdProp(Instance, string(PropInfo^.Name), VI);
+        end;
+      tkChar:
+        begin
+          if ReadStringValue(Obj, string(PropInfo^.Name), VS) then
+            if Length(VS) > 0 then
+              SetOrdProp(Instance, string(PropInfo^.Name), Ord(VS[1]));
+        end;
+      tkSet:
+        begin
+          if ReadStringValue(Obj, string(PropInfo^.Name), VS) then
+            SetSetProp(Instance, string(PropInfo^.Name), VS);
+        end;
+      tkEnumeration:
+        begin
+          if PropType = TypeInfo(Boolean) then
+          begin
+            if ReadBooleanValue(Obj, string(PropInfo^.Name), VB) then
+              SetOrdProp(Obj, string(PropInfo^.Name), Ord(VB));
+          end
+          else
+          begin
+            if ReadStringValue(Obj, string(PropInfo^.Name), VS) then
+              SetEnumProp(Instance, string(PropInfo^.Name), VS);
+          end;
+        end;
+    end;
+  end;
+
+  procedure ReadObjectProp;
+  var
+    Value: TCnJSONValue;
+    Sub: TObject;
+  begin
+    Value := Obj.ValueByName[string(PropInfo^.Name)];
+    if Value <> nil then
+    begin
+      if Value is TCnJSONNull then
+        SetObjectProp(Instance, string(PropInfo^.Name), nil)
+      else if Value is TCnJSONObject then
+      begin
+        Sub := GetObjectProp(Instance, string(PropInfo^.Name));
+        if Sub <> nil then
+        Read(TPersistent(Sub), Value as TCnJSONObject);
+      end;
+    end;
+  end;
+
+begin
+  if PropInfo^.SetProc <> nil then // 只要可写
+  begin
+    PropType := PropInfo^.PropType^;
+    case PropType^.Kind of
+      tkInteger, tkChar, tkEnumeration, tkSet:
+        ReadOrdProp;
+      tkString, tkLString, tkWString {$IFDEF UNICODE}, tkUString {$ENDIF}:
+        ReadStrProp;
+      tkFloat:
+        ReadFloatProp; // 时间日期暂时不额外处理，内部都用浮点先整
+      tkInt64:
+        ReadInt64Prop;
+      tkClass:
+        ReadObjectProp;
+    end;
+  end;
 end;
 
 { TCnJSONWriter }
@@ -1670,7 +1985,8 @@ begin
   end;
 end;
 
-class function TCnJSONWriter.SaveToJSON(Instance: TPersistent): AnsiString;
+class function TCnJSONWriter.SaveToJSON(Instance: TPersistent;
+  UseFormat: Boolean): AnsiString;
 var
   Obj: TCnJSONObject;
   Writer: TCnJSONWriter;
@@ -1683,7 +1999,7 @@ begin
     Writer := TCnJSONWriter.Create;
 
     Writer.Write(Instance, Obj);
-    Result := Obj.ToJSON;
+    Result := Obj.ToJSON(UseFormat);
   finally
     Writer.Free;
     Obj.Free;
@@ -1733,12 +2049,6 @@ begin
   end;
 end;
 
-procedure TCnJSONWriter.WriteNameValue(Obj: TCnJSONObject; const Name,
-  Value: string);
-begin
-  Obj.AddPair(Name, Value);
-end;
-
 procedure TCnJSONWriter.WriteProperty(Instance: TPersistent;
   PropInfo: PPropInfo; Obj: TCnJSONObject);
 var
@@ -1749,7 +2059,7 @@ var
     Value: string;
   begin
     Value := GetStrProp(Instance, PropInfo);
-    WriteNameValue(Obj, string(PropInfo^.Name), Value);
+    WriteStringValue(Obj, string(PropInfo^.Name), Value);
   end;
 
   procedure WriteOrdProp;
@@ -1761,17 +2071,17 @@ var
     begin
       case PropType^.Kind of
         tkInteger:
-          WriteNameValue(Obj, string(PropInfo^.Name), IntToStr(Value));
+          WriteIntegerValue(Obj, string(PropInfo^.Name), Value);
         tkChar:
-          WriteNameValue(Obj, string(PropInfo^.Name), Chr(Value));
+          WriteStringValue(Obj, string(PropInfo^.Name), Chr(Value));
         tkSet:
-          WriteNameValue(Obj, string(PropInfo^.Name), GetSetProp(Instance, PPropInfo(PropInfo), True));
+          WriteStringValue(Obj, string(PropInfo^.Name), GetSetProp(Instance, PPropInfo(PropInfo), True));
         tkEnumeration:
           begin
             if PropType = TypeInfo(Boolean) then
-              WriteNameValue(Obj, string(PropInfo^.Name), BoolToStr(Boolean(Value), True))
+              WriteBooleanValue(Obj, string(PropInfo^.Name), Value <> 0)
             else
-              WriteNameValue(Obj, string(PropInfo^.Name), GetEnumName(PropType, Value));
+              WriteStringValue(Obj, string(PropInfo^.Name), GetEnumName(PropType, Value));
           end;
       end;
     end;
@@ -1782,7 +2092,7 @@ var
     Value: Extended;
   begin
     Value := GetFloatProp(Instance, PropInfo);
-    WriteNameValue(Obj, string(PropInfo^.Name), FloatToStr(Value));
+    WriteFloatValue(Obj, string(PropInfo^.Name), Value);
   end;
 
   procedure WriteInt64Prop;
@@ -1790,7 +2100,7 @@ var
     Value: Int64;
   begin
     Value := GetInt64Prop(Instance, PropInfo);
-    WriteNameValue(Obj, string(PropInfo^.Name), IntToStr(Value));
+    WriteInt64Value(Obj, string(PropInfo^.Name), Value);
   end;
 
   procedure WriteObjectProp;
@@ -1798,35 +2108,77 @@ var
     Value: TObject;
     SubObj: TCnJSONObject;
   begin
-    Value := TObject(GetOrdProp(Instance, PropInfo));
+    Value := GetObjectProp(Instance, PropInfo);
     if Value <> nil then
     begin
-      if Value is TPersistent then
+      if Value is TComponent then
+      begin
+        WriteStringValue(Obj, string(PropInfo^.Name), (Value as TComponent).Name);
+      end
+      else if Value is TPersistent then
       begin
         SubObj := TCnJSONObject.Create;
         Obj.AddPair(string(PropInfo^.Name), SubObj);
         Write(TPersistent(Value), SubObj);
       end;
-    end;
+    end
+    else
+      WriteNullValue(Obj, string(PropInfo^.Name));
   end;
 
 begin
-  if (PPropInfo(PropInfo)^.SetProc <> nil) and
-    (PPropInfo(PropInfo)^.GetProc <> nil) then
+  if PropInfo^.GetProc <> nil then // 只要可读
   begin
-    PropType := PPropInfo(PropInfo)^.PropType^;
+    PropType := PropInfo^.PropType^;
     case PropType^.Kind of
       tkInteger, tkChar, tkEnumeration, tkSet:
         WriteOrdProp;
       tkString, tkLString, tkWString {$IFDEF UNICODE}, tkUString {$ENDIF}:
         WriteStrProp;
       tkFloat:
-        // 时间日期暂时不额外处理，内部都用浮点先整
-        WriteFloatProp;
-      tkInt64: WriteInt64Prop;
-      tkClass: WriteObjectProp;
+        WriteFloatProp; // 时间日期暂时不额外处理，内部都用浮点先整
+      tkInt64:
+        WriteInt64Prop;
+      tkClass:
+        WriteObjectProp;
     end;
   end;
+end;
+
+procedure TCnJSONWriter.WriteStringValue(Obj: TCnJSONObject; const Name,
+  Value: string);
+begin
+  Obj.AddPair(Name, Value);
+end;
+
+procedure TCnJSONWriter.WriteBooleanValue(Obj: TCnJSONObject;
+  const Name: string; Value: Boolean);
+begin
+  Obj.AddPair(Name, Value);
+end;
+
+procedure TCnJSONWriter.WriteFloatValue(Obj: TCnJSONObject;
+  const Name: string; Value: Extended);
+begin
+  Obj.AddPair(Name, Value);
+end;
+
+procedure TCnJSONWriter.WriteInt64Value(Obj: TCnJSONObject;
+  const Name: string; Value: Int64);
+begin
+  Obj.AddPair(Name, Value);
+end;
+
+procedure TCnJSONWriter.WriteIntegerValue(Obj: TCnJSONObject;
+  const Name: string; Value: Integer);
+begin
+  Obj.AddPair(Name, Value);
+end;
+
+procedure TCnJSONWriter.WriteNullValue(Obj: TCnJSONObject;
+  const Name: string);
+begin
+  Obj.AddPair(Name);
 end;
 
 end.
