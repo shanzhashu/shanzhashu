@@ -57,11 +57,16 @@ type
     ts7: TTabSheet;
     ScrollBox7: TScrollBox;
     fcpSheet7: TFlexCelPreviewer;
+    edt1JiLuBianHao: TEdit;
+    btnStamp: TSpeedButton;
+    dlgOpen1: TOpenDialog;
+    dlgSaveStamp: TSaveDialog;
     procedure FormCreate(Sender: TObject);
     procedure btnPDFClick(Sender: TObject);
     procedure edtChange1(Sender: TObject);
     procedure btnToggleVisibleClick(Sender: TObject);
     procedure btnSettingsClick(Sender: TObject);
+    procedure btnStampClick(Sender: TObject);
   private
     FSettingFile: string;
     FStampFile: string;
@@ -129,8 +134,121 @@ begin
   with TFormSetting.Create(nil) do
   begin
     ShowModal;
-    FWSetting.SaveToXML(FSettingFile);
+    FWSetting.SaveToJSON(FSettingFile);
     Free;
+  end;
+end;
+
+function LoadAndDrawImageFromFile(Bmp: TBitmap; const FileName: string): Boolean;
+var
+  FileStream: TFileStream;
+  JpgImage: TJPEGImage;
+  PngImage: TPNGImage;
+  ImageWidth, ImageHeight: Integer;
+begin
+  Result := False;
+  if not FileExists(FileName) then
+    Exit;
+
+  // 创建文件流
+  FileStream := TFileStream.Create(FileName, fmOpenRead);
+
+  try
+    // 尝试加载JPEG图像
+    JpgImage := TJPEGImage.Create;
+    try
+      JpgImage.LoadFromStream(FileStream);
+      ImageWidth := JpgImage.Width;
+      ImageHeight := JpgImage.Height;
+      Bmp.Width := ImageWidth;
+      Bmp.Height := ImageHeight;
+      Bmp.Canvas.Draw(0, 0, JpgImage);
+      Result := True;
+    finally
+      JpgImage.Free;
+    end;
+  finally
+    FileStream.Free;
+  end;
+
+  if not Result then
+  begin
+    // 如果不是JPEG，尝试加载PNG图像
+    PngImage := TPNGImage.Create;
+    try
+      PngImage.LoadFromStream(FileStream);
+      ImageWidth := PngImage.Width;
+      ImageHeight := PngImage.Height;
+      Bmp.Width := ImageWidth;
+      Bmp.Height := ImageHeight;
+      Bmp.Canvas.Draw(0, 0, PngImage);
+      Result := True;
+    finally
+      PngImage.Free;
+    end;
+  end;
+end;
+
+function LoadAndDrawStamp(Bmp: TBitmap; const FileName: string; Left, Top: Integer): Boolean;
+var
+  FileStream: TFileStream;
+  PngImage: TPNGImage;
+begin
+  Result := False;
+  if not FileExists(FileName) then
+    Exit;
+
+  // 创建文件流
+  FileStream := TFileStream.Create(FileName, fmOpenRead);
+
+  try
+    // 尝试加载PNG图像
+    PngImage := TPNGImage.Create;
+    try
+      PngImage.LoadFromStream(FileStream);
+      Bmp.Canvas.Draw(Left, Top, PngImage);
+      Result := True;
+    finally
+      PngImage.Free;
+    end;
+  finally
+    FileStream.Free;
+  end;
+end;
+
+procedure SaveBitmapToJPG(const Bitmap: TBitmap; const FileName: string);
+var
+  JPEGImage: TJPEGImage;
+begin
+  JPEGImage := TJPEGImage.Create;
+  try
+    JPEGImage.Assign(Bitmap);
+    JPEGImage.SaveToFile(FileName);
+  finally
+    JPEGImage.Free;
+  end;
+end;
+
+procedure TFormMain.btnStampClick(Sender: TObject);
+var
+  Bmp: TBitmap;
+begin
+  if dlgOpen1.Execute then
+  begin
+    Bmp := TBitmap.Create;
+
+    try
+      if LoadAndDrawImageFromFile(Bmp, dlgOpen1.FileName) then
+      begin
+        if LoadAndDrawStamp(Bmp, FStampFile, 200, 400) then
+        begin
+          if dlgSaveStamp.Execute then
+            SaveBitmapToJPG(Bmp, dlgSaveStamp.FileName);
+        end;
+      end;
+    finally
+      Bmp.Free;
+    end;
   end;
 end;
 
@@ -195,8 +313,8 @@ begin
   if FileExists(FSettingFile) then
   begin
     FWSetting.LoadFromJSON(FSettingFile);
-    //FWSetting.LoadFromXML(ExtractFilePath(Application.ExeName) + 'Setting.xml');
-    //TCnJSONWriter.SaveToFile(FWSetting, FSettingFile);
+//    FWSetting.LoadFromXML(ExtractFilePath(Application.ExeName) + 'Setting.xml');
+//    TCnJSONWriter.SaveToFile(FWSetting, FSettingFile);
     // TCnJSONReader.LoadFromFile(FWSetting, FSettingFile);
   end;
 
@@ -287,6 +405,9 @@ procedure TFormMain.UpdateSheet1;
 var
   S: string;
 begin
+  S := Format('记录编号：%s', [edt1JiLuBianHao.Text]);
+  FXlses[1].SetCellValue(3, 1, S);
+
   S := Format('气温：%s℃     湿度：%s％RH    风速：%sm/s',
     [edt1QiWen.Text, edt1ShiDu.Text, edt1FengSu.Text]);
   FXlses[1].SetCellValue(4, 2, S);

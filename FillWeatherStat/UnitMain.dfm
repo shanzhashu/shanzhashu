@@ -4793,6 +4793,15 @@ object FormMain: TFormMain
             TabOrder = 13
             OnChange = edtChange1
           end
+          object edt1JiLuBianHao: TEdit
+            Left = 396
+            Top = 101
+            Width = 148
+            Height = 20
+            TabOrder = 14
+            Text = 'G-7231-H(T)23030150101'
+            OnChange = edtChange1
+          end
         end
       end
     end
@@ -4998,7 +5007,7 @@ object FormMain: TFormMain
   object pnlMain: TPanel
     Left = 400
     Top = 810
-    Width = 185
+    Width = 207
     Height = 20
     Anchors = [akRight, akBottom]
     BevelOuter = bvNone
@@ -5063,9 +5072,44 @@ object FormMain: TFormMain
       ShowHint = True
       OnClick = btnSettingsClick
     end
+    object btnStamp: TSpeedButton
+      Left = 103
+      Top = -2
+      Width = 23
+      Height = 22
+      Hint = #22270#29255#30422#31456
+      Flat = True
+      Glyph.Data = {
+        66010000424D6601000000000000760000002800000013000000140000000100
+        040000000000F000000000000000000000001000000000000000000000000000
+        80000080000000808000800000008000800080800000C0C0C000808080000000
+        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
+        3333333F000030030000003333333337000033333330F0003333333B00003333
+        33330F000333333000003333333330F00033333700003333333330F000333330
+        00003333333300F00003333A0000333333300FF0000333370000333333300F00
+        00033337000033333300FF000000333E00003333330FF0000000333700003333
+        330FF00000003337000033333300F0000000333F000033333330000000033337
+        0000333333330FFF003333370000333333330FFF0033333F0000333333330FFF
+        0033333E0000333333330FFF0033333700003333333330000333333F00003333
+        33333333333333300000}
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = btnStampClick
+    end
   end
   object dlgSave1: TSaveDialog
+    Filter = 'PDF'#25991#20214'|*.pdf'
     Left = 372
     Top = 732
+  end
+  object dlgOpen1: TOpenDialog
+    Filter = 'JPG'#25110'PNG'#25991#20214'|*.jpg|*.png'
+    Left = 436
+    Top = 748
+  end
+  object dlgSaveStamp: TSaveDialog
+    Filter = 'JPG'#25991#20214'|*.jpg'
+    Left = 508
+    Top = 740
   end
 end
