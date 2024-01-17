@@ -5102,7 +5102,7 @@ object FormMain: TFormMain
     Left = 372
     Top = 732
   end
-  object dlgOpen1: TOpenDialog
+  object dlgOpenForStamp: TOpenDialog
     Filter = 'JPG'#25110'PNG'#25991#20214'|*.jpg;*.png|PNG'#25991#20214'|*.png'
     Left = 436
     Top = 748

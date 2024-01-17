@@ -59,7 +59,7 @@ type
     fcpSheet7: TFlexCelPreviewer;
     edt1JiLuBianHao: TEdit;
     btnStamp: TSpeedButton;
-    dlgOpen1: TOpenDialog;
+    dlgOpenForStamp: TOpenDialog;
     dlgSaveStamp: TSaveDialog;
     procedure FormCreate(Sender: TObject);
     procedure btnPDFClick(Sender: TObject);
@@ -67,6 +67,14 @@ type
     procedure btnToggleVisibleClick(Sender: TObject);
     procedure btnSettingsClick(Sender: TObject);
     procedure btnStampClick(Sender: TObject);
+
+    procedure UpdateSheet1(Sender: TObject);
+    procedure UpdateSheet2(Sender: TObject);
+    procedure UpdateSheet3(Sender: TObject);
+    procedure UpdateSheet4(Sender: TObject);
+    procedure UpdateSheet5(Sender: TObject);
+    procedure UpdateSheet6(Sender: TObject);
+    procedure UpdateSheet7(Sender: TObject);
   private
     FSettingFile: string;
     FStampFile: string;
@@ -82,12 +90,13 @@ type
     function PreviewerByIndex(Index: Integer): TFlexCelPreviewer;
     function CurrentPreviewer: TFlexCelPreviewer;
   public
-    procedure UpdateSheet1; // 气温
-    procedure UpdateSheet2; // 湿度
-    procedure UpdateSheet3; // 风向
-    procedure UpdateSheet4; // 风速
-    procedure UpdateSheet5; // 气压
-    procedure UpdateSheet6; // 雨量
+    procedure Init1;
+    procedure Init2;
+    procedure Init3;
+    procedure Init4;
+    procedure Init5;
+    procedure Init6;
+    procedure Init7;
   end;
 
 var
@@ -242,12 +251,12 @@ procedure TFormMain.btnStampClick(Sender: TObject);
 var
   Bmp: TBitmap;
 begin
-  if dlgOpen1.Execute then
+  if dlgOpenForStamp.Execute then
   begin
     Bmp := TBitmap.Create;
 
     try
-      if LoadAndDrawImageFromFile(Bmp, dlgOpen1.FileName) then
+      if LoadAndDrawImageFromFile(Bmp, dlgOpenForStamp.FileName) then
       begin
         if LoadAndDrawStamp(Bmp, FStampFile, FWSetting.StampLeft,
           FWSetting.StampTop) then
@@ -314,7 +323,7 @@ end;
 
 procedure TFormMain.edtChange1(Sender: TObject);
 begin
-  UpdateSheet1;
+  UpdateSheet1(Sender);
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
@@ -353,7 +362,18 @@ begin
 
   pgcMain.ActivePageIndex := 0;
 
-  // 初始化填写元素，后面分页来，第一页：
+  // 初始化填写元素，分页来
+  Init1;
+  Init2;
+  Init3;
+  Init4;
+  Init5;
+  Init6;
+  Init7;
+end;
+
+procedure TFormMain.Init1;
+begin
   edt1JiaoZhunShiJian.Text := FormatDateTime('yyyy年MM月dd日', Now());
 
   F1BiaoZhunQiNames := TStringList.Create;
@@ -384,8 +404,36 @@ begin
   cbb1HeChaYiJu.Items.Assign(F1HeChaYiJu);
   if cbb1HeChaYiJu.Items.Count > 0 then
     cbb1HeChaYiJu.ItemIndex := 0;
+end;
 
-  // 第二页
+procedure TFormMain.Init2;
+begin
+
+end;
+
+procedure TFormMain.Init3;
+begin
+
+end;
+
+procedure TFormMain.Init4;
+begin
+
+end;
+
+procedure TFormMain.Init5;
+begin
+
+end;
+
+procedure TFormMain.Init6;
+begin
+
+end;
+
+procedure TFormMain.Init7;
+begin
+
 end;
 
 procedure TFormMain.InsertStamp(Index: Integer);
@@ -414,7 +462,7 @@ begin
     raise Exception.Create('NO FcpSheet for ' + IntToStr(Index));
 end;
 
-procedure TFormMain.UpdateSheet1;
+procedure TFormMain.UpdateSheet1(Sender: TObject);
 var
   S: string;
 begin
@@ -456,29 +504,34 @@ begin
   FcpSheet1.InvalidatePreview;
 end;
 
-procedure TFormMain.UpdateSheet2;
+procedure TFormMain.UpdateSheet2(Sender: TObject);
 begin
-
+  //
 end;
 
-procedure TFormMain.UpdateSheet3;
+procedure TFormMain.UpdateSheet3(Sender: TObject);
 begin
-
+  //
 end;
 
-procedure TFormMain.UpdateSheet4;
+procedure TFormMain.UpdateSheet4(Sender: TObject);
 begin
-
+  //
 end;
 
-procedure TFormMain.UpdateSheet5;
+procedure TFormMain.UpdateSheet5(Sender: TObject);
 begin
-
+  //
 end;
 
-procedure TFormMain.UpdateSheet6;
+procedure TFormMain.UpdateSheet6(Sender: TObject);
 begin
+  //
+end;
 
+procedure TFormMain.UpdateSheet7(Sender: TObject);
+begin
+  //
 end;
 
 end.
