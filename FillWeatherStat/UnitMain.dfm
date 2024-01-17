@@ -25,7 +25,7 @@ object FormMain: TFormMain
     Top = 0
     Width = 629
     Height = 828
-    ActivePage = ts1
+    ActivePage = ts2
     Align = alClient
     TabOrder = 0
     TabPosition = tpBottom
@@ -4823,7 +4823,7 @@ object FormMain: TFormMain
           802)
         object fcpSheet2: TFlexCelPreviewer
           Left = 0
-          Top = 0
+          Top = 1
           Width = 603
           Height = 800
           Margins.Top = 1
@@ -4835,6 +4835,187 @@ object FormMain: TFormMain
           Zoom = 0.700000000000000000
           Anchors = [akLeft, akTop, akBottom]
           TabOrder = 0
+          object lbl2BeiHeCha: TLabel
+            Left = 339
+            Top = 178
+            Width = 72
+            Height = 12
+            Caption = #34987#26680#26597#22120#20855#65306
+            Transparent = True
+          end
+          object lbl2BiaoZhunQi: TLabel
+            Left = 152
+            Top = 178
+            Width = 48
+            Height = 12
+            Caption = #26631#20934#22120#65306
+            Transparent = True
+          end
+          object edt2JiLuBianHao: TEdit
+            Left = 396
+            Top = 97
+            Width = 156
+            Height = 20
+            TabOrder = 0
+            Text = 'G-7231-H(TH)23030150101'
+            OnChange = UpdateSheet2
+          end
+          object edt2QiWen: TEdit
+            Left = 242
+            Top = 121
+            Width = 35
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 1
+            Text = '23.9'
+            OnChange = UpdateSheet2
+          end
+          object edt2ShiDu: TEdit
+            Left = 339
+            Top = 121
+            Width = 21
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 2
+            Text = '42'
+            OnChange = UpdateSheet2
+          end
+          object edt2FengSu: TEdit
+            Left = 450
+            Top = 121
+            Width = 23
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 3
+            Text = '2.0'
+            OnChange = UpdateSheet2
+          end
+          object edt2KaiShiShiJian: TEdit
+            Left = 210
+            Top = 147
+            Width = 41
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 4
+            Text = '13:10'
+            OnChange = UpdateSheet2
+          end
+          object edt2JieShuShiJian: TEdit
+            Left = 460
+            Top = 147
+            Width = 41
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 5
+            Text = '15:50'
+            OnChange = UpdateSheet2
+          end
+          object cbb2BiaoZhunQi: TComboBox
+            Left = 206
+            Top = 173
+            Width = 115
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 6
+            OnChange = UpdateSheet2
+          end
+          object cbb2BeiHeCha: TComboBox
+            Left = 404
+            Top = 173
+            Width = 115
+            Height = 20
+            TabOrder = 7
+            OnChange = UpdateSheet2
+          end
+          object cbb2WaiGuanHeGe: TComboBox
+            Left = 139
+            Top = 412
+            Width = 81
+            Height = 20
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 8
+            Text = #21512#26684
+            OnChange = UpdateSheet2
+            Items.Strings = (
+              #21512#26684
+              #19981#21512#26684)
+          end
+          object cbb2HeGe: TComboBox
+            Left = 139
+            Top = 610
+            Width = 81
+            Height = 20
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 9
+            Text = #21512#26684
+            OnChange = UpdateSheet2
+            Items.Strings = (
+              #21512#26684
+              #19981#21512#26684)
+          end
+          object cbb2HeChaYiJu: TComboBox
+            Left = 139
+            Top = 636
+            Width = 413
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 10
+            OnChange = UpdateSheet2
+          end
+          object cbb2FuHeYaoQiu: TComboBox
+            Left = 139
+            Top = 664
+            Width = 65
+            Height = 20
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 11
+            Text = #26159
+            OnChange = UpdateSheet2
+            Items.Strings = (
+              #26159
+              #21542)
+          end
+          object cbb2JiaoZhun: TComboBox
+            Left = 104
+            Top = 692
+            Width = 65
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 12
+            OnChange = UpdateSheet2
+            OnClick = edtChange1
+          end
+          object cbb2HeYan: TComboBox
+            Left = 260
+            Top = 692
+            Width = 77
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 13
+            OnChange = UpdateSheet2
+          end
+          object edt2JiaoZhunShiJian: TEdit
+            Left = 412
+            Top = 694
+            Width = 140
+            Height = 20
+            TabOrder = 14
+            Text = '2023'#24180'12'#26376'31'#26085
+            OnChange = UpdateSheet2
+          end
         end
       end
     end
@@ -4971,7 +5152,7 @@ object FormMain: TFormMain
       end
     end
     object ts7: TTabSheet
-      Caption = #21551#21160#39118
+      Caption = #36215#21160#39118
       ImageIndex = 1
       object ScrollBox7: TScrollBox
         Left = 0
@@ -5097,7 +5278,7 @@ object FormMain: TFormMain
       OnClick = btnStampClick
     end
   end
-  object dlgSave1: TSaveDialog
+  object dlgSavePDF: TSaveDialog
     Filter = 'PDF'#25991#20214'|*.pdf'
     Left = 372
     Top = 732
