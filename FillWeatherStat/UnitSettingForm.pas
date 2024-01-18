@@ -14,6 +14,11 @@ type
     pnlToolbar: TPanel;
     btnAdd: TSpeedButton;
     btnDelete: TSpeedButton;
+    grpStamp: TGroupBox;
+    lbledtStampWidth: TLabeledEdit;
+    lbledtStampHeight: TLabeledEdit;
+    lbledtStampTop: TLabeledEdit;
+    lbledtStampLeft: TLabeledEdit;
     procedure FormCreate(Sender: TObject);
     procedure btnAddClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
@@ -95,6 +100,11 @@ var
   Tab: TTabSheet;
   Frm: TFrameSetting;
 begin
+  lbledtStampTop.Text := IntToStr(FWSetting.StampTop);
+  lbledtStampLeft.Text := IntToStr(FWSetting.StampLeft);
+  lbledtStampWidth.Text := IntToStr(FWSetting.StampWidth);
+  lbledtStampHeight.Text := IntToStr(FWSetting.StampHeight);
+
   SL := TStringList.Create;
   try
     for I := 0 to FWSetting.Count - 1 do

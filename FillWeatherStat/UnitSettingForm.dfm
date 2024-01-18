@@ -3,7 +3,7 @@ object FormSetting: TFormSetting
   Top = 0
   BorderStyle = bsDialog
   Caption = #36873#39033#35774#32622
-  ClientHeight = 425
+  ClientHeight = 483
   ClientWidth = 552
   Color = clBtnFace
   Font.Charset = GB2312_CHARSET
@@ -17,26 +17,27 @@ object FormSetting: TFormSetting
   OnCreate = FormCreate
   DesignSize = (
     552
-    425)
+    483)
   PixelsPerInch = 96
   TextHeight = 12
   object pgcSetting: TPageControl
     Left = 8
     Top = 8
     Width = 537
-    Height = 371
-    Anchors = [akLeft, akTop, akRight, akBottom]
+    Height = 321
+    Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
   end
   object btnClose: TButton
-    Left = 470
-    Top = 389
+    Left = 469
+    Top = 443
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #20851#38381
     TabOrder = 1
     OnClick = btnCloseClick
+    ExplicitTop = 439
   end
   object pnlToolbar: TPanel
     Left = 467
@@ -116,6 +117,54 @@ object FormSetting: TFormSetting
         FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
         00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF}
       OnClick = btnDeleteClick
+    end
+  end
+  object grpStamp: TGroupBox
+    Left = 8
+    Top = 344
+    Width = 536
+    Height = 89
+    Caption = #30422#31456#35774#32622
+    TabOrder = 3
+    object lbledtStampWidth: TLabeledEdit
+      Left = 24
+      Top = 40
+      Width = 89
+      Height = 20
+      EditLabel.Width = 24
+      EditLabel.Height = 12
+      EditLabel.Caption = #23485#65306
+      TabOrder = 0
+    end
+    object lbledtStampHeight: TLabeledEdit
+      Left = 128
+      Top = 40
+      Width = 89
+      Height = 20
+      EditLabel.Width = 24
+      EditLabel.Height = 12
+      EditLabel.Caption = #39640#65306
+      TabOrder = 1
+    end
+    object lbledtStampTop: TLabeledEdit
+      Left = 328
+      Top = 40
+      Width = 89
+      Height = 20
+      EditLabel.Width = 60
+      EditLabel.Height = 12
+      EditLabel.Caption = #19978#32536#36317#31163#65306
+      TabOrder = 2
+    end
+    object lbledtStampLeft: TLabeledEdit
+      Left = 432
+      Top = 40
+      Width = 89
+      Height = 20
+      EditLabel.Width = 60
+      EditLabel.Height = 12
+      EditLabel.Caption = #24038#36793#36317#31163#65306
+      TabOrder = 3
     end
   end
 end

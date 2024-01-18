@@ -22,6 +22,7 @@ type
     btnSettings: TSpeedButton;
     ScrollBox1: TScrollBox;
     fcpSheet1: TFlexCelPreviewer;
+    edt1JiLuBianHao: TEdit;
     lbl1BiaoZhunQi: TLabel;
     img1bk: TImage;
     lbl1BeiHeCha: TLabel;
@@ -62,22 +63,72 @@ type
     ts3: TTabSheet;
     ScrollBox3: TScrollBox;
     fcpSheet3: TFlexCelPreviewer;
+    cbb3FuHeYaoQiu: TComboBox;
+    cbb3HeChaYiJu: TComboBox;
+    cbb3HeGe: TComboBox;
+    cbb3WaiGuanHeGe: TComboBox;
+    cbb3BeiHeCha: TComboBox;
+    cbb3BiaoZhunQi: TComboBox;
+    edt3KaiShiShiJian: TEdit;
+    edt3QiWen: TEdit;
+    edt3ShiDu: TEdit;
+    edt3FengSu: TEdit;
+    edt3JieShuShiJian: TEdit;
+    edt3JiLuBianHao: TEdit;
+    lbl3BeiHeCha: TLabel;
+    lbl3BiaoZhunQi: TLabel;
+    cbb3JiaoZhun: TComboBox;
+    edt3JiaoZhunShiJian: TEdit;
+    cbb3HeYan: TComboBox;
     ts4: TTabSheet;
     ScrollBox4: TScrollBox;
     fcpSheet4: TFlexCelPreviewer;
+    edt4JiLuBianHao: TEdit;
+    edt4QiWen: TEdit;
+    edt4ShiDu: TEdit;
+    edt4FengSu: TEdit;
+    edt4JieShuShiJian: TEdit;
+    cbb4BeiHeCha: TComboBox;
+    lbl4BeiHeCha: TLabel;
+    cbb4BiaoZhunQi: TComboBox;
+    lbl4BiaoZhunQi: TLabel;
+    cbb4WaiGuanHeGe: TComboBox;
+    cbb4HeGe: TComboBox;
+    cbb4HeChaYiJu: TComboBox;
+    cbb4FuHeYaoQiu: TComboBox;
+    edt4JiaoZhunShiJian: TEdit;
+    cbb4JiaoZhun: TComboBox;
+    cbb4HeYan: TComboBox;
     ts5: TTabSheet;
     ScrollBox5: TScrollBox;
     fcpSheet5: TFlexCelPreviewer;
     ts6: TTabSheet;
     ScrollBox6: TScrollBox;
     fcpSheet6: TFlexCelPreviewer;
+    edt6JiLuBianHao: TEdit;
+    edt6FengSu: TEdit;
+    edt6ShiDu: TEdit;
+    edt6QiWen: TEdit;
+    edt6KaiShiShiJian: TEdit;
+    edt6JieShuShiJian: TEdit;
+    cbb6BiaoZhunQi: TComboBox;
+    lbl6BiaoZhunQi: TLabel;
+    lbl6BeiHeCha: TLabel;
+    cbb6BeiHeCha: TComboBox;
+    cbb6WaiGuanHeGe: TComboBox;
+    cbb6HeGe: TComboBox;
+    cbb6HeChaYiJu: TComboBox;
+    cbb6FuHeYaoQiu: TComboBox;
+    cbb6HeYan: TComboBox;
+    cbb6JiaoZhun: TComboBox;
+    edt6JiaoZhunShiJian: TEdit;
     ts7: TTabSheet;
     ScrollBox7: TScrollBox;
     fcpSheet7: TFlexCelPreviewer;
-    edt1JiLuBianHao: TEdit;
     btnStamp: TSpeedButton;
     dlgOpenForStamp: TOpenDialog;
     dlgSaveStamp: TSaveDialog;
+    edt4KaiShiShiJian: TEdit;
 
     procedure FormCreate(Sender: TObject);
     procedure btnPDFClick(Sender: TObject);
@@ -93,6 +144,7 @@ type
     procedure UpdateSheet5(Sender: TObject);
     procedure UpdateSheet6(Sender: TObject);
     procedure UpdateSheet7(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     FSettingFile: string;
     FStampFile: string;
@@ -132,6 +184,7 @@ const
   S_F_SET = 'Setting.json';
   S_F_STAMP = 'stamp.png';
   S_ARR_HEGE: array[0..1] of string = ('合格', '不合格');
+  OFFSET_ARRAY: array[1..XLS_COUNT] of Integer = (0, -100, -130, -80, 0, -70, -150);
 
 var
   XLS_FILES: array[1..XLS_COUNT] of string;
@@ -162,6 +215,12 @@ begin
   with TFormSetting.Create(nil) do
   begin
     ShowModal;
+
+    FWSetting.StampTop := StrToInt(lbledtStampTop.Text);
+    FWSetting.StampLeft := StrToInt(lbledtStampLeft.Text);
+    FWSetting.StampWidth := StrToInt(lbledtStampWidth.Text);
+    FWSetting.StampHeight := StrToInt(lbledtStampHeight.Text);
+
     FWSetting.SaveToJSON(FSettingFile);
     Free;
   end;
@@ -226,10 +285,11 @@ begin
   end;
 end;
 
-function LoadAndDrawStamp(Bmp: TBitmap; const FileName: string; Left, Top: Integer): Boolean;
+function LoadAndDrawStamp(Bmp: TBitmap; const FileName: string; Left, Top, Width, Height: Integer): Boolean;
 var
   FileStream: TFileStream;
   PngImage: TPNGImage;
+  R: TRect;
 begin
   Result := False;
   if not FileExists(FileName) then
@@ -243,7 +303,9 @@ begin
     PngImage := TPNGImage.Create;
     try
       PngImage.LoadFromStream(FileStream);
-      Bmp.Canvas.Draw(Left, Top, PngImage);
+      R := Rect(Left, Top, Left + Width, Top + Height);
+      Bmp.Canvas.StretchDraw(R, PngImage);
+      // Bmp.Canvas.Draw(Left, Top, PngImage);
       Result := True;
     finally
       PngImage.Free;
@@ -278,7 +340,7 @@ begin
       if LoadAndDrawImageFromFile(Bmp, dlgOpenForStamp.FileName) then
       begin
         if LoadAndDrawStamp(Bmp, FStampFile, FWSetting.StampLeft,
-          FWSetting.StampTop) then
+          FWSetting.StampTop, FWSetting.StampWidth, FWSetting.StampHeight) then
         begin
           if dlgSaveStamp.Execute then
           begin
@@ -401,6 +463,19 @@ begin
   UpdateSheet7(nil);
 end;
 
+procedure TFormMain.FormDestroy(Sender: TObject);
+begin
+  FBiaoZhunQiNames.Free;
+  FBiaoZhunQiValues.Free;
+
+  FBeiHeChaQiJuNames.Free;
+  FBeiHeChaQiJuValues.Free;
+
+  FJiaoZhun.Free;
+  FHeYan.Free;
+  FHeChaYiJu.Free;
+end;
+
 procedure TFormMain.Init0;
 begin
   FBiaoZhunQiNames := TStringList.Create;
@@ -463,12 +538,44 @@ end;
 
 procedure TFormMain.Init3;
 begin
+  edt3JiaoZhunShiJian.Text := FormatDateTime('yyyy年MM月dd日', Now());
 
+  cbb3BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
+
+  cbb3BeiHeCha.Items.Assign(FBeiHeChaQiJuNames);
+
+  cbb3JiaoZhun.Items.Assign(FJiaoZhun);
+  if cbb3JiaoZhun.Items.Count > 0 then
+    cbb3JiaoZhun.ItemIndex := 0;
+
+  cbb3HeYan.Items.Assign(FHeYan);
+  if cbb3HeYan.Items.Count > 0 then
+    cbb3HeYan.ItemIndex := 0;
+
+  cbb3HeChaYiJu.Items.Assign(FHeChaYiJu);
+  if cbb3HeChaYiJu.Items.Count > 0 then
+    cbb3HeChaYiJu.ItemIndex := 0;
 end;
 
 procedure TFormMain.Init4;
 begin
+  edt4JiaoZhunShiJian.Text := FormatDateTime('yyyy年MM月dd日', Now());
 
+  cbb4BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
+
+  cbb4BeiHeCha.Items.Assign(FBeiHeChaQiJuNames);
+
+  cbb4JiaoZhun.Items.Assign(FJiaoZhun);
+  if cbb4JiaoZhun.Items.Count > 0 then
+    cbb4JiaoZhun.ItemIndex := 0;
+
+  cbb4HeYan.Items.Assign(FHeYan);
+  if cbb4HeYan.Items.Count > 0 then
+    cbb4HeYan.ItemIndex := 0;
+
+  cbb4HeChaYiJu.Items.Assign(FHeChaYiJu);
+  if cbb4HeChaYiJu.Items.Count > 0 then
+    cbb4HeChaYiJu.ItemIndex := 0;
 end;
 
 procedure TFormMain.Init5;
@@ -478,7 +585,23 @@ end;
 
 procedure TFormMain.Init6;
 begin
+  edt6JiaoZhunShiJian.Text := FormatDateTime('yyyy年MM月dd日', Now());
 
+  cbb6BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
+
+  cbb6BeiHeCha.Items.Assign(FBeiHeChaQiJuNames);
+
+  cbb6JiaoZhun.Items.Assign(FJiaoZhun);
+  if cbb6JiaoZhun.Items.Count > 0 then
+    cbb6JiaoZhun.ItemIndex := 0;
+
+  cbb6HeYan.Items.Assign(FHeYan);
+  if cbb6HeYan.Items.Count > 0 then
+    cbb6HeYan.ItemIndex := 0;
+
+  cbb6HeChaYiJu.Items.Assign(FHeChaYiJu);
+  if cbb6HeChaYiJu.Items.Count > 0 then
+    cbb6HeChaYiJu.ItemIndex := 0;
 end;
 
 procedure TFormMain.Init7;
@@ -495,8 +618,8 @@ begin
     // 插入图像
     MP := TImageProperties.Create;
     MP.Anchor := TClientAnchor.Create(TFlxAnchorType.MoveAndDontResize,
-      16, 0, 4, 50, 256, 236, FXlses[Index]);
-
+      16, OFFSET_ARRAY[Index], 4, 50, 256, 236, FXlses[Index]);
+      // 行、行偏移像素、列、列偏移像素、高、宽、XLS实例
     FXlses[Index].AddImage(FStampFile, MP);
     Inc(FStampIndexes[Index]);
 
@@ -562,7 +685,7 @@ begin
   FXlses[2].SetCellValue(2, 1, S);
 
   S := Format('气温：%s℃     湿度：%s％RH    风速：%sm/s',
-    [edt2QiWen.Text, edt1ShiDu.Text, edt1FengSu.Text]);
+    [edt2QiWen.Text, edt2ShiDu.Text, edt2FengSu.Text]);
   FXlses[2].SetCellValue(3, 2, S);
 
   if cbb2WaiGuanHeGe.ItemIndex = 0 then
@@ -597,13 +720,87 @@ begin
 end;
 
 procedure TFormMain.UpdateSheet3(Sender: TObject);
+var
+  S: string;
 begin
-  //
+  S := Format('记录编号：%s', [edt3JiLuBianHao.Text]);
+  FXlses[3].SetCellValue(3, 3, S);
+
+  S := Format('气温：%s℃     湿度：%s％RH    风速：%sm/s',
+    [edt3QiWen.Text, edt3ShiDu.Text, edt3FengSu.Text]);
+  FXlses[3].SetCellValue(4, 2, S);
+
+  if cbb3WaiGuanHeGe.ItemIndex = 0 then
+    S := Format('%s合格                  %s 不合格', [#$2611, #$25A1])
+  else
+    S := Format('%s合格                  %s 不合格', [#$25A1, #$2611]);
+  FXlses[3].SetCellValue(8, 2, S);
+
+  FXlses[3].SetCellValue(5, 2, edt3KaiShiShiJian.Text);
+  FXlses[3].SetCellValue(5, 5, edt3JieShuShiJian.Text);
+
+  if (cbb3BiaoZhunQi.ItemIndex >= 0) and (cbb3BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
+    FXlses[3].SetCellValue(7, 2, FBiaoZhunQiValues[cbb3BiaoZhunQi.ItemIndex]);
+
+  if (cbb3BeiHeCha.ItemIndex >= 0) and (cbb3BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
+    FXlses[3].SetCellValue(7, 4, FBeiHeChaQiJuValues[cbb3BeiHeCha.ItemIndex]);
+
+  FXlses[3].SetCellValue(13, 3, S_ARR_HEGE[cbb3HeGe.ItemIndex]);
+  if cbb3FuHeYaoQiu.ItemIndex = 0 then
+    S := Format('%s 是        %s 否', [#$2611, #$25A1])
+  else
+    S := Format('%s 是        %s 否', [#$25A1, #$2611]);
+
+  FXlses[3].SetCellValue(14, 3, cbb3HeChaYiJu.Items[cbb3HeChaYiJu.ItemIndex]);
+  FXlses[3].SetCellValue(15, 3, S);
+
+  FXlses[3].SetCellValue(16, 1, '校准：' + cbb3JiaoZhun.Items[cbb3JiaoZhun.ItemIndex]);
+  FXlses[3].SetCellValue(16, 3, '核验：' + cbb3HeYan.Items[cbb3HeYan.ItemIndex]);
+  FXlses[3].SetCellValue(16, 5, edt3JiaoZhunShiJian.Text);
+
+  FcpSheet3.InvalidatePreview;
 end;
 
 procedure TFormMain.UpdateSheet4(Sender: TObject);
+var
+  S: string;
 begin
-  //
+  S := Format('记录编号：%s', [edt4JiLuBianHao.Text]);
+  FXlses[4].SetCellValue(3, 3, S);
+
+  S := Format('气温：%s℃     湿度：%s％RH    风速：%sm/s',
+    [edt4QiWen.Text, edt4ShiDu.Text, edt4FengSu.Text]);
+  FXlses[4].SetCellValue(4, 2, S);
+
+  if cbb4WaiGuanHeGe.ItemIndex = 0 then
+    S := Format('%s合格                  %s 不合格', [#$2611, #$25A1])
+  else
+    S := Format('%s合格                  %s 不合格', [#$25A1, #$2611]);
+  FXlses[4].SetCellValue(8, 2, S);
+
+  FXlses[4].SetCellValue(5, 2, edt4KaiShiShiJian.Text);
+  FXlses[4].SetCellValue(5, 5, edt4JieShuShiJian.Text);
+
+  if (cbb4BiaoZhunQi.ItemIndex >= 0) and (cbb4BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
+    FXlses[4].SetCellValue(7, 2, FBiaoZhunQiValues[cbb4BiaoZhunQi.ItemIndex]);
+
+  if (cbb4BeiHeCha.ItemIndex >= 0) and (cbb4BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
+    FXlses[4].SetCellValue(7, 4, FBeiHeChaQiJuValues[cbb4BeiHeCha.ItemIndex]);
+
+  FXlses[4].SetCellValue(15, 3, S_ARR_HEGE[cbb4HeGe.ItemIndex]);
+  if cbb4FuHeYaoQiu.ItemIndex = 0 then
+    S := Format('%s 是        %s 否', [#$2611, #$25A1])
+  else
+    S := Format('%s 是        %s 否', [#$25A1, #$2611]);
+
+  FXlses[4].SetCellValue(16, 3, cbb4HeChaYiJu.Items[cbb4HeChaYiJu.ItemIndex]);
+  FXlses[4].SetCellValue(17, 3, S);
+
+  FXlses[4].SetCellValue(18, 1, '校准：' + cbb4JiaoZhun.Items[cbb4JiaoZhun.ItemIndex]);
+  FXlses[4].SetCellValue(18, 3, '核验：' + cbb4HeYan.Items[cbb4HeYan.ItemIndex]);
+  FXlses[4].SetCellValue(18, 5, edt4JiaoZhunShiJian.Text);
+
+  FcpSheet4.InvalidatePreview;
 end;
 
 procedure TFormMain.UpdateSheet5(Sender: TObject);
@@ -612,8 +809,45 @@ begin
 end;
 
 procedure TFormMain.UpdateSheet6(Sender: TObject);
+var
+  S: string;
 begin
-  //
+  S := Format('记录编号：%s', [edt6JiLuBianHao.Text]);
+  FXlses[6].SetCellValue(3, 4, S);
+
+  S := Format('气温：%s℃     湿度：%s％RH    风速：%sm/s',
+    [edt6QiWen.Text, edt6ShiDu.Text, edt6FengSu.Text]);
+  FXlses[6].SetCellValue(4, 2, S);
+
+  if cbb6WaiGuanHeGe.ItemIndex = 0 then
+    S := Format('%s合格                  %s 不合格', [#$2611, #$25A1])
+  else
+    S := Format('%s合格                  %s 不合格', [#$25A1, #$2611]);
+  FXlses[6].SetCellValue(8, 2, S);
+
+  FXlses[6].SetCellValue(5, 2, edt6KaiShiShiJian.Text);
+  FXlses[6].SetCellValue(5, 5, edt6JieShuShiJian.Text);
+
+  if (cbb6BiaoZhunQi.ItemIndex >= 0) and (cbb6BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
+    FXlses[6].SetCellValue(7, 2, FBiaoZhunQiValues[cbb6BiaoZhunQi.ItemIndex]);
+
+  if (cbb6BeiHeCha.ItemIndex >= 0) and (cbb6BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
+    FXlses[6].SetCellValue(7, 4, FBeiHeChaQiJuValues[cbb6BeiHeCha.ItemIndex]);
+
+  FXlses[6].SetCellValue(16, 3, S_ARR_HEGE[cbb6HeGe.ItemIndex]);
+  if cbb6FuHeYaoQiu.ItemIndex = 0 then
+    S := Format('%s 是        %s 否', [#$2611, #$25A1])
+  else
+    S := Format('%s 是        %s 否', [#$25A1, #$2611]);
+
+  FXlses[6].SetCellValue(17, 3, cbb6HeChaYiJu.Items[cbb6HeChaYiJu.ItemIndex]);
+  FXlses[6].SetCellValue(18, 3, S);
+
+  FXlses[6].SetCellValue(19, 2, cbb6JiaoZhun.Items[cbb6JiaoZhun.ItemIndex]);
+  FXlses[6].SetCellValue(19, 3, '核验：' + cbb6HeYan.Items[cbb6HeYan.ItemIndex]);
+  FXlses[6].SetCellValue(19, 5, edt6JiaoZhunShiJian.Text);
+
+  FcpSheet6.InvalidatePreview;
 end;
 
 procedure TFormMain.UpdateSheet7(Sender: TObject);

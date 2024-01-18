@@ -23,6 +23,8 @@ type
     FSettingVersion: Integer;
     FStampLeft: Integer;
     FStampTop: Integer;
+    FStampWidth: Integer;
+    FStampHeight: Integer;
   public
     constructor Create; reintroduce;
     destructor Destroy; override;
@@ -41,6 +43,8 @@ type
 
     property StampLeft: Integer read FStampLeft write FStampLeft;
     property StampTop: Integer read FStampTop write FStampTop;
+    property StampWidth: Integer read FStampWidth write FStampWidth;
+    property StampHeight: Integer read FStampHeight write FStampHeight;
   end;
 
 var
@@ -54,8 +58,10 @@ constructor TFWSettingCollectin.Create;
 begin
   inherited Create(TFWSettingItem);
   FSettingVersion := 1;
-  FStampTop := 550;
-  FStampLeft := 100;
+  FStampTop := 350;
+  FStampLeft := 80;
+  FStampWidth := 200;
+  FStampHeight := 200;
 end;
 
 procedure TFWSettingCollectin.DeleteType(const AType: string);
