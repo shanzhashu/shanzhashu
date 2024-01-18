@@ -26,7 +26,7 @@ object FormMain: TFormMain
     Top = 0
     Width = 629
     Height = 828
-    ActivePage = ts4
+    ActivePage = ts1
     Align = alClient
     TabOrder = 0
     TabPosition = tpBottom
@@ -5478,6 +5478,187 @@ object FormMain: TFormMain
           Zoom = 0.700000000000000000
           Anchors = [akLeft, akTop, akBottom]
           TabOrder = 0
+          object lbl5BiaoZhunQi: TLabel
+            Left = 146
+            Top = 189
+            Width = 48
+            Height = 12
+            Caption = #26631#20934#22120#65306
+            Transparent = True
+          end
+          object lbl5BeiHeCha: TLabel
+            Left = 333
+            Top = 189
+            Width = 72
+            Height = 12
+            Caption = #34987#26680#26597#22120#20855#65306
+            Transparent = True
+          end
+          object edt5JiLuBianHao: TEdit
+            Left = 384
+            Top = 109
+            Width = 162
+            Height = 20
+            TabOrder = 0
+            Text = 'G-7231-H(P)23030150101'
+            OnChange = UpdateSheet5
+          end
+          object edt5QiWen: TEdit
+            Left = 228
+            Top = 135
+            Width = 35
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 1
+            Text = '23.9'
+            OnChange = UpdateSheet5
+          end
+          object edt5ShiDu: TEdit
+            Left = 327
+            Top = 135
+            Width = 21
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 2
+            Text = '42'
+            OnChange = UpdateSheet5
+          end
+          object edt5FengSu: TEdit
+            Left = 437
+            Top = 135
+            Width = 23
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 3
+            Text = '2.0'
+            OnChange = UpdateSheet5
+          end
+          object edt5JieShuShiJian: TEdit
+            Left = 463
+            Top = 160
+            Width = 41
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 4
+            Text = '15:10'
+            OnChange = UpdateSheet5
+          end
+          object edt5KaiShiShiJian: TEdit
+            Left = 207
+            Top = 160
+            Width = 41
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 5
+            Text = '13:10'
+            OnChange = UpdateSheet5
+          end
+          object cbb5BiaoZhunQi: TComboBox
+            Left = 202
+            Top = 185
+            Width = 115
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 6
+            OnChange = UpdateSheet5
+          end
+          object cbb5BeiHeCha: TComboBox
+            Left = 400
+            Top = 185
+            Width = 115
+            Height = 20
+            TabOrder = 7
+            OnChange = UpdateSheet5
+          end
+          object cbb5WaiGuanHeGe: TComboBox
+            Left = 127
+            Top = 392
+            Width = 81
+            Height = 20
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 8
+            Text = #21512#26684
+            OnChange = UpdateSheet5
+            Items.Strings = (
+              #21512#26684
+              #19981#21512#26684)
+          end
+          object cbb5HeGe: TComboBox
+            Left = 217
+            Top = 620
+            Width = 81
+            Height = 20
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 9
+            Text = #21512#26684
+            OnChange = UpdateSheet5
+            Items.Strings = (
+              #21512#26684
+              #19981#21512#26684)
+          end
+          object cbb5HeChaYiJu: TComboBox
+            Left = 217
+            Top = 644
+            Width = 323
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 10
+            OnChange = UpdateSheet5
+          end
+          object cbb5FuHeYaoQiu: TComboBox
+            Left = 217
+            Top = 670
+            Width = 65
+            Height = 20
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 11
+            Text = #26159
+            OnChange = UpdateSheet5
+            Items.Strings = (
+              #26159
+              #21542)
+          end
+          object edt5JiaoZhunShiJian: TEdit
+            Left = 412
+            Top = 693
+            Width = 133
+            Height = 20
+            TabOrder = 12
+            Text = '2023'#24180'12'#26376'31'#26085
+            OnChange = UpdateSheet5
+          end
+          object cbb5JiaoZhun: TComboBox
+            Left = 92
+            Top = 693
+            Width = 65
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 13
+            OnChange = UpdateSheet5
+            OnClick = edtChange1
+          end
+          object cbb5HeYan: TComboBox
+            Left = 250
+            Top = 693
+            Width = 77
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 14
+            OnChange = UpdateSheet5
+          end
         end
       end
     end
@@ -5725,6 +5906,173 @@ object FormMain: TFormMain
           Zoom = 0.700000000000000000
           Anchors = [akLeft, akTop, akBottom]
           TabOrder = 0
+          object lbl7BeiHeCha: TLabel
+            Left = 337
+            Top = 192
+            Width = 72
+            Height = 12
+            Caption = #34987#26680#26597#22120#20855#65306
+            Transparent = True
+          end
+          object lbl7BiaoZhunQi: TLabel
+            Left = 150
+            Top = 192
+            Width = 48
+            Height = 12
+            Caption = #26631#20934#22120#65306
+            Transparent = True
+          end
+          object edt7JiLuBianHao: TEdit
+            Left = 396
+            Top = 111
+            Width = 154
+            Height = 20
+            TabOrder = 0
+            Text = 'G-7231-H(VS)23030150101'
+            OnChange = UpdateSheet7
+          end
+          object edt7QiWen: TEdit
+            Left = 232
+            Top = 138
+            Width = 35
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 1
+            Text = '23.9'
+            OnChange = UpdateSheet7
+          end
+          object edt7ShiDu: TEdit
+            Left = 329
+            Top = 138
+            Width = 21
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 2
+            Text = '42'
+            OnChange = UpdateSheet7
+          end
+          object edt7FengSu: TEdit
+            Left = 440
+            Top = 138
+            Width = 23
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 3
+            Text = '2.0'
+            OnChange = UpdateSheet7
+          end
+          object edt7JieShuShiJian: TEdit
+            Left = 462
+            Top = 163
+            Width = 41
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 4
+            Text = '15:10'
+            OnChange = UpdateSheet7
+          end
+          object edt7KaiShiShiJian: TEdit
+            Left = 204
+            Top = 163
+            Width = 41
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 5
+            Text = '13:10'
+            OnChange = UpdateSheet7
+          end
+          object cbb7BiaoZhunQi: TComboBox
+            Left = 202
+            Top = 189
+            Width = 115
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 6
+            OnChange = UpdateSheet7
+          end
+          object cbb7BeiHeCha: TComboBox
+            Left = 403
+            Top = 189
+            Width = 115
+            Height = 20
+            TabOrder = 7
+            OnChange = UpdateSheet7
+          end
+          object cbb7WaiGuanHeGe: TComboBox
+            Left = 125
+            Top = 430
+            Width = 81
+            Height = 20
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 8
+            Text = #21512#26684
+            OnChange = UpdateSheet7
+            Items.Strings = (
+              #21512#26684
+              #19981#21512#26684)
+          end
+          object cbb7HeChaYiJu: TComboBox
+            Left = 214
+            Top = 622
+            Width = 323
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 9
+            OnChange = UpdateSheet7
+          end
+          object cbb7FuHeYaoQiu: TComboBox
+            Left = 214
+            Top = 647
+            Width = 65
+            Height = 20
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 10
+            Text = #26159
+            OnChange = UpdateSheet7
+            Items.Strings = (
+              #26159
+              #21542)
+          end
+          object edt7JiaoZhunShiJian: TEdit
+            Left = 418
+            Top = 670
+            Width = 132
+            Height = 20
+            TabOrder = 11
+            Text = '2023'#24180'12'#26376'31'#26085
+            OnChange = UpdateSheet7
+          end
+          object cbb7JiaoZhun: TComboBox
+            Left = 124
+            Top = 670
+            Width = 65
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 12
+            OnChange = UpdateSheet7
+            OnClick = edtChange1
+          end
+          object cbb7HeYan: TComboBox
+            Left = 256
+            Top = 670
+            Width = 77
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 13
+            OnChange = UpdateSheet7
+          end
         end
       end
     end
