@@ -169,6 +169,10 @@ type
     btnStamp: TSpeedButton;
     dlgOpenForStamp: TOpenDialog;
     dlgSaveStamp: TSaveDialog;
+    edt7BiaoZhunZhi1: TEdit;
+    edt7BiaoZhunZhi2: TEdit;
+    edt7BiaoZhunZhi3: TEdit;
+    edt7HeChaJieGuo: TEdit;
 
     procedure FormCreate(Sender: TObject);
     procedure btnPDFClick(Sender: TObject);
@@ -221,6 +225,23 @@ implementation
 
 uses
   UnitSettingForm, UnitSetting, CnJSON;
+
+const
+  S_Gai_Zhang_Cheng_Gong = '盖章成功！';
+  S_Ti_Shi = '提示';
+  S_Biao_Zhun_Qi = '标准器';
+  S_Bei_He_Cha_Qi_Ju = '被核查器具';
+  S_Xiao_Zhun_Ren = '校准人';
+  S_He_Yan_Ren = '核验人';
+  S_He_Cha_Yi_Ju = '核查依据';
+  S_Yyyy_Nian_Mm_Yue_Dd_Ri = 'yyyy年MM月dd日';
+  S_No_Fcpsheet_For = 'NO FcpSheet for ';
+  S_Ji_Lu_Bian_Hao_S = '记录编号：%s';
+  S_Qi_Wen_S_Shi_Dong_S_Rh_Feng_Su = '气温：%s℃     湿度：%s％RH    风速：%sm/s';
+  S_S_He_Ge_S_Bu_He_Ge = '%s合格                  %s 不合格';
+  S_S_Shi_S_Fou = '%s 是        %s 否';
+  S_Xiao_Zhun = '校准：';
+  S_He_Yan = '核验：';
 
 const
   S_F_SET = 'Setting.json';
@@ -387,7 +408,7 @@ begin
           if dlgSaveStamp.Execute then
           begin
             SaveBitmapToJPG(Bmp, dlgSaveStamp.FileName);
-            Application.MessageBox('盖章成功！', '提示', MB_OK + MB_ICONINFORMATION);
+            Application.MessageBox(S_Gai_Zhang_Cheng_Gong, S_Ti_Shi, MB_OK + MB_ICONINFORMATION);
           end;
         end;
       end;
@@ -528,23 +549,23 @@ procedure TFormMain.Init0;
 begin
   FBiaoZhunQiNames := TStringList.Create;
   FBiaoZhunQiValues := TStringList.Create;
-  FWSetting.GetType('标准器', FBiaoZhunQiNames, FBiaoZhunQiValues);
+  FWSetting.GetType(S_Biao_Zhun_Qi, FBiaoZhunQiNames, FBiaoZhunQiValues);
 
   FBeiHeChaQiJuNames := TStringList.Create;
   FBeiHeChaQiJuValues := TStringList.Create;
-  FWSetting.GetType('被核查器具', FBeiHeChaQiJuNames, FBeiHeChaQiJuValues);
+  FWSetting.GetType(S_Bei_He_Cha_Qi_Ju, FBeiHeChaQiJuNames, FBeiHeChaQiJuValues);
 
   FJiaoZhun := TStringList.Create;
   FHeYan := TStringList.Create;
   FHeChaYiJu := TStringList.Create;
-  FWSetting.GetType('校准人', FJiaoZhun, nil);
-  FWSetting.GetType('核验人', FHeYan, nil);
-  FWSetting.GetType('核查依据', FHeChaYiJu, nil);
+  FWSetting.GetType(S_Xiao_Zhun_Ren, FJiaoZhun, nil);
+  FWSetting.GetType(S_He_Yan_Ren, FHeYan, nil);
+  FWSetting.GetType(S_He_Cha_Yi_Ju, FHeChaYiJu, nil);
 end;
 
 procedure TFormMain.Init1;
 begin
-  edt1JiaoZhunShiJian.Text := FormatDateTime('yyyy年MM月dd日', Now());
+  edt1JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
 
   cbb1BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
 
@@ -565,7 +586,7 @@ end;
 
 procedure TFormMain.Init2;
 begin
-  edt2JiaoZhunShiJian.Text := FormatDateTime('yyyy年MM月dd日', Now());
+  edt2JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
 
   cbb2BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
 
@@ -586,7 +607,7 @@ end;
 
 procedure TFormMain.Init3;
 begin
-  edt3JiaoZhunShiJian.Text := FormatDateTime('yyyy年MM月dd日', Now());
+  edt3JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
 
   cbb3BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
 
@@ -607,7 +628,7 @@ end;
 
 procedure TFormMain.Init4;
 begin
-  edt4JiaoZhunShiJian.Text := FormatDateTime('yyyy年MM月dd日', Now());
+  edt4JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
 
   cbb4BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
 
@@ -628,7 +649,7 @@ end;
 
 procedure TFormMain.Init5;
 begin
-  edt5JiaoZhunShiJian.Text := FormatDateTime('yyyy年MM月dd日', Now());
+  edt5JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
 
   cbb5BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
 
@@ -649,7 +670,7 @@ end;
 
 procedure TFormMain.Init6;
 begin
-  edt6JiaoZhunShiJian.Text := FormatDateTime('yyyy年MM月dd日', Now());
+  edt6JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
 
   cbb6BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
 
@@ -670,7 +691,7 @@ end;
 
 procedure TFormMain.Init7;
 begin
-  edt7JiaoZhunShiJian.Text := FormatDateTime('yyyy年MM月dd日', Now());
+  edt7JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
 
   cbb7BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
 
@@ -712,7 +733,7 @@ function TFormMain.PreviewerByIndex(Index: Integer): TFlexCelPreviewer;
 begin
   Result := FindComponent('fcpSheet' + IntToStr(Index)) as TFlexCelPreviewer;
   if Result = nil then
-    raise Exception.Create('NO FcpSheet for ' + IntToStr(Index));
+    raise Exception.Create(S_No_Fcpsheet_For + IntToStr(Index));
 end;
 
 procedure TFormMain.SetNumberValue(Xls: TExcelFile; Row, Col: Integer;
@@ -742,17 +763,17 @@ procedure TFormMain.UpdateSheet1(Sender: TObject);
 var
   S: string;
 begin
-  S := Format('记录编号：%s', [edt1JiLuBianHao.Text]);
+  S := Format(S_Ji_Lu_Bian_Hao_S, [edt1JiLuBianHao.Text]);
   FXlses[1].SetCellValue(3, 1, S);
 
-  S := Format('气温：%s℃     湿度：%s％RH    风速：%sm/s',
+  S := Format(S_Qi_Wen_S_Shi_Dong_S_Rh_Feng_Su,
     [edt1QiWen.Text, edt1ShiDu.Text, edt1FengSu.Text]);
   FXlses[1].SetCellValue(4, 2, S);
 
   if cbb1WaiGuanHeGe.ItemIndex = 0 then
-    S := Format('%s合格                  %s 不合格', [#$2611, #$25A1])
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$2611, #$25A1])
   else
-    S := Format('%s合格                  %s 不合格', [#$25A1, #$2611]);
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$25A1, #$2611]);
   FXlses[1].SetCellValue(8, 2, S);
 
   FXlses[1].SetCellValue(5, 2, edt1KaiShiShiJian.Text);
@@ -766,15 +787,15 @@ begin
 
   FXlses[1].SetCellValue(19, 3, S_ARR_HEGE[cbb1HeGe.ItemIndex]);
   if cbb1FuHeYaoQiu.ItemIndex = 0 then
-    S := Format('%s 是        %s 否', [#$2611, #$25A1])
+    S := Format(S_S_Shi_S_Fou, [#$2611, #$25A1])
   else
-    S := Format('%s 是        %s 否', [#$25A1, #$2611]);
+    S := Format(S_S_Shi_S_Fou, [#$25A1, #$2611]);
 
   FXlses[1].SetCellValue(20, 3, cbb1HeChaYiJu.Items[cbb1HeChaYiJu.ItemIndex]);
   FXlses[1].SetCellValue(21, 3, S);
 
-  FXlses[1].SetCellValue(22, 1, '校准：' + cbb1JiaoZhun.Items[cbb1JiaoZhun.ItemIndex]);
-  FXlses[1].SetCellValue(22, 3, '核验：' + cbb1HeYan.Items[cbb1HeYan.ItemIndex]);
+  FXlses[1].SetCellValue(22, 1, S_Xiao_Zhun + cbb1JiaoZhun.Items[cbb1JiaoZhun.ItemIndex]);
+  FXlses[1].SetCellValue(22, 3, S_He_Yan + cbb1HeYan.Items[cbb1HeYan.ItemIndex]);
   FXlses[1].SetCellValue(22, 5, edt1JiaoZhunShiJian.Text);
 
   FcpSheet1.InvalidatePreview;
@@ -784,17 +805,17 @@ procedure TFormMain.UpdateSheet2(Sender: TObject);
 var
   S: string;
 begin
-  S := Format('记录编号：%s', [edt2JiLuBianHao.Text]);
+  S := Format(S_Ji_Lu_Bian_Hao_S, [edt2JiLuBianHao.Text]);
   FXlses[2].SetCellValue(2, 1, S);
 
-  S := Format('气温：%s℃     湿度：%s％RH    风速：%sm/s',
+  S := Format(S_Qi_Wen_S_Shi_Dong_S_Rh_Feng_Su,
     [edt2QiWen.Text, edt2ShiDu.Text, edt2FengSu.Text]);
   FXlses[2].SetCellValue(3, 2, S);
 
   if cbb2WaiGuanHeGe.ItemIndex = 0 then
-    S := Format('%s合格                  %s 不合格', [#$2611, #$25A1])
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$2611, #$25A1])
   else
-    S := Format('%s合格                  %s 不合格', [#$25A1, #$2611]);
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$25A1, #$2611]);
   FXlses[2].SetCellValue(7, 2, S);
 
   FXlses[2].SetCellValue(4, 2, edt2KaiShiShiJian.Text);
@@ -808,15 +829,15 @@ begin
 
   FXlses[2].SetCellValue(15, 2, S_ARR_HEGE[cbb2HeGe.ItemIndex]);
   if cbb2FuHeYaoQiu.ItemIndex = 0 then
-    S := Format('%s 是        %s 否', [#$2611, #$25A1])
+    S := Format(S_S_Shi_S_Fou, [#$2611, #$25A1])
   else
-    S := Format('%s 是        %s 否', [#$25A1, #$2611]);
+    S := Format(S_S_Shi_S_Fou, [#$25A1, #$2611]);
 
   FXlses[2].SetCellValue(16, 2, cbb2HeChaYiJu.Items[cbb2HeChaYiJu.ItemIndex]);
   FXlses[2].SetCellValue(17, 2, S);
 
-  FXlses[2].SetCellValue(18, 1, '校准：' + cbb2JiaoZhun.Items[cbb2JiaoZhun.ItemIndex]);
-  FXlses[2].SetCellValue(18, 3, '核验：' + cbb2HeYan.Items[cbb2HeYan.ItemIndex]);
+  FXlses[2].SetCellValue(18, 1, S_Xiao_Zhun + cbb2JiaoZhun.Items[cbb2JiaoZhun.ItemIndex]);
+  FXlses[2].SetCellValue(18, 3, S_He_Yan + cbb2HeYan.Items[cbb2HeYan.ItemIndex]);
   FXlses[2].SetCellValue(18, 5, edt2JiaoZhunShiJian.Text);
 
   FcpSheet2.InvalidatePreview;
@@ -826,17 +847,17 @@ procedure TFormMain.UpdateSheet3(Sender: TObject);
 var
   S: string;
 begin
-  S := Format('记录编号：%s', [edt3JiLuBianHao.Text]);
+  S := Format(S_Ji_Lu_Bian_Hao_S, [edt3JiLuBianHao.Text]);
   FXlses[3].SetCellValue(3, 3, S);
 
-  S := Format('气温：%s℃     湿度：%s％RH    风速：%sm/s',
+  S := Format(S_Qi_Wen_S_Shi_Dong_S_Rh_Feng_Su,
     [edt3QiWen.Text, edt3ShiDu.Text, edt3FengSu.Text]);
   FXlses[3].SetCellValue(4, 2, S);
 
   if cbb3WaiGuanHeGe.ItemIndex = 0 then
-    S := Format('%s合格                  %s 不合格', [#$2611, #$25A1])
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$2611, #$25A1])
   else
-    S := Format('%s合格                  %s 不合格', [#$25A1, #$2611]);
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$25A1, #$2611]);
   FXlses[3].SetCellValue(8, 2, S);
 
   FXlses[3].SetCellValue(5, 2, edt3KaiShiShiJian.Text);
@@ -850,15 +871,15 @@ begin
 
   FXlses[3].SetCellValue(13, 3, S_ARR_HEGE[cbb3HeGe.ItemIndex]);
   if cbb3FuHeYaoQiu.ItemIndex = 0 then
-    S := Format('%s 是        %s 否', [#$2611, #$25A1])
+    S := Format(S_S_Shi_S_Fou, [#$2611, #$25A1])
   else
-    S := Format('%s 是        %s 否', [#$25A1, #$2611]);
+    S := Format(S_S_Shi_S_Fou, [#$25A1, #$2611]);
 
   FXlses[3].SetCellValue(14, 3, cbb3HeChaYiJu.Items[cbb3HeChaYiJu.ItemIndex]);
   FXlses[3].SetCellValue(15, 3, S);
 
-  FXlses[3].SetCellValue(16, 1, '校准：' + cbb3JiaoZhun.Items[cbb3JiaoZhun.ItemIndex]);
-  FXlses[3].SetCellValue(16, 3, '核验：' + cbb3HeYan.Items[cbb3HeYan.ItemIndex]);
+  FXlses[3].SetCellValue(16, 1, S_Xiao_Zhun + cbb3JiaoZhun.Items[cbb3JiaoZhun.ItemIndex]);
+  FXlses[3].SetCellValue(16, 3, S_He_Yan + cbb3HeYan.Items[cbb3HeYan.ItemIndex]);
   FXlses[3].SetCellValue(16, 5, edt3JiaoZhunShiJian.Text);
 
   FcpSheet3.InvalidatePreview;
@@ -868,17 +889,17 @@ procedure TFormMain.UpdateSheet4(Sender: TObject);
 var
   S: string;
 begin
-  S := Format('记录编号：%s', [edt4JiLuBianHao.Text]);
+  S := Format(S_Ji_Lu_Bian_Hao_S, [edt4JiLuBianHao.Text]);
   FXlses[4].SetCellValue(3, 3, S);
 
-  S := Format('气温：%s℃     湿度：%s％RH    风速：%sm/s',
+  S := Format(S_Qi_Wen_S_Shi_Dong_S_Rh_Feng_Su,
     [edt4QiWen.Text, edt4ShiDu.Text, edt4FengSu.Text]);
   FXlses[4].SetCellValue(4, 2, S);
 
   if cbb4WaiGuanHeGe.ItemIndex = 0 then
-    S := Format('%s合格                  %s 不合格', [#$2611, #$25A1])
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$2611, #$25A1])
   else
-    S := Format('%s合格                  %s 不合格', [#$25A1, #$2611]);
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$25A1, #$2611]);
   FXlses[4].SetCellValue(8, 2, S);
 
   FXlses[4].SetCellValue(5, 2, edt4KaiShiShiJian.Text);
@@ -892,15 +913,15 @@ begin
 
   FXlses[4].SetCellValue(15, 3, S_ARR_HEGE[cbb4HeGe.ItemIndex]);
   if cbb4FuHeYaoQiu.ItemIndex = 0 then
-    S := Format('%s 是        %s 否', [#$2611, #$25A1])
+    S := Format(S_S_Shi_S_Fou, [#$2611, #$25A1])
   else
-    S := Format('%s 是        %s 否', [#$25A1, #$2611]);
+    S := Format(S_S_Shi_S_Fou, [#$25A1, #$2611]);
 
   FXlses[4].SetCellValue(16, 3, cbb4HeChaYiJu.Items[cbb4HeChaYiJu.ItemIndex]);
   FXlses[4].SetCellValue(17, 3, S);
 
-  FXlses[4].SetCellValue(18, 1, '校准：' + cbb4JiaoZhun.Items[cbb4JiaoZhun.ItemIndex]);
-  FXlses[4].SetCellValue(18, 3, '核验：' + cbb4HeYan.Items[cbb4HeYan.ItemIndex]);
+  FXlses[4].SetCellValue(18, 1, S_Xiao_Zhun + cbb4JiaoZhun.Items[cbb4JiaoZhun.ItemIndex]);
+  FXlses[4].SetCellValue(18, 3, S_He_Yan + cbb4HeYan.Items[cbb4HeYan.ItemIndex]);
   FXlses[4].SetCellValue(18, 5, edt4JiaoZhunShiJian.Text);
 
   FcpSheet4.InvalidatePreview;
@@ -910,17 +931,17 @@ procedure TFormMain.UpdateSheet5(Sender: TObject);
 var
   S: string;
 begin
-  S := Format('记录编号：%s', [edt5JiLuBianHao.Text]);
+  S := Format(S_Ji_Lu_Bian_Hao_S, [edt5JiLuBianHao.Text]);
   FXlses[5].SetCellValue(3, 4, S);
 
-  S := Format('气温：%s℃     湿度：%s％RH    风速：%sm/s',
+  S := Format(S_Qi_Wen_S_Shi_Dong_S_Rh_Feng_Su,
     [edt5QiWen.Text, edt5ShiDu.Text, edt5FengSu.Text]);
   FXlses[5].SetCellValue(4, 2, S);
 
   if cbb5WaiGuanHeGe.ItemIndex = 0 then
-    S := Format('%s合格                  %s 不合格', [#$2611, #$25A1])
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$2611, #$25A1])
   else
-    S := Format('%s合格                  %s 不合格', [#$25A1, #$2611]);
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$25A1, #$2611]);
   FXlses[5].SetCellValue(8, 2, S);
 
   FXlses[5].SetCellValue(5, 2, edt5KaiShiShiJian.Text);
@@ -934,15 +955,15 @@ begin
 
   FXlses[5].SetCellValue(19, 3, S_ARR_HEGE[cbb5HeGe.ItemIndex]);
   if cbb5FuHeYaoQiu.ItemIndex = 0 then
-    S := Format('%s 是        %s 否', [#$2611, #$25A1])
+    S := Format(S_S_Shi_S_Fou, [#$2611, #$25A1])
   else
-    S := Format('%s 是        %s 否', [#$25A1, #$2611]);
+    S := Format(S_S_Shi_S_Fou, [#$25A1, #$2611]);
 
   FXlses[5].SetCellValue(20, 3, cbb5HeChaYiJu.Items[cbb5HeChaYiJu.ItemIndex]);
   FXlses[5].SetCellValue(21, 3, S);
 
-  FXlses[5].SetCellValue(22, 1, '校准：' + cbb5JiaoZhun.Items[cbb5JiaoZhun.ItemIndex]);
-  FXlses[5].SetCellValue(22, 3, '核验：' + cbb5HeYan.Items[cbb5HeYan.ItemIndex]);
+  FXlses[5].SetCellValue(22, 1, S_Xiao_Zhun + cbb5JiaoZhun.Items[cbb5JiaoZhun.ItemIndex]);
+  FXlses[5].SetCellValue(22, 3, S_He_Yan + cbb5HeYan.Items[cbb5HeYan.ItemIndex]);
   FXlses[5].SetCellValue(22, 5, edt5JiaoZhunShiJian.Text);
 
   FcpSheet5.InvalidatePreview;
@@ -952,17 +973,17 @@ procedure TFormMain.UpdateSheet6(Sender: TObject);
 var
   S: string;
 begin
-  S := Format('记录编号：%s', [edt6JiLuBianHao.Text]);
+  S := Format(S_Ji_Lu_Bian_Hao_S, [edt6JiLuBianHao.Text]);
   FXlses[6].SetCellValue(3, 4, S);
 
-  S := Format('气温：%s℃     湿度：%s％RH    风速：%sm/s',
+  S := Format(S_Qi_Wen_S_Shi_Dong_S_Rh_Feng_Su,
     [edt6QiWen.Text, edt6ShiDu.Text, edt6FengSu.Text]);
   FXlses[6].SetCellValue(4, 2, S);
 
   if cbb6WaiGuanHeGe.ItemIndex = 0 then
-    S := Format('%s合格                  %s 不合格', [#$2611, #$25A1])
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$2611, #$25A1])
   else
-    S := Format('%s合格                  %s 不合格', [#$25A1, #$2611]);
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$25A1, #$2611]);
   FXlses[6].SetCellValue(8, 2, S);
 
   FXlses[6].SetCellValue(5, 2, edt6KaiShiShiJian.Text);
@@ -987,15 +1008,15 @@ begin
 
   FXlses[6].SetCellValue(16, 3, S_ARR_HEGE[cbb6HeGe.ItemIndex]);
   if cbb6FuHeYaoQiu.ItemIndex = 0 then
-    S := Format('%s 是        %s 否', [#$2611, #$25A1])
+    S := Format(S_S_Shi_S_Fou, [#$2611, #$25A1])
   else
-    S := Format('%s 是        %s 否', [#$25A1, #$2611]);
+    S := Format(S_S_Shi_S_Fou, [#$25A1, #$2611]);
 
   FXlses[6].SetCellValue(17, 3, cbb6HeChaYiJu.Items[cbb6HeChaYiJu.ItemIndex]);
   FXlses[6].SetCellValue(18, 3, S);
 
   FXlses[6].SetCellValue(19, 2, cbb6JiaoZhun.Items[cbb6JiaoZhun.ItemIndex]);
-  FXlses[6].SetCellValue(19, 3, '核验：' + cbb6HeYan.Items[cbb6HeYan.ItemIndex]);
+  FXlses[6].SetCellValue(19, 3, S_He_Yan + cbb6HeYan.Items[cbb6HeYan.ItemIndex]);
   FXlses[6].SetCellValue(19, 5, edt6JiaoZhunShiJian.Text);
 
   FcpSheet6.InvalidatePreview;
@@ -1005,17 +1026,17 @@ procedure TFormMain.UpdateSheet7(Sender: TObject);
 var
   S: string;
 begin
-  S := Format('记录编号：%s', [edt7JiLuBianHao.Text]);
+  S := Format(S_Ji_Lu_Bian_Hao_S, [edt7JiLuBianHao.Text]);
   FXlses[7].SetCellValue(3, 4, S);
 
-  S := Format('气温：%s℃     湿度：%s％RH    风速：%sm/s',
+  S := Format(S_Qi_Wen_S_Shi_Dong_S_Rh_Feng_Su,
     [edt7QiWen.Text, edt7ShiDu.Text, edt7FengSu.Text]);
   FXlses[7].SetCellValue(4, 2, S);
 
   if cbb7WaiGuanHeGe.ItemIndex = 0 then
-    S := Format('%s合格                  %s 不合格', [#$2611, #$25A1])
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$2611, #$25A1])
   else
-    S := Format('%s合格                  %s 不合格', [#$25A1, #$2611]);
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$25A1, #$2611]);
   FXlses[7].SetCellValue(8, 2, S);
 
   FXlses[7].SetCellValue(5, 2, edt7KaiShiShiJian.Text);
@@ -1027,17 +1048,21 @@ begin
   if (cbb7BeiHeCha.ItemIndex >= 0) and (cbb7BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
     FXlses[7].SetCellValue(7, 4, FBeiHeChaQiJuValues[cbb7BeiHeCha.ItemIndex]);
 
-  // FXlses[7].SetCellValue(16, 3, S_ARR_HEGE[cbb7HeGe.ItemIndex]);
+  FXlses[7].SetCellValue(10, 2, edt7BiaoZhunZhi1.Text);
+  FXlses[7].SetCellValue(11, 2, edt7BiaoZhunZhi2.Text);
+  FXlses[7].SetCellValue(12, 2, edt7BiaoZhunZhi3.Text);
+  FXlses[7].SetCellValue(10, 4, edt7HeChaJieGuo.Text);
+
   if cbb7FuHeYaoQiu.ItemIndex = 0 then
-    S := Format('%s 是        %s 否', [#$2611, #$25A1])
+    S := Format(S_S_Shi_S_Fou, [#$2611, #$25A1])
   else
-    S := Format('%s 是        %s 否', [#$25A1, #$2611]);
+    S := Format(S_S_Shi_S_Fou, [#$25A1, #$2611]);
 
   FXlses[7].SetCellValue(14, 3, cbb7HeChaYiJu.Items[cbb7HeChaYiJu.ItemIndex]);
   FXlses[7].SetCellValue(15, 3, S);
 
   FXlses[7].SetCellValue(16, 2, cbb7JiaoZhun.Items[cbb7JiaoZhun.ItemIndex]);
-  FXlses[7].SetCellValue(16, 3, '核验：' + cbb7HeYan.Items[cbb7HeYan.ItemIndex]);
+  FXlses[7].SetCellValue(16, 3, S_He_Yan + cbb7HeYan.Items[cbb7HeYan.ItemIndex]);
   FXlses[7].SetCellValue(16, 5, edt7JiaoZhunShiJian.Text);
 
   FcpSheet7.InvalidatePreview;

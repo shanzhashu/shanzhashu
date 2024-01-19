@@ -26,7 +26,7 @@ object FormMain: TFormMain
     Top = 0
     Width = 629
     Height = 828
-    ActivePage = ts6
+    ActivePage = ts7
     Align = alClient
     TabOrder = 0
     TabPosition = tpBottom
@@ -6125,6 +6125,39 @@ object FormMain: TFormMain
             Height = 20
             Style = csDropDownList
             TabOrder = 13
+            OnChange = UpdateSheet7
+          end
+          object edt7BiaoZhunZhi1: TEdit
+            Left = 124
+            Top = 497
+            Width = 192
+            Height = 20
+            TabOrder = 14
+            OnChange = UpdateSheet7
+          end
+          object edt7BiaoZhunZhi2: TEdit
+            Left = 125
+            Top = 535
+            Width = 192
+            Height = 20
+            TabOrder = 15
+            OnChange = UpdateSheet7
+          end
+          object edt7BiaoZhunZhi3: TEdit
+            Left = 124
+            Top = 569
+            Width = 192
+            Height = 20
+            TabOrder = 16
+            OnChange = UpdateSheet7
+          end
+          object edt7HeChaJieGuo: TEdit
+            Left = 345
+            Top = 535
+            Width = 192
+            Height = 20
+            TabOrder = 17
+            Text = '0.0'
             OnChange = UpdateSheet7
           end
         end
