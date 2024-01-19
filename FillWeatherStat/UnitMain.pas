@@ -19,7 +19,6 @@ type
     fcpSheet1: TFlexCelPreviewer;
     edt1JiLuBianHao: TEdit;
     lbl1BiaoZhunQi: TLabel;
-    img1bk: TImage;
     lbl1BeiHeCha: TLabel;
     cbb1BiaoZhunQi: TComboBox;
     edt1QiWen: TEdit;
@@ -35,6 +34,21 @@ type
     cbb1JiaoZhun: TComboBox;
     cbb1HeYan: TComboBox;
     cbb1HeChaYiJu: TComboBox;
+    edt1BeiHeCha1: TEdit;
+    edt1BeiHeCha2: TEdit;
+    edt1BeiHeCha3: TEdit;
+    edt1XiuZhengZhi1: TEdit;
+    edt1XiuZhengZhi2: TEdit;
+    edt1XiuZhengZhi3: TEdit;
+    edt1BiaoZhunZhi1: TEdit;
+    edt1BiaoZhunZhi2: TEdit;
+    edt1BiaoZhunZhi3: TEdit;
+    edt1BiaoZhunZhi4: TEdit;
+    edt1BiaoZhunZhi5: TEdit;
+    edt1BiaoZhunZhi6: TEdit;
+    edt1BiaoZhunZhi7: TEdit;
+    edt1BiaoZhunZhi8: TEdit;
+    edt1BiaoZhunZhi9: TEdit;
     ts2: TTabSheet;
     ScrollBox2: TScrollBox;
     fcpSheet2: TFlexCelPreviewer;
@@ -55,6 +69,16 @@ type
     edt2JiaoZhunShiJian: TEdit;
     lbl2BeiHeCha: TLabel;
     lbl2BiaoZhunQi: TLabel;
+    edt2BiaoZhunZhi1: TEdit;
+    edt2BiaoZhunZhi2: TEdit;
+    edt2BiaoZhunZhi3: TEdit;
+    edt2BiaoZhunZhi4: TEdit;
+    edt2BiaoZhunZhi5: TEdit;
+    edt2BiaoZhunZhi6: TEdit;
+    edt2XiuZhengZhi1: TEdit;
+    edt2XiuZhengZhi2: TEdit;
+    edt2BeiHeCha1: TEdit;
+    edt2BeiHeCha2: TEdit;
     ts3: TTabSheet;
     ScrollBox3: TScrollBox;
     fcpSheet3: TFlexCelPreviewer;
@@ -75,6 +99,9 @@ type
     cbb3JiaoZhun: TComboBox;
     edt3JiaoZhunShiJian: TEdit;
     cbb3HeYan: TComboBox;
+    edt3BeiHeCha1: TEdit;
+    edt3BeiHeCha2: TEdit;
+    edt3BeiHeCha3: TEdit;
     ts4: TTabSheet;
     ScrollBox4: TScrollBox;
     fcpSheet4: TFlexCelPreviewer;
@@ -95,6 +122,16 @@ type
     edt4JiaoZhunShiJian: TEdit;
     cbb4JiaoZhun: TComboBox;
     cbb4HeYan: TComboBox;
+    edt4BiaoZhunZhi1: TEdit;
+    edt4BiaoZhunZhi2: TEdit;
+    edt4BiaoZhunZhi3: TEdit;
+    edt4BiaoZhunZhi4: TEdit;
+    edt4BiaoZhunZhi5: TEdit;
+    edt4BeiHeCha1: TEdit;
+    edt4BeiHeCha2: TEdit;
+    edt4BeiHeCha3: TEdit;
+    edt4BeiHeCha4: TEdit;
+    edt4BeiHeCha5: TEdit;
     ts5: TTabSheet;
     ScrollBox5: TScrollBox;
     fcpSheet5: TFlexCelPreviewer;
@@ -115,6 +152,21 @@ type
     edt5JiaoZhunShiJian: TEdit;
     cbb5JiaoZhun: TComboBox;
     cbb5HeYan: TComboBox;
+    edt5BeiHeCha1: TEdit;
+    edt5BeiHeCha2: TEdit;
+    edt5BeiHeCha3: TEdit;
+    edt5XiuZhengZhi1: TEdit;
+    edt5XiuZhengZhi2: TEdit;
+    edt5XiuZhengZhi3: TEdit;
+    edt5BiaoZhunZhi1: TEdit;
+    edt5BiaoZhunZhi2: TEdit;
+    edt5BiaoZhunZhi3: TEdit;
+    edt5BiaoZhunZhi6: TEdit;
+    edt5BiaoZhunZhi5: TEdit;
+    edt5BiaoZhunZhi4: TEdit;
+    edt5BiaoZhunZhi7: TEdit;
+    edt5BiaoZhunZhi8: TEdit;
+    edt5BiaoZhunZhi9: TEdit;
     ts6: TTabSheet;
     ScrollBox6: TScrollBox;
     fcpSheet6: TFlexCelPreviewer;
@@ -160,6 +212,10 @@ type
     edt7JiaoZhunShiJian: TEdit;
     cbb7JiaoZhun: TComboBox;
     cbb7HeYan: TComboBox;
+    edt7BiaoZhunZhi1: TEdit;
+    edt7BiaoZhunZhi2: TEdit;
+    edt7BiaoZhunZhi3: TEdit;
+    edt7HeChaJieGuo: TEdit;
 
     pnlMain: TPanel;
     btnPDF: TSpeedButton;
@@ -169,14 +225,9 @@ type
     btnStamp: TSpeedButton;
     dlgOpenForStamp: TOpenDialog;
     dlgSaveStamp: TSaveDialog;
-    edt7BiaoZhunZhi1: TEdit;
-    edt7BiaoZhunZhi2: TEdit;
-    edt7BiaoZhunZhi3: TEdit;
-    edt7HeChaJieGuo: TEdit;
 
     procedure FormCreate(Sender: TObject);
     procedure btnPDFClick(Sender: TObject);
-    procedure edtChange1(Sender: TObject);
     procedure btnToggleVisibleClick(Sender: TObject);
     procedure btnSettingsClick(Sender: TObject);
     procedure btnStampClick(Sender: TObject);
@@ -463,11 +514,6 @@ end;
 function TFormMain.CurrentPreviewer: TFlexCelPreviewer;
 begin
   Result := PreviewerByIndex(pgcMain.ActivePageIndex + 1);
-end;
-
-procedure TFormMain.edtChange1(Sender: TObject);
-begin
-  UpdateSheet1(Sender);
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
@@ -785,6 +831,27 @@ begin
   if (cbb1BeiHeCha.ItemIndex >= 0) and (cbb1BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
     FXlses[1].SetCellValue(7, 4, FBeiHeChaQiJuValues[cbb1BeiHeCha.ItemIndex]);
 
+  SetNumberValue(FXlses[1], 10, 2, edt1BiaoZhunZhi1.Text);
+  SetNumberValue(FXlses[1], 11, 2, edt1BiaoZhunZhi2.Text);
+  SetNumberValue(FXlses[1], 12, 2, edt1BiaoZhunZhi3.Text);
+  SetNumberValue(FXlses[1], 13, 2, edt1BiaoZhunZhi4.Text);
+  SetNumberValue(FXlses[1], 14, 2, edt1BiaoZhunZhi5.Text);
+  SetNumberValue(FXlses[1], 15, 2, edt1BiaoZhunZhi6.Text);
+  SetNumberValue(FXlses[1], 16, 2, edt1BiaoZhunZhi7.Text);
+  SetNumberValue(FXlses[1], 17, 2, edt1BiaoZhunZhi8.Text);
+  SetNumberValue(FXlses[1], 18, 2, edt1BiaoZhunZhi9.Text);
+
+  SetNumberValue(FXlses[1], 10, 3, edt1XiuZhengZhi1.Text);
+  SetNumberValue(FXlses[1], 13, 3, edt1XiuZhengZhi2.Text);
+  SetNumberValue(FXlses[1], 16, 3, edt1XiuZhengZhi3.Text);
+
+  SetNumberValue(FXlses[1], 10, 5, edt1BeiHeCha1.Text);
+  SetNumberValue(FXlses[1], 13, 5, edt1BeiHeCha2.Text);
+  SetNumberValue(FXlses[1], 16, 5, edt1BeiHeCha3.Text);
+
+  if not FIniting then
+    FXlses[1].RecalcAndVerify;
+
   FXlses[1].SetCellValue(19, 3, S_ARR_HEGE[cbb1HeGe.ItemIndex]);
   if cbb1FuHeYaoQiu.ItemIndex = 0 then
     S := Format(S_S_Shi_S_Fou, [#$2611, #$25A1])
@@ -826,6 +893,22 @@ begin
 
   if (cbb2BeiHeCha.ItemIndex >= 0) and (cbb2BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
     FXlses[2].SetCellValue(6, 4, FBeiHeChaQiJuValues[cbb2BeiHeCha.ItemIndex]);
+
+  SetNumberValue(FXlses[2], 9, 2, edt2BiaoZhunZhi1.Text);
+  SetNumberValue(FXlses[2], 10, 2, edt2BiaoZhunZhi2.Text);
+  SetNumberValue(FXlses[2], 11, 2, edt2BiaoZhunZhi3.Text);
+  SetNumberValue(FXlses[2], 12, 2, edt2BiaoZhunZhi4.Text);
+  SetNumberValue(FXlses[2], 13, 2, edt2BiaoZhunZhi5.Text);
+  SetNumberValue(FXlses[2], 14, 2, edt2BiaoZhunZhi6.Text);
+
+  SetNumberValue(FXlses[2], 9, 3, edt2XiuZhengZhi1.Text);
+  SetNumberValue(FXlses[2], 12, 3, edt2XiuZhengZhi2.Text);
+
+  SetNumberValue(FXlses[2], 9, 5, edt2BeiHeCha1.Text);
+  SetNumberValue(FXlses[2], 12, 5, edt2BeiHeCha2.Text);
+
+  if not FIniting then
+    FXlses[2].RecalcAndVerify;
 
   FXlses[2].SetCellValue(15, 2, S_ARR_HEGE[cbb2HeGe.ItemIndex]);
   if cbb2FuHeYaoQiu.ItemIndex = 0 then
@@ -869,6 +952,13 @@ begin
   if (cbb3BeiHeCha.ItemIndex >= 0) and (cbb3BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
     FXlses[3].SetCellValue(7, 4, FBeiHeChaQiJuValues[cbb3BeiHeCha.ItemIndex]);
 
+  SetNumberValue(FXlses[3], 10, 2, edt3BeiHeCha1.Text);
+  SetNumberValue(FXlses[3], 11, 2, edt3BeiHeCha2.Text);
+  SetNumberValue(FXlses[3], 12, 2, edt3BeiHeCha3.Text);
+
+  if not FIniting then
+    FXlses[3].RecalcAndVerify;
+
   FXlses[3].SetCellValue(13, 3, S_ARR_HEGE[cbb3HeGe.ItemIndex]);
   if cbb3FuHeYaoQiu.ItemIndex = 0 then
     S := Format(S_S_Shi_S_Fou, [#$2611, #$25A1])
@@ -911,6 +1001,21 @@ begin
   if (cbb4BeiHeCha.ItemIndex >= 0) and (cbb4BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
     FXlses[4].SetCellValue(7, 4, FBeiHeChaQiJuValues[cbb4BeiHeCha.ItemIndex]);
 
+  SetNumberValue(FXlses[4], 10, 2, edt4BiaoZhunZhi1.Text);
+  SetNumberValue(FXlses[4], 11, 2, edt4BiaoZhunZhi2.Text);
+  SetNumberValue(FXlses[4], 12, 2, edt4BiaoZhunZhi3.Text);
+  SetNumberValue(FXlses[4], 13, 2, edt4BiaoZhunZhi4.Text);
+  SetNumberValue(FXlses[4], 14, 2, edt4BiaoZhunZhi5.Text);
+
+  SetNumberValue(FXlses[4], 10, 3, edt4BeiHeCha1.Text);
+  SetNumberValue(FXlses[4], 11, 3, edt4BeiHeCha2.Text);
+  SetNumberValue(FXlses[4], 12, 3, edt4BeiHeCha3.Text);
+  SetNumberValue(FXlses[4], 13, 3, edt4BeiHeCha4.Text);
+  SetNumberValue(FXlses[4], 14, 3, edt4BeiHeCha5.Text);
+
+  if not FIniting then
+    FXlses[4].RecalcAndVerify;
+
   FXlses[4].SetCellValue(15, 3, S_ARR_HEGE[cbb4HeGe.ItemIndex]);
   if cbb4FuHeYaoQiu.ItemIndex = 0 then
     S := Format(S_S_Shi_S_Fou, [#$2611, #$25A1])
@@ -952,6 +1057,27 @@ begin
 
   if (cbb5BeiHeCha.ItemIndex >= 0) and (cbb5BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
     FXlses[5].SetCellValue(7, 4, FBeiHeChaQiJuValues[cbb5BeiHeCha.ItemIndex]);
+
+  SetNumberValue(FXlses[5], 10, 2, edt5BiaoZhunZhi1.Text);
+  SetNumberValue(FXlses[5], 11, 2, edt5BiaoZhunZhi2.Text);
+  SetNumberValue(FXlses[5], 12, 2, edt5BiaoZhunZhi3.Text);
+  SetNumberValue(FXlses[5], 13, 2, edt5BiaoZhunZhi4.Text);
+  SetNumberValue(FXlses[5], 14, 2, edt5BiaoZhunZhi5.Text);
+  SetNumberValue(FXlses[5], 15, 2, edt5BiaoZhunZhi6.Text);
+  SetNumberValue(FXlses[5], 16, 2, edt5BiaoZhunZhi7.Text);
+  SetNumberValue(FXlses[5], 17, 2, edt5BiaoZhunZhi8.Text);
+  SetNumberValue(FXlses[5], 18, 2, edt5BiaoZhunZhi9.Text);
+
+  SetNumberValue(FXlses[5], 10, 3, edt5XiuZhengZhi1.Text);
+  SetNumberValue(FXlses[5], 13, 3, edt5XiuZhengZhi2.Text);
+  SetNumberValue(FXlses[5], 16, 3, edt5XiuZhengZhi3.Text);
+
+  SetNumberValue(FXlses[5], 10, 5, edt5BeiHeCha1.Text);
+  SetNumberValue(FXlses[5], 13, 5, edt5BeiHeCha2.Text);
+  SetNumberValue(FXlses[5], 16, 5, edt5BeiHeCha3.Text);
+
+  if not FIniting then
+    FXlses[5].RecalcAndVerify;
 
   FXlses[5].SetCellValue(19, 3, S_ARR_HEGE[cbb5HeGe.ItemIndex]);
   if cbb5FuHeYaoQiu.ItemIndex = 0 then
