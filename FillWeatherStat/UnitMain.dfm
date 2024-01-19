@@ -26,7 +26,7 @@ object FormMain: TFormMain
     Top = 0
     Width = 629
     Height = 828
-    ActivePage = ts1
+    ActivePage = ts6
     Align = alClient
     TabOrder = 0
     TabPosition = tpBottom
@@ -5871,6 +5871,60 @@ object FormMain: TFormMain
             Height = 20
             TabOrder = 14
             Text = '2023'#24180'12'#26376'31'#26085
+            OnChange = UpdateSheet6
+          end
+          object edt6ChuanGanQi1: TEdit
+            Left = 321
+            Top = 489
+            Width = 94
+            Height = 20
+            TabOrder = 15
+            Text = '10.2'
+            OnChange = UpdateSheet6
+          end
+          object edt6ChuanGanQi2: TEdit
+            Left = 321
+            Top = 508
+            Width = 94
+            Height = 20
+            TabOrder = 16
+            Text = '10.3'
+            OnChange = UpdateSheet6
+          end
+          object edt6ChuanGanQi3: TEdit
+            Left = 321
+            Top = 527
+            Width = 94
+            Height = 20
+            TabOrder = 17
+            Text = '10.2'
+            OnChange = UpdateSheet6
+          end
+          object edt6ChuanGanQi4: TEdit
+            Left = 321
+            Top = 546
+            Width = 94
+            Height = 20
+            TabOrder = 18
+            Text = '10.3'
+            OnChange = UpdateSheet6
+          end
+          object edt6ChuanGanQi5: TEdit
+            Left = 321
+            Top = 564
+            Width = 94
+            Height = 20
+            TabOrder = 19
+            Text = '10.3'
+            OnChange = UpdateSheet6
+          end
+          object edt6ChuanGanQi6: TEdit
+            Left = 321
+            Top = 581
+            Width = 94
+            Height = 20
+            TabOrder = 20
+            Text = '10.3'
             OnChange = UpdateSheet6
           end
         end

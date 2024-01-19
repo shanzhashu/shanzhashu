@@ -135,6 +135,12 @@ type
     cbb6HeYan: TComboBox;
     cbb6JiaoZhun: TComboBox;
     edt6JiaoZhunShiJian: TEdit;
+    edt6ChuanGanQi1: TEdit;
+    edt6ChuanGanQi2: TEdit;
+    edt6ChuanGanQi3: TEdit;
+    edt6ChuanGanQi4: TEdit;
+    edt6ChuanGanQi5: TEdit;
+    edt6ChuanGanQi6: TEdit;
     ts7: TTabSheet;
     ScrollBox7: TScrollBox;
     fcpSheet7: TFlexCelPreviewer;
@@ -180,6 +186,7 @@ type
     procedure UpdateSheet7(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
+    FIniting: Boolean;
     FSettingFile: string;
     FStampFile: string;
     FStampIndexes: array[1..XLS_COUNT] of Integer;
@@ -190,6 +197,7 @@ type
     FBeiHeChaQiJuNames, FBeiHeChaQiJuValues: TStringList;
     FHeChaYiJu, FJiaoZhun, FHeYan: TStringList;
   protected
+    procedure SetNumberValue(Xls: TExcelFile; Row, Col: Integer; const Value: string);
     procedure InsertStamp(Index: Integer);
     function PreviewerByIndex(Index: Integer): TFlexCelPreviewer;
     function CurrentPreviewer: TFlexCelPreviewer;
@@ -478,23 +486,29 @@ begin
   pgcMain.ActivePageIndex := 0;
 
   // 初始化填写元素，分页来
-  Init0;
 
-  Init1;
-  Init2;
-  Init3;
-  Init4;
-  Init5;
-  Init6;
-  Init7;
+  FIniting := True;
+  try
+    Init0;
 
-  UpdateSheet1(nil);
-  UpdateSheet2(nil);
-  UpdateSheet3(nil);
-  UpdateSheet4(nil);
-  UpdateSheet5(nil);
-  UpdateSheet6(nil);
-  UpdateSheet7(nil);
+    Init1;
+    Init2;
+    Init3;
+    Init4;
+    Init5;
+    Init6;
+    Init7;
+
+    UpdateSheet1(nil);
+    UpdateSheet2(nil);
+    UpdateSheet3(nil);
+    UpdateSheet4(nil);
+    UpdateSheet5(nil);
+    UpdateSheet6(nil);
+    UpdateSheet7(nil);
+  finally
+    FIniting := False;
+  end;
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
@@ -699,6 +713,29 @@ begin
   Result := FindComponent('fcpSheet' + IntToStr(Index)) as TFlexCelPreviewer;
   if Result = nil then
     raise Exception.Create('NO FcpSheet for ' + IntToStr(Index));
+end;
+
+procedure TFormMain.SetNumberValue(Xls: TExcelFile; Row, Col: Integer;
+  const Value: string);
+var
+  E, VI: Integer;
+  VE: Extended;
+begin
+  Val(Value, VI, E);
+  if E = 0 then
+  begin
+    // 是整数
+    Xls.SetCellValue(Row, Col, VI);
+    Exit;
+  end;
+
+  try
+    // 按浮点数处理
+    VE := StrToFloat(Value);
+    Xls.SetCellValue(Row, Col, VE);
+  except
+    ; // 出错则啥都不做
+  end;
 end;
 
 procedure TFormMain.UpdateSheet1(Sender: TObject);
@@ -936,6 +973,17 @@ begin
 
   if (cbb6BeiHeCha.ItemIndex >= 0) and (cbb6BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
     FXlses[6].SetCellValue(7, 4, FBeiHeChaQiJuValues[cbb6BeiHeCha.ItemIndex]);
+
+  // 填格子并计算，注意得数值
+  SetNumberValue(FXlses[6], 10, 4, edt6ChuanGanQi1.Text);
+  SetNumberValue(FXlses[6], 11, 4, edt6ChuanGanQi2.Text);
+  SetNumberValue(FXlses[6], 12, 4, edt6ChuanGanQi3.Text);
+  SetNumberValue(FXlses[6], 13, 4, edt6ChuanGanQi4.Text);
+  SetNumberValue(FXlses[6], 14, 4, edt6ChuanGanQi5.Text);
+  SetNumberValue(FXlses[6], 15, 4, edt6ChuanGanQi6.Text);
+
+  if not FIniting then
+    FXlses[6].RecalcAndVerify;
 
   FXlses[6].SetCellValue(16, 3, S_ARR_HEGE[cbb6HeGe.ItemIndex]);
   if cbb6FuHeYaoQiu.ItemIndex = 0 then
