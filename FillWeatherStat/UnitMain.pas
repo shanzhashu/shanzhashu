@@ -251,11 +251,16 @@ type
     FBiaoZhunQiNames, FBiaoZhunQiValues: TStringList;
     FBeiHeChaQiJuNames, FBeiHeChaQiJuValues: TStringList;
     FHeChaYiJu, FJiaoZhun, FHeYan: TStringList;
+    function ExtractBianHao(const CellValue: string): string;
+    function CalcCurrentBianhao(const QuZhanHao: string): string;
+    procedure ToggleSheet(Index: Integer);
+    function ToggleSheetControlsVisible(Prev: TFlexCelPreviewer): Boolean;
   protected
     procedure SetNumberValue(Xls: TExcelFile; Row, Col: Integer; const Value: string);
     procedure InsertStamp(Index: Integer);
     function PreviewerByIndex(Index: Integer): TFlexCelPreviewer;
     function CurrentPreviewer: TFlexCelPreviewer;
+    function CurrentBeiHeCha: TComboBox;
   public
     procedure Init0;
     procedure Init1;
@@ -287,6 +292,7 @@ const
   S_He_Cha_Yi_Ju = '核查依据';
   S_Yyyy_Nian_Mm_Yue_Dd_Ri = 'yyyy年MM月dd日';
   S_No_Fcpsheet_For = 'NO FcpSheet for ';
+  S_No_Combo_For = 'NO ComboBox for ';
   S_Ji_Lu_Bian_Hao_S = '记录编号：%s';
   S_Qi_Wen_S_Shi_Dong_S_Rh_Feng_Su = '气温：%s℃     湿度：%s％RH    风速：%sm/s';
   S_S_He_Ge_S_Bu_He_Ge = '%s合格                  %s 不合格';
@@ -298,6 +304,15 @@ const
   S_F_SET = 'Setting.json';
   S_F_STAMP = 'stamp.png';
   S_ARR_HEGE: array[0..1] of string = ('合格', '不合格');
+  S_BIANHAO_FMT: array[1..XLS_COUNT] of string = (
+    'G-%s-H(T)%s0101',
+    'G-%s-H(TH)%s0101',
+    'G-%s-H(VX)%s0101',
+    'G-%s-H(VX)%s0101',
+    'G-%s-H(P)%s0101',
+    'G-%s-H(R)%s0101',
+    'G-%s-H(VS)%s0101'
+  );
   OFFSET_ARRAY: array[1..XLS_COUNT] of Integer = (0, -100, -130, -80, 0, -70, -150);
 
 var
@@ -307,7 +322,15 @@ procedure TFormMain.btnPDFClick(Sender: TObject);
 var
   Pdf: TFlexCelPdfExport;
   Idx: Integer;
+  Combo: TComboBox;
+  S: string;
 begin
+  S := '表格.pdf';
+  Combo := CurrentBeiHeCha;
+  if Combo.ItemIndex >= 0 then
+    S := Combo.Items[Combo.ItemIndex] + '.pdf';
+
+  dlgSavePDF.FileName := S;
   if dlgSavePDF.Execute then
   begin
     Idx := pgcMain.ActivePageIndex + 1;
@@ -336,6 +359,7 @@ begin
     FWSetting.StampHeight := StrToInt(lbledtStampHeight.Text);
 
     FWSetting.SaveToJSON(FSettingFile);
+    FWSetting.SaveToXML(FSettingFile + 'xml');
     Free;
   end;
 end;
@@ -469,51 +493,96 @@ begin
   end;
 end;
 
+function TFormMain.ToggleSheetControlsVisible(Prev: TFlexCelPreviewer): Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 0 to Prev.ControlCount - 1 do
+  begin
+    if (Prev.Controls[I] is TEdit) or (Prev.Controls[I] is TComboBox) or
+      (Prev.Controls[I] is TRadioGroup) or (Prev.Controls[I] is TLabel) then
+    begin
+      Prev.Controls[I].Visible := not Prev.Controls[I].Visible;
+      Result := Prev.Controls[I].Visible;
+    end;
+  end;
+end;
+
+procedure TFormMain.ToggleSheet(Index: Integer);
+var
+  Sht: TFlexCelPreviewer;
+begin
+  Sht := FindComponent('fcpSheet' +IntToStr(Index)) as TFlexCelPreviewer;
+
+  if ToggleSheetControlsVisible(Sht) then
+  begin
+    FXlses[Index].DeleteImage(FStampIndexes[Index]);
+    Dec(FStampIndexes[Index]);
+    FStampAddeds[Index] := False;
+
+    Sht.InvalidatePreview;
+  end
+  else
+  begin
+    InsertStamp(Index);
+  end;
+end;
+
 procedure TFormMain.btnToggleVisibleClick(Sender: TObject);
-
-  function ToggleSheetControlsVisible(Prev: TFlexCelPreviewer): Boolean;
-  var
-    I: Integer;
-  begin
-    Result := False;
-    for I := 0 to Prev.ControlCount - 1 do
-    begin
-      if (Prev.Controls[I] is TEdit) or (Prev.Controls[I] is TComboBox) or
-        (Prev.Controls[I] is TRadioGroup) or (Prev.Controls[I] is TLabel) then
-      begin
-        Prev.Controls[I].Visible := not Prev.Controls[I].Visible;
-        Result := Prev.Controls[I].Visible;
-      end;
-    end;
-  end;
-
-  procedure ToggleSheet(Index: Integer);
-  var
-    Sht: TFlexCelPreviewer;
-  begin
-    Sht := FindComponent('fcpSheet' +IntToStr(Index)) as TFlexCelPreviewer;
-
-    if ToggleSheetControlsVisible(Sht) then
-    begin
-      FXlses[Index].DeleteImage(FStampIndexes[Index]);
-      Dec(FStampIndexes[Index]);
-      FStampAddeds[Index] := False;
-
-      Sht.InvalidatePreview;
-    end
-    else
-    begin
-      InsertStamp(Index);
-    end;
-  end;
-
 begin
   ToggleSheet(pgcMain.ActivePageIndex + 1);
+end;
+
+function TFormMain.CalcCurrentBianhao(const QuZhanHao: string): string;
+var
+  Idx: Integer;
+  Dt: TDate;
+  S: string;
+begin
+  Dt := Now;
+  S := FormatDateTime('yyMMdd', Dt);
+
+  Idx := pgcMain.ActivePageIndex + 1;
+  Result := Format(S_BIANHAO_FMT[Idx], [QuZhanHao, S]);
+end;
+
+function TFormMain.CurrentBeiHeCha: TComboBox;
+var
+  Idx: Integer;
+begin
+  Idx := pgcMain.ActivePageIndex + 1;
+  Result := FindComponent('cbb' + IntToStr(Idx) + 'BeiHeCha') as TComboBox;
+  if Result = nil then
+    raise Exception.Create(S_No_Combo_For + IntToStr(Idx));
 end;
 
 function TFormMain.CurrentPreviewer: TFlexCelPreviewer;
 begin
   Result := PreviewerByIndex(pgcMain.ActivePageIndex + 1);
+end;
+
+function TFormMain.ExtractBianHao(const CellValue: string): string;
+var
+  I: Integer;
+  SL: TStringList;
+begin
+  Result := '0000';
+
+  SL := TStringList.Create;
+  try
+    SL.Text := CellValue;
+    for I := 0 to SL.Count - 1 do
+    begin
+      if (Length(SL[I]) > 4) and (Pos('区站号', SL[I])  > 0) then
+      begin
+        Result := Copy(SL[I], Length(SL[I]) - 3, MaxInt);
+        Exit;
+      end;
+    end;
+  finally
+    SL.Free;
+  end;
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
@@ -809,6 +878,16 @@ procedure TFormMain.UpdateSheet1(Sender: TObject);
 var
   S: string;
 begin
+  if Sender <> edt1JiLuBianHao then
+  begin
+    if (cbb1BeiHeCha.ItemIndex >= 0) and
+     (cbb1BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
+    begin
+      S := FBeiHeChaQiJuValues[cbb1BeiHeCha.ItemIndex];
+      edt1JiLuBianHao.Text := CalcCurrentBianhao(ExtractBianHao(S));
+    end;
+  end;
+
   S := Format(S_Ji_Lu_Bian_Hao_S, [edt1JiLuBianHao.Text]);
   FXlses[1].SetCellValue(3, 1, S);
 
@@ -872,6 +951,16 @@ procedure TFormMain.UpdateSheet2(Sender: TObject);
 var
   S: string;
 begin
+  if Sender <> edt2JiLuBianHao then
+  begin
+    if (cbb2BeiHeCha.ItemIndex >= 0) and
+     (cbb2BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
+    begin
+      S := FBeiHeChaQiJuValues[cbb2BeiHeCha.ItemIndex];
+      edt2JiLuBianHao.Text := CalcCurrentBianhao(ExtractBianHao(S));
+    end;
+  end;
+
   S := Format(S_Ji_Lu_Bian_Hao_S, [edt2JiLuBianHao.Text]);
   FXlses[2].SetCellValue(2, 1, S);
 
@@ -930,6 +1019,16 @@ procedure TFormMain.UpdateSheet3(Sender: TObject);
 var
   S: string;
 begin
+  if Sender <> edt3JiLuBianHao then
+  begin
+    if (cbb3BeiHeCha.ItemIndex >= 0) and
+     (cbb3BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
+    begin
+      S := FBeiHeChaQiJuValues[cbb3BeiHeCha.ItemIndex];
+      edt3JiLuBianHao.Text := CalcCurrentBianhao(ExtractBianHao(S));
+    end;
+  end;
+
   S := Format(S_Ji_Lu_Bian_Hao_S, [edt3JiLuBianHao.Text]);
   FXlses[3].SetCellValue(3, 3, S);
 
@@ -979,6 +1078,16 @@ procedure TFormMain.UpdateSheet4(Sender: TObject);
 var
   S: string;
 begin
+  if Sender <> edt4JiLuBianHao then
+  begin
+    if (cbb4BeiHeCha.ItemIndex >= 0) and
+     (cbb4BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
+    begin
+      S := FBeiHeChaQiJuValues[cbb4BeiHeCha.ItemIndex];
+      edt4JiLuBianHao.Text := CalcCurrentBianhao(ExtractBianHao(S));
+    end;
+  end;
+
   S := Format(S_Ji_Lu_Bian_Hao_S, [edt4JiLuBianHao.Text]);
   FXlses[4].SetCellValue(3, 3, S);
 
@@ -1036,6 +1145,16 @@ procedure TFormMain.UpdateSheet5(Sender: TObject);
 var
   S: string;
 begin
+  if Sender <> edt5JiLuBianHao then
+  begin
+    if (cbb5BeiHeCha.ItemIndex >= 0) and
+     (cbb5BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
+    begin
+      S := FBeiHeChaQiJuValues[cbb5BeiHeCha.ItemIndex];
+      edt5JiLuBianHao.Text := CalcCurrentBianhao(ExtractBianHao(S));
+    end;
+  end;
+
   S := Format(S_Ji_Lu_Bian_Hao_S, [edt5JiLuBianHao.Text]);
   FXlses[5].SetCellValue(3, 4, S);
 
@@ -1099,6 +1218,16 @@ procedure TFormMain.UpdateSheet6(Sender: TObject);
 var
   S: string;
 begin
+  if Sender <> edt6JiLuBianHao then
+  begin
+    if (cbb6BeiHeCha.ItemIndex >= 0) and
+     (cbb6BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
+    begin
+      S := FBeiHeChaQiJuValues[cbb6BeiHeCha.ItemIndex];
+      edt6JiLuBianHao.Text := CalcCurrentBianhao(ExtractBianHao(S));
+    end;
+  end;
+
   S := Format(S_Ji_Lu_Bian_Hao_S, [edt6JiLuBianHao.Text]);
   FXlses[6].SetCellValue(3, 4, S);
 
@@ -1152,6 +1281,16 @@ procedure TFormMain.UpdateSheet7(Sender: TObject);
 var
   S: string;
 begin
+  if Sender <> edt7JiLuBianHao then
+  begin
+    if (cbb7BeiHeCha.ItemIndex >= 0) and
+     (cbb7BeiHeCha.ItemIndex < FBeiHeChaQiJuValues.Count) then
+    begin
+      S := FBeiHeChaQiJuValues[cbb7BeiHeCha.ItemIndex];
+      edt7JiLuBianHao.Text := CalcCurrentBianhao(ExtractBianHao(S));
+    end;
+  end;
+
   S := Format(S_Ji_Lu_Bian_Hao_S, [edt7JiLuBianHao.Text]);
   FXlses[7].SetCellValue(3, 4, S);
 

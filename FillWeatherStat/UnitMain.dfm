@@ -1,7 +1,7 @@
 object FormMain: TFormMain
   Left = 0
   Top = 0
-  Caption = #27668#35937#26680#26597#25253#21578#19968#38190#24335#29983#25104#31995#32479
+  Caption = #27668#35937#26680#26597#25253#21578#19968#38190#24335#29983#25104#31995#32479' 1.0'
   ClientHeight = 828
   ClientWidth = 629
   Color = clBtnFace
@@ -82,6 +82,7 @@ object FormMain: TFormMain
             Height = 20
             Style = csDropDownList
             TabOrder = 6
+            OnChange = UpdateSheet1
           end
           object edt1QiWen: TEdit
             Left = 228
@@ -165,6 +166,7 @@ object FormMain: TFormMain
             Width = 115
             Height = 20
             TabOrder = 7
+            OnChange = UpdateSheet1
           end
           object cbb1WaiGuanHeGe: TComboBox
             Left = 123
@@ -222,7 +224,7 @@ object FormMain: TFormMain
             Width = 150
             Height = 20
             TabOrder = 0
-            Text = 'G-7231-H(T)23030150101'
+            Text = 'G-7231-H(T)2303150101'
           end
           object edt1BeiHeCha1: TEdit
             Left = 416
@@ -414,7 +416,7 @@ object FormMain: TFormMain
             Width = 156
             Height = 20
             TabOrder = 0
-            Text = 'G-7231-H(TH)23030150101'
+            Text = 'G-7231-H(TH)2303150101'
             OnChange = UpdateSheet2
           end
           object edt2QiWen: TEdit
@@ -845,7 +847,7 @@ object FormMain: TFormMain
             Width = 156
             Height = 20
             TabOrder = 0
-            Text = 'G-7231-H(VX)23030150101'
+            Text = 'G-7231-H(VX)2303150101'
             OnChange = UpdateSheet3
           end
           object cbb3JiaoZhun: TComboBox
@@ -957,7 +959,7 @@ object FormMain: TFormMain
             Width = 156
             Height = 20
             TabOrder = 0
-            Text = 'G-7231-H(VX)23030150101'
+            Text = 'G-7231-H(VX)2303150101'
             OnChange = UpdateSheet4
           end
           object edt4QiWen: TEdit
@@ -1260,7 +1262,7 @@ object FormMain: TFormMain
             Width = 162
             Height = 20
             TabOrder = 0
-            Text = 'G-7231-H(P)23030150101'
+            Text = 'G-7231-H(P)2303150101'
             OnChange = UpdateSheet5
           end
           object edt5QiWen: TEdit
@@ -1608,7 +1610,7 @@ object FormMain: TFormMain
             Width = 148
             Height = 20
             TabOrder = 0
-            Text = 'G-7231-H(R)23030150101'
+            Text = 'G-7231-H(R)2303150101'
             OnChange = UpdateSheet6
           end
           object edt6FengSu: TEdit
@@ -1875,7 +1877,7 @@ object FormMain: TFormMain
             Width = 154
             Height = 20
             TabOrder = 0
-            Text = 'G-7231-H(VS)23030150101'
+            Text = 'G-7231-H(VS)2303150101'
             OnChange = UpdateSheet7
           end
           object edt7QiWen: TEdit
