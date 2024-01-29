@@ -253,6 +253,7 @@ type
     FHeChaYiJu, FJiaoZhun, FHeYan: TStringList;
     function ExtractBianHao(const CellValue: string): string;
     function CalcCurrentBianhao(const QuZhanHao: string): string;
+    function MyStrToDate(const Str: string): TDate;
     procedure ToggleSheet(Index: Integer);
     function ToggleSheetControlsVisible(Prev: TFlexCelPreviewer): Boolean;
   protected
@@ -537,13 +538,17 @@ end;
 function TFormMain.CalcCurrentBianhao(const QuZhanHao: string): string;
 var
   Idx: Integer;
-  Dt: TDate;
+  Dt: TDateTime;
   S: string;
+  Edt: TEdit;
+  MyFmtSettings: TFormatSettings;
 begin
-  Dt := Now;
-  S := FormatDateTime('yyMMdd', Dt);
-
   Idx := pgcMain.ActivePageIndex + 1;
+  S := 'edt' + IntToStr(Idx) + 'JiaoZhunShiJian';
+  Edt := FindComponent(S) as TEdit;
+  Dt := MyStrToDate(Edt.Text);
+
+  S := FormatDateTime('yyMMdd', Dt);
   Result := Format(S_BIANHAO_FMT[Idx], [QuZhanHao, S]);
 end;
 
@@ -841,6 +846,42 @@ begin
 
     PreviewerByIndex(Index).InvalidatePreview;
     FStampAddeds[Index] := True;
+  end;
+end;
+
+function TFormMain.MyStrToDate(const Str: string): TDate;
+var
+  Idx, Y, M, D: Integer;
+  S, T: string;
+begin
+  Result := Now;
+  S := Str;
+
+  Idx := Pos('Äê', S);
+  if Idx > 0 then
+  begin
+    T := Copy(S, 1, Idx - 1);
+    Y := StrToInt(T);
+
+    Delete(S, 1, Idx);
+
+    Idx := Pos('ÔÂ', S);
+    if Idx > 0 then
+    begin
+      T := Copy(S, 1, Idx - 1);
+      M := StrToInt(T);
+
+      Delete(S, 1, Idx);
+
+      Idx := Pos('ÈÕ', S);
+      if Idx > 0 then
+      begin
+        T := Copy(S, 1, Idx - 1);
+        D := StrToInt(T);
+
+        Result := EncodeDate(Y, M, D);
+      end;
+    end;
   end;
 end;
 

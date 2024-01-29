@@ -30,6 +30,7 @@ object FormMain: TFormMain
     Align = alClient
     TabOrder = 0
     TabPosition = tpBottom
+    OnChange = UpdateSheet3
     object ts1: TTabSheet
       Caption = #27668#28201
       object ScrollBox1: TScrollBox
@@ -159,6 +160,7 @@ object FormMain: TFormMain
             Height = 20
             TabOrder = 29
             Text = '2023'#24180'12'#26376'31'#26085
+            OnChange = UpdateSheet1
           end
           object cbb1BeiHeCha: TComboBox
             Left = 398
@@ -2059,9 +2061,9 @@ object FormMain: TFormMain
     end
   end
   object pnlMain: TPanel
-    Left = 400
+    Left = 452
     Top = 810
-    Width = 207
+    Width = 155
     Height = 20
     Anchors = [akRight, akBottom]
     BevelOuter = bvNone
