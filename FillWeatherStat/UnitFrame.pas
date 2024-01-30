@@ -16,6 +16,7 @@ type
     btnAdd: TSpeedButton;
     btnDelete: TSpeedButton;
     edtSearch: TEdit;
+    lblItemCount: TLabel;
     procedure lstNamesClick(Sender: TObject);
     procedure btnAddClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
@@ -30,6 +31,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
+    procedure ShowCount;
     procedure UpdateFromOrigin;
     procedure ShowContents;
     procedure AddNew(const AName, AValue: string);
@@ -233,6 +235,13 @@ begin
     lstNames.Selected[0] := True;
     lstNames.OnClick(lstNames);
   end;
+
+  ShowCount;
+end;
+
+procedure TFrameSetting.ShowCount;
+begin
+  lblItemCount.Caption := 'ÊýÁ¿£º' + IntToStr(lstNames.Count);
 end;
 
 procedure TFrameSetting.UpdateFromOrigin;

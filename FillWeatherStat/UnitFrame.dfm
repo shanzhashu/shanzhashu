@@ -96,6 +96,15 @@ object FrameSetting: TFrameSetting
       00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF}
     OnClick = btnDeleteClick
   end
+  object lblItemCount: TLabel
+    Left = 88
+    Top = 318
+    Width = 73
+    Height = 13
+    Anchors = [akLeft, akBottom]
+    AutoSize = False
+    Caption = #25968#37327#65306
+  end
   object lstNames: TListBox
     Left = 24
     Top = 56

@@ -3,8 +3,8 @@ object FormSetting: TFormSetting
   Top = 0
   BorderStyle = bsDialog
   Caption = #36873#39033#35774#32622
-  ClientHeight = 483
-  ClientWidth = 552
+  ClientHeight = 492
+  ClientWidth = 646
   Color = clBtnFace
   Font.Charset = GB2312_CHARSET
   Font.Color = clWindowText
@@ -16,34 +16,35 @@ object FormSetting: TFormSetting
   ShowHint = True
   OnCreate = FormCreate
   DesignSize = (
-    552
-    483)
+    646
+    492)
   PixelsPerInch = 96
   TextHeight = 12
   object pgcSetting: TPageControl
     Left = 8
-    Top = 8
-    Width = 537
-    Height = 321
+    Top = 24
+    Width = 631
+    Height = 305
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
   end
   object btnClose: TButton
-    Left = 469
-    Top = 443
+    Left = 563
+    Top = 452
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #20851#38381
     TabOrder = 1
     OnClick = btnCloseClick
-    ExplicitTop = 439
+    ExplicitLeft = 469
+    ExplicitTop = 443
   end
   object pnlToolbar: TPanel
-    Left = 467
-    Top = 2
+    Left = 563
+    Top = 1
     Width = 81
-    Height = 24
+    Height = 23
     BevelOuter = bvNone
     TabOrder = 2
     object btnAdd: TSpeedButton
@@ -122,8 +123,9 @@ object FormSetting: TFormSetting
   object grpStamp: TGroupBox
     Left = 8
     Top = 344
-    Width = 536
+    Width = 630
     Height = 89
+    Anchors = [akLeft, akTop, akRight]
     Caption = #30422#31456#35774#32622
     TabOrder = 3
     object lbledtStampWidth: TLabeledEdit
@@ -147,7 +149,7 @@ object FormSetting: TFormSetting
       TabOrder = 1
     end
     object lbledtStampTop: TLabeledEdit
-      Left = 328
+      Left = 232
       Top = 40
       Width = 89
       Height = 20
@@ -157,7 +159,7 @@ object FormSetting: TFormSetting
       TabOrder = 2
     end
     object lbledtStampLeft: TLabeledEdit
-      Left = 432
+      Left = 336
       Top = 40
       Width = 89
       Height = 20
