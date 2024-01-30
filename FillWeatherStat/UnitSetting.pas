@@ -3,8 +3,7 @@ unit UnitSetting;
 interface
 
 uses
-  System.SysUtils, System.Classes, OmniXML, OmniXMLUtils, OmniXMLPersistent,
-  CnJSON;
+  System.SysUtils, System.Classes, CnJSON;
 
 type
   TFWSettingItem = class(TCollectionItem)
@@ -32,9 +31,6 @@ type
     function Find(const AType, AName: string): Integer;
     procedure DeleteType(const AType: string);
     procedure GetType(const AType: string; Names, Values: TStrings);
-
-    procedure SaveToXML(const XMLFile: string);
-    procedure LoadFromXML(const XMLFile: string);
 
     procedure SaveToJSON(const JSONFile: string);
     procedure LoadFromJSON(const JSONFile: string);
@@ -125,19 +121,9 @@ begin
   TCnJSONReader.LoadFromFile(Self, JSONFile);
 end;
 
-procedure TFWSettingCollectin.LoadFromXML(const XMLFile: string);
-begin
-  TOmniXMLReader.LoadFromFile(Self, XMLFile);
-end;
-
 procedure TFWSettingCollectin.SaveToJSON(const JSONFile: string);
 begin
   TCnJSONWriter.SaveToFile(Self, JSONFile);
-end;
-
-procedure TFWSettingCollectin.SaveToXML(const XMLFile: string);
-begin
-  TOmniXMLWriter.SaveToFile(Self, XMLFile, pfAuto, ofIndent);
 end;
 
 initialization

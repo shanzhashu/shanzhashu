@@ -225,6 +225,7 @@ type
     btnStamp: TSpeedButton;
     dlgOpenForStamp: TOpenDialog;
     dlgSaveStamp: TSaveDialog;
+    chkImage: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure btnPDFClick(Sender: TObject);
@@ -265,6 +266,7 @@ type
   protected
     procedure SetNumberValue(Xls: TExcelFile; Row, Col: Integer; const Value: string);
     procedure InsertStamp(Index: Integer);
+    procedure DeleteStamp(Index: Integer);
     function PreviewerByIndex(Index: Integer): TFlexCelPreviewer;
     function CurrentPreviewer: TFlexCelPreviewer;
     function CurrentBeiHeCha: TComboBox;
@@ -347,7 +349,10 @@ begin
   if dlgSavePDF.Execute then
   begin
     Idx := pgcMain.ActivePageIndex + 1;
-    InsertStamp(Idx);
+    if chkImage.Checked then
+      InsertStamp(Idx)
+    else
+      DeleteStamp(Idx);
 
     Pdf := TFlexCelPdfExport.Create(FXlses[Idx], True);
     Screen.Cursor := crHourGlass;
@@ -372,7 +377,6 @@ begin
     FWSetting.StampHeight := StrToInt(lbledtStampHeight.Text);
 
     FWSetting.SaveToJSON(FSettingFile);
-    FWSetting.SaveToXML(FSettingFile + 'xml');
     Free;
   end;
 end;
@@ -576,6 +580,18 @@ end;
 function TFormMain.CurrentPreviewer: TFlexCelPreviewer;
 begin
   Result := PreviewerByIndex(pgcMain.ActivePageIndex + 1);
+end;
+
+procedure TFormMain.DeleteStamp(Index: Integer);
+begin
+  if FStampAddeds[Index] then
+  begin
+    FXlses[Index].DeleteImage(FStampIndexes[Index]);
+    Dec(FStampIndexes[Index]);
+    FStampAddeds[Index] := False;
+
+    PreviewerByIndex(Index).InvalidatePreview;;
+  end;
 end;
 
 function TFormMain.ExtractBianHao(const CellValue: string): string;

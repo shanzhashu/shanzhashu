@@ -2061,15 +2061,15 @@ object FormMain: TFormMain
     end
   end
   object pnlMain: TPanel
-    Left = 452
+    Left = 423
     Top = 810
-    Width = 155
+    Width = 184
     Height = 20
     Anchors = [akRight, akBottom]
     BevelOuter = bvNone
     TabOrder = 1
     object btnPDF: TSpeedButton
-      Left = 16
+      Left = 70
       Top = -2
       Width = 23
       Height = 22
@@ -2089,7 +2089,7 @@ object FormMain: TFormMain
       OnClick = btnPDFClick
     end
     object btnToggleVisible: TSpeedButton
-      Left = 45
+      Left = 99
       Top = -2
       Width = 23
       Height = 22
@@ -2109,7 +2109,7 @@ object FormMain: TFormMain
       OnClick = btnToggleVisibleClick
     end
     object btnSettings: TSpeedButton
-      Left = 74
+      Left = 128
       Top = -2
       Width = 23
       Height = 22
@@ -2129,7 +2129,7 @@ object FormMain: TFormMain
       OnClick = btnSettingsClick
     end
     object btnStamp: TSpeedButton
-      Left = 103
+      Left = 157
       Top = -2
       Width = 23
       Height = 22
@@ -2151,6 +2151,16 @@ object FormMain: TFormMain
       ParentShowHint = False
       ShowHint = True
       OnClick = btnStampClick
+    end
+    object chkImage: TCheckBox
+      Left = 14
+      Top = 0
+      Width = 35
+      Height = 17
+      Caption = #31456
+      Checked = True
+      State = cbChecked
+      TabOrder = 0
     end
   end
   object dlgSavePDF: TSaveDialog
