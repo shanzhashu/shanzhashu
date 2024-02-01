@@ -37,8 +37,6 @@ object FormSetting: TFormSetting
     Caption = #20851#38381
     TabOrder = 1
     OnClick = btnCloseClick
-    ExplicitLeft = 469
-    ExplicitTop = 443
   end
   object pnlToolbar: TPanel
     Left = 563

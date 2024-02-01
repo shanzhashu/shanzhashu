@@ -621,15 +621,12 @@ procedure TFormMain.FormCreate(Sender: TObject);
 var
   I: Integer;
 begin
+  Application.Title := '气象系统';
+
   // 初始化选项文件
   FSettingFile := ExtractFilePath(Application.ExeName) + S_F_SET;
   if FileExists(FSettingFile) then
-  begin
     FWSetting.LoadFromJSON(FSettingFile);
-//    FWSetting.LoadFromXML(ExtractFilePath(Application.ExeName) + 'Setting.xml');
-//    TCnJSONWriter.SaveToFile(FWSetting, FSettingFile);
-    // TCnJSONReader.LoadFromFile(FWSetting, FSettingFile);
-  end;
 
   // 初始化公章文件
   FStampFile := ExtractFilePath(Application.ExeName) + S_F_STAMP;

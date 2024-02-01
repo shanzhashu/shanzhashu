@@ -41,12 +41,21 @@ uses
 
 procedure TFormSetting.btnAddClick(Sender: TObject);
 var
+  I: Integer;
   S: string;
   Tab: TTabSheet;
   Frm: TFrameSetting;
 begin
   // 输入名称新增大页
   S := InputBox('', '新页面名称', '新页面一');
+
+  for I := 0 to pgcSetting.PageCount - 1 do
+  begin
+    Tab := pgcSetting.Pages[I];
+    if S = Tab.Caption then
+      raise Exception.Create('页面名称重复了！');
+  end;
+
   if S <> '' then
   begin
     // 拿到新的 SettingType，新建界面
@@ -68,7 +77,17 @@ begin
 end;
 
 procedure TFormSetting.btnCloseClick(Sender: TObject);
+var
+  I: Integer;
+  Tab: TTabSheet;
 begin
+  for I := 0 to pgcSetting.PageCount - 1 do
+  begin
+    Tab := pgcSetting.Pages[I];
+    if Pos('被核查器具', Tab.Caption) = 1 then
+      FWSetting.SortType(Tab.Caption);
+  end;
+
   Close;
 end;
 
@@ -78,12 +97,15 @@ var
 begin
   if pgcSetting.ActivePageIndex >= 0 then
   begin
-    Tab := pgcSetting.ActivePage;
+    if Application.MessageBox('确定要删除页面？', '提示', MB_OKCANCEL + MB_ICONQUESTION) = IDOK then
+    begin
+      Tab := pgcSetting.ActivePage;
 
-    FWSetting.DeleteType(Tab.Caption);
+      FWSetting.DeleteType(Tab.Caption);
 
-    Tab.PageControl := nil;
-    Tab.Free;
+      Tab.PageControl := nil;
+      Tab.Free;
+    end;
   end;
 end;
 
