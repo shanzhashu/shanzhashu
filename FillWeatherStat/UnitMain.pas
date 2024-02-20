@@ -226,6 +226,12 @@ type
     dlgOpenForStamp: TOpenDialog;
     dlgSaveStamp: TSaveDialog;
     chkImage: TCheckBox;
+    edt7ZuiDaYunXuZhi: TEdit;
+    cbb4JieGuoHeGe1: TComboBox;
+    cbb4JieGuoHeGe2: TComboBox;
+    cbb4JieGuoHeGe3: TComboBox;
+    cbb4JieGuoHeGe4: TComboBox;
+    cbb4JieGuoHeGe5: TComboBox;
 
     procedure FormCreate(Sender: TObject);
     procedure btnPDFClick(Sender: TObject);
@@ -534,15 +540,18 @@ begin
 
   if ToggleSheetControlsVisible(Sht) then
   begin
-    FXlses[Index].DeleteImage(FStampIndexes[Index]);
-    Dec(FStampIndexes[Index]);
-    FStampAddeds[Index] := False;
-
+    if FStampAddeds[Index] then
+    begin
+      FXlses[Index].DeleteImage(FStampIndexes[Index]);
+      Dec(FStampIndexes[Index]);
+      FStampAddeds[Index] := False;
+    end;
     Sht.InvalidatePreview;
   end
   else
   begin
-    InsertStamp(Index);
+    if chkImage.Checked then
+      InsertStamp(Index);
   end;
 end;
 
@@ -1229,6 +1238,12 @@ begin
   SetNumberValue(FXlses[4], 13, 3, edt4BeiHeCha4.Text);
   SetNumberValue(FXlses[4], 14, 3, edt4BeiHeCha5.Text);
 
+  FXlses[4].SetCellValue(10, 5, S_ARR_HEGE[cbb4JieGuoHeGe1.ItemIndex]);
+  FXlses[4].SetCellValue(11, 5, S_ARR_HEGE[cbb4JieGuoHeGe2.ItemIndex]);
+  FXlses[4].SetCellValue(12, 5, S_ARR_HEGE[cbb4JieGuoHeGe3.ItemIndex]);
+  FXlses[4].SetCellValue(13, 5, S_ARR_HEGE[cbb4JieGuoHeGe4.ItemIndex]);
+  FXlses[4].SetCellValue(14, 5, S_ARR_HEGE[cbb4JieGuoHeGe5.ItemIndex]);
+
   if not FIniting then
     FXlses[4].RecalcAndVerify;
 
@@ -1424,6 +1439,7 @@ begin
   FXlses[7].SetCellValue(11, 2, edt7BiaoZhunZhi2.Text);
   FXlses[7].SetCellValue(12, 2, edt7BiaoZhunZhi3.Text);
   FXlses[7].SetCellValue(10, 4, edt7HeChaJieGuo.Text);
+  FXlses[7].SetCellValue(13, 3, edt7ZuiDaYunXuZhi.Text);
 
   if cbb7FuHeYaoQiu.ItemIndex = 0 then
     S := Format(S_S_Shi_S_Fou, [#$2611, #$25A1])
