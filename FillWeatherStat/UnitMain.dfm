@@ -141,8 +141,8 @@ object FormMain: TFormMain
             Text = '15:10'
           end
           object cbb1HeGe: TComboBox
-            Left = 216
-            Top = 618
+            Left = 215
+            Top = 644
             Width = 81
             Height = 20
             Style = csDropDownList
@@ -154,8 +154,8 @@ object FormMain: TFormMain
               #19981#21512#26684)
           end
           object edt1JiaoZhunShiJian: TEdit
-            Left = 419
-            Top = 686
+            Left = 418
+            Top = 712
             Width = 121
             Height = 20
             TabOrder = 29
@@ -171,8 +171,8 @@ object FormMain: TFormMain
             OnChange = UpdateSheet1
           end
           object cbb1WaiGuanHeGe: TComboBox
-            Left = 123
-            Top = 396
+            Left = 124
+            Top = 422
             Width = 81
             Height = 20
             Style = csDropDownList
@@ -184,8 +184,8 @@ object FormMain: TFormMain
               #19981#21512#26684)
           end
           object cbb1FuHeYaoQiu: TComboBox
-            Left = 216
-            Top = 664
+            Left = 215
+            Top = 690
             Width = 65
             Height = 20
             Style = csDropDownList
@@ -197,24 +197,24 @@ object FormMain: TFormMain
               #21542)
           end
           object cbb1JiaoZhun: TComboBox
-            Left = 96
-            Top = 684
+            Left = 95
+            Top = 710
             Width = 65
             Height = 20
             Style = csDropDownList
             TabOrder = 27
           end
           object cbb1HeYan: TComboBox
-            Left = 252
-            Top = 684
+            Left = 251
+            Top = 710
             Width = 77
             Height = 20
             Style = csDropDownList
             TabOrder = 28
           end
           object cbb1HeChaYiJu: TComboBox
-            Left = 216
-            Top = 640
+            Left = 215
+            Top = 666
             Width = 323
             Height = 20
             Style = csDropDownList
@@ -230,7 +230,7 @@ object FormMain: TFormMain
           end
           object edt1BeiHeCha1: TEdit
             Left = 416
-            Top = 469
+            Top = 495
             Width = 70
             Height = 20
             TabOrder = 12
@@ -239,7 +239,7 @@ object FormMain: TFormMain
           end
           object edt1BeiHeCha2: TEdit
             Left = 416
-            Top = 525
+            Top = 551
             Width = 70
             Height = 20
             TabOrder = 17
@@ -248,7 +248,7 @@ object FormMain: TFormMain
           end
           object edt1BeiHeCha3: TEdit
             Left = 416
-            Top = 579
+            Top = 605
             Width = 70
             Height = 20
             TabOrder = 21
@@ -256,8 +256,8 @@ object FormMain: TFormMain
             OnChange = UpdateSheet1
           end
           object edt1XiuZhengZhi1: TEdit
-            Left = 217
-            Top = 469
+            Left = 216
+            Top = 495
             Width = 100
             Height = 20
             TabOrder = 11
@@ -265,8 +265,8 @@ object FormMain: TFormMain
             OnChange = UpdateSheet1
           end
           object edt1XiuZhengZhi2: TEdit
-            Left = 217
-            Top = 525
+            Left = 216
+            Top = 551
             Width = 100
             Height = 20
             TabOrder = 16
@@ -274,8 +274,8 @@ object FormMain: TFormMain
             OnChange = UpdateSheet1
           end
           object edt1XiuZhengZhi3: TEdit
-            Left = 217
-            Top = 579
+            Left = 216
+            Top = 605
             Width = 100
             Height = 20
             TabOrder = 20
@@ -283,8 +283,8 @@ object FormMain: TFormMain
             OnChange = UpdateSheet1
           end
           object edt1BiaoZhunZhi1: TEdit
-            Left = 125
-            Top = 451
+            Left = 124
+            Top = 477
             Width = 90
             Height = 20
             TabOrder = 9
@@ -292,8 +292,8 @@ object FormMain: TFormMain
             OnChange = UpdateSheet1
           end
           object edt1BiaoZhunZhi2: TEdit
-            Left = 125
-            Top = 469
+            Left = 124
+            Top = 495
             Width = 90
             Height = 20
             TabOrder = 10
@@ -301,8 +301,8 @@ object FormMain: TFormMain
             OnChange = UpdateSheet1
           end
           object edt1BiaoZhunZhi3: TEdit
-            Left = 125
-            Top = 487
+            Left = 124
+            Top = 513
             Width = 90
             Height = 20
             TabOrder = 13
@@ -310,8 +310,8 @@ object FormMain: TFormMain
             OnChange = UpdateSheet1
           end
           object edt1BiaoZhunZhi4: TEdit
-            Left = 125
-            Top = 506
+            Left = 124
+            Top = 532
             Width = 90
             Height = 20
             TabOrder = 14
@@ -319,8 +319,8 @@ object FormMain: TFormMain
             OnChange = UpdateSheet1
           end
           object edt1BiaoZhunZhi5: TEdit
-            Left = 125
-            Top = 525
+            Left = 124
+            Top = 551
             Width = 90
             Height = 20
             TabOrder = 15
@@ -328,8 +328,8 @@ object FormMain: TFormMain
             OnChange = UpdateSheet1
           end
           object edt1BiaoZhunZhi6: TEdit
-            Left = 125
-            Top = 544
+            Left = 124
+            Top = 570
             Width = 90
             Height = 20
             TabOrder = 18
@@ -337,8 +337,8 @@ object FormMain: TFormMain
             OnChange = UpdateSheet1
           end
           object edt1BiaoZhunZhi7: TEdit
-            Left = 125
-            Top = 563
+            Left = 124
+            Top = 589
             Width = 90
             Height = 20
             TabOrder = 19
@@ -346,8 +346,8 @@ object FormMain: TFormMain
             OnChange = UpdateSheet1
           end
           object edt1BiaoZhunZhi8: TEdit
-            Left = 125
-            Top = 581
+            Left = 124
+            Top = 607
             Width = 90
             Height = 20
             TabOrder = 22
@@ -355,8 +355,8 @@ object FormMain: TFormMain
             OnChange = UpdateSheet1
           end
           object edt1BiaoZhunZhi9: TEdit
-            Left = 125
-            Top = 599
+            Left = 124
+            Top = 625
             Width = 90
             Height = 20
             TabOrder = 23

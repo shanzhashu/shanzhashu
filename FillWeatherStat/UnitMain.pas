@@ -334,7 +334,7 @@ const
     'G-%s-H(R)%s0101',
     'G-%s-H(VS)%s0201'
   );
-  OFFSET_ARRAY: array[1..XLS_COUNT] of Integer = (0, -100, -130, -80, 0, -70, -150);
+  OFFSET_ARRAY: array[1..XLS_COUNT] of Integer = (-33, -100, -130, -80, 0, -70, -150);
 
 var
   XLS_FILES: array[1..XLS_COUNT] of string;
@@ -1070,9 +1070,9 @@ begin
   if Sender <> edt2JiLuBianHao then
   begin
     if (cbb2BeiHeCha.ItemIndex >= 0) and
-     (cbb2BeiHeCha.ItemIndex < FBeiHeChaQiJuValues1.Count) then
+     (cbb2BeiHeCha.ItemIndex < FBeiHeChaQiJuValues2.Count) then
     begin
-      S := FBeiHeChaQiJuValues1[cbb2BeiHeCha.ItemIndex];
+      S := FBeiHeChaQiJuValues2[cbb2BeiHeCha.ItemIndex];
       edt2JiLuBianHao.Text := CalcCurrentBianhao(ExtractBianHao(S));
     end;
   end;
@@ -1096,8 +1096,8 @@ begin
   if (cbb2BiaoZhunQi.ItemIndex >= 0) and (cbb2BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
     FXlses[2].SetCellValue(6, 2, FBiaoZhunQiValues[cbb2BiaoZhunQi.ItemIndex]);
 
-  if (cbb2BeiHeCha.ItemIndex >= 0) and (cbb2BeiHeCha.ItemIndex < FBeiHeChaQiJuValues1.Count) then
-    FXlses[2].SetCellValue(6, 4, FBeiHeChaQiJuValues1[cbb2BeiHeCha.ItemIndex]);
+  if (cbb2BeiHeCha.ItemIndex >= 0) and (cbb2BeiHeCha.ItemIndex < FBeiHeChaQiJuValues2.Count) then
+    FXlses[2].SetCellValue(6, 4, FBeiHeChaQiJuValues2[cbb2BeiHeCha.ItemIndex]);
 
   SetNumberValue(FXlses[2], 9, 2, edt2BiaoZhunZhi1.Text);
   SetNumberValue(FXlses[2], 10, 2, edt2BiaoZhunZhi2.Text);
@@ -1138,9 +1138,9 @@ begin
   if Sender <> edt3JiLuBianHao then
   begin
     if (cbb3BeiHeCha.ItemIndex >= 0) and
-     (cbb3BeiHeCha.ItemIndex < FBeiHeChaQiJuValues1.Count) then
+     (cbb3BeiHeCha.ItemIndex < FBeiHeChaQiJuValues3.Count) then
     begin
-      S := FBeiHeChaQiJuValues1[cbb3BeiHeCha.ItemIndex];
+      S := FBeiHeChaQiJuValues3[cbb3BeiHeCha.ItemIndex];
       edt3JiLuBianHao.Text := CalcCurrentBianhao(ExtractBianHao(S));
     end;
   end;
@@ -1164,8 +1164,8 @@ begin
   if (cbb3BiaoZhunQi.ItemIndex >= 0) and (cbb3BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
     FXlses[3].SetCellValue(7, 2, FBiaoZhunQiValues[cbb3BiaoZhunQi.ItemIndex]);
 
-  if (cbb3BeiHeCha.ItemIndex >= 0) and (cbb3BeiHeCha.ItemIndex < FBeiHeChaQiJuValues1.Count) then
-    FXlses[3].SetCellValue(7, 4, FBeiHeChaQiJuValues1[cbb3BeiHeCha.ItemIndex]);
+  if (cbb3BeiHeCha.ItemIndex >= 0) and (cbb3BeiHeCha.ItemIndex < FBeiHeChaQiJuValues3.Count) then
+    FXlses[3].SetCellValue(7, 4, FBeiHeChaQiJuValues3[cbb3BeiHeCha.ItemIndex]);
 
   SetNumberValue(FXlses[3], 10, 2, edt3BeiHeCha1.Text);
   SetNumberValue(FXlses[3], 11, 2, edt3BeiHeCha2.Text);
@@ -1197,9 +1197,9 @@ begin
   if Sender <> edt4JiLuBianHao then
   begin
     if (cbb4BeiHeCha.ItemIndex >= 0) and
-     (cbb4BeiHeCha.ItemIndex < FBeiHeChaQiJuValues1.Count) then
+     (cbb4BeiHeCha.ItemIndex < FBeiHeChaQiJuValues4.Count) then
     begin
-      S := FBeiHeChaQiJuValues1[cbb4BeiHeCha.ItemIndex];
+      S := FBeiHeChaQiJuValues4[cbb4BeiHeCha.ItemIndex];
       edt4JiLuBianHao.Text := CalcCurrentBianhao(ExtractBianHao(S));
     end;
   end;
@@ -1223,8 +1223,8 @@ begin
   if (cbb4BiaoZhunQi.ItemIndex >= 0) and (cbb4BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
     FXlses[4].SetCellValue(7, 2, FBiaoZhunQiValues[cbb4BiaoZhunQi.ItemIndex]);
 
-  if (cbb4BeiHeCha.ItemIndex >= 0) and (cbb4BeiHeCha.ItemIndex < FBeiHeChaQiJuValues1.Count) then
-    FXlses[4].SetCellValue(7, 4, FBeiHeChaQiJuValues1[cbb4BeiHeCha.ItemIndex]);
+  if (cbb4BeiHeCha.ItemIndex >= 0) and (cbb4BeiHeCha.ItemIndex < FBeiHeChaQiJuValues4.Count) then
+    FXlses[4].SetCellValue(7, 4, FBeiHeChaQiJuValues4[cbb4BeiHeCha.ItemIndex]);
 
   SetNumberValue(FXlses[4], 10, 2, edt4BiaoZhunZhi1.Text);
   SetNumberValue(FXlses[4], 11, 2, edt4BiaoZhunZhi2.Text);
@@ -1270,9 +1270,9 @@ begin
   if Sender <> edt5JiLuBianHao then
   begin
     if (cbb5BeiHeCha.ItemIndex >= 0) and
-     (cbb5BeiHeCha.ItemIndex < FBeiHeChaQiJuValues1.Count) then
+     (cbb5BeiHeCha.ItemIndex < FBeiHeChaQiJuValues5.Count) then
     begin
-      S := FBeiHeChaQiJuValues1[cbb5BeiHeCha.ItemIndex];
+      S := FBeiHeChaQiJuValues5[cbb5BeiHeCha.ItemIndex];
       edt5JiLuBianHao.Text := CalcCurrentBianhao(ExtractBianHao(S));
     end;
   end;
@@ -1296,8 +1296,8 @@ begin
   if (cbb5BiaoZhunQi.ItemIndex >= 0) and (cbb5BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
     FXlses[5].SetCellValue(7, 2, FBiaoZhunQiValues[cbb5BiaoZhunQi.ItemIndex]);
 
-  if (cbb5BeiHeCha.ItemIndex >= 0) and (cbb5BeiHeCha.ItemIndex < FBeiHeChaQiJuValues1.Count) then
-    FXlses[5].SetCellValue(7, 4, FBeiHeChaQiJuValues1[cbb5BeiHeCha.ItemIndex]);
+  if (cbb5BeiHeCha.ItemIndex >= 0) and (cbb5BeiHeCha.ItemIndex < FBeiHeChaQiJuValues5.Count) then
+    FXlses[5].SetCellValue(7, 4, FBeiHeChaQiJuValues5[cbb5BeiHeCha.ItemIndex]);
 
   SetNumberValue(FXlses[5], 10, 2, edt5BiaoZhunZhi1.Text);
   SetNumberValue(FXlses[5], 11, 2, edt5BiaoZhunZhi2.Text);
@@ -1343,9 +1343,9 @@ begin
   if Sender <> edt6JiLuBianHao then
   begin
     if (cbb6BeiHeCha.ItemIndex >= 0) and
-     (cbb6BeiHeCha.ItemIndex < FBeiHeChaQiJuValues1.Count) then
+     (cbb6BeiHeCha.ItemIndex < FBeiHeChaQiJuValues6.Count) then
     begin
-      S := FBeiHeChaQiJuValues1[cbb6BeiHeCha.ItemIndex];
+      S := FBeiHeChaQiJuValues6[cbb6BeiHeCha.ItemIndex];
       edt6JiLuBianHao.Text := CalcCurrentBianhao(ExtractBianHao(S));
     end;
   end;
@@ -1369,8 +1369,8 @@ begin
   if (cbb6BiaoZhunQi.ItemIndex >= 0) and (cbb6BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
     FXlses[6].SetCellValue(7, 2, FBiaoZhunQiValues[cbb6BiaoZhunQi.ItemIndex]);
 
-  if (cbb6BeiHeCha.ItemIndex >= 0) and (cbb6BeiHeCha.ItemIndex < FBeiHeChaQiJuValues1.Count) then
-    FXlses[6].SetCellValue(7, 4, FBeiHeChaQiJuValues1[cbb6BeiHeCha.ItemIndex]);
+  if (cbb6BeiHeCha.ItemIndex >= 0) and (cbb6BeiHeCha.ItemIndex < FBeiHeChaQiJuValues6.Count) then
+    FXlses[6].SetCellValue(7, 4, FBeiHeChaQiJuValues6[cbb6BeiHeCha.ItemIndex]);
 
   // 填格子并计算，注意得数值
   SetNumberValue(FXlses[6], 10, 4, edt6ChuanGanQi1.Text);
@@ -1406,9 +1406,9 @@ begin
   if Sender <> edt7JiLuBianHao then
   begin
     if (cbb7BeiHeCha.ItemIndex >= 0) and
-     (cbb7BeiHeCha.ItemIndex < FBeiHeChaQiJuValues1.Count) then
+     (cbb7BeiHeCha.ItemIndex < FBeiHeChaQiJuValues7.Count) then
     begin
-      S := FBeiHeChaQiJuValues1[cbb7BeiHeCha.ItemIndex];
+      S := FBeiHeChaQiJuValues7[cbb7BeiHeCha.ItemIndex];
       edt7JiLuBianHao.Text := CalcCurrentBianhao(ExtractBianHao(S));
     end;
   end;
@@ -1432,8 +1432,8 @@ begin
   if (cbb7BiaoZhunQi.ItemIndex >= 0) and (cbb7BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
     FXlses[7].SetCellValue(7, 2, FBiaoZhunQiValues[cbb7BiaoZhunQi.ItemIndex]);
 
-  if (cbb7BeiHeCha.ItemIndex >= 0) and (cbb7BeiHeCha.ItemIndex < FBeiHeChaQiJuValues1.Count) then
-    FXlses[7].SetCellValue(7, 4, FBeiHeChaQiJuValues1[cbb7BeiHeCha.ItemIndex]);
+  if (cbb7BeiHeCha.ItemIndex >= 0) and (cbb7BeiHeCha.ItemIndex < FBeiHeChaQiJuValues7.Count) then
+    FXlses[7].SetCellValue(7, 4, FBeiHeChaQiJuValues7[cbb7BeiHeCha.ItemIndex]);
 
   FXlses[7].SetCellValue(10, 2, edt7BiaoZhunZhi1.Text);
   FXlses[7].SetCellValue(11, 2, edt7BiaoZhunZhi2.Text);
