@@ -329,10 +329,10 @@ const
     'G-%s-H(T)%s0101',
     'G-%s-H(TH)%s0101',
     'G-%s-H(VX)%s0101',
-    'G-%s-H(VX)%s0101',
+    'G-%s-H(VS)%s0101',
     'G-%s-H(P)%s0101',
     'G-%s-H(R)%s0101',
-    'G-%s-H(VS)%s0101'
+    'G-%s-H(VS)%s0201'
   );
   OFFSET_ARRAY: array[1..XLS_COUNT] of Integer = (0, -100, -130, -80, 0, -70, -150);
 

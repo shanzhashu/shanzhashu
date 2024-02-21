@@ -26,7 +26,7 @@ object FormMain: TFormMain
     Top = 0
     Width = 629
     Height = 828
-    ActivePage = ts4
+    ActivePage = ts1
     Align = alClient
     TabOrder = 0
     TabPosition = tpBottom
@@ -961,7 +961,7 @@ object FormMain: TFormMain
             Width = 156
             Height = 20
             TabOrder = 0
-            Text = 'G-7231-H(VX)2303150101'
+            Text = 'G-7231-H(VS)2303150101'
             OnChange = UpdateSheet4
           end
           object edt4QiWen: TEdit
@@ -1949,7 +1949,7 @@ object FormMain: TFormMain
             Width = 154
             Height = 20
             TabOrder = 0
-            Text = 'G-7231-H(VS)2303150101'
+            Text = 'G-7231-H(VS)2303150201'
             OnChange = UpdateSheet7
           end
           object edt7QiWen: TEdit
