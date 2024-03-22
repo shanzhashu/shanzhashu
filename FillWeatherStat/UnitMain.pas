@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, VCL.FlexCel.Core, FlexCel.XlsAdapter, FlexCel.Pdf,
   FlexCel.Render, FlexCel.Preview, Vcl.ComCtrls, Vcl.Imaging.pngimage, _UMiscClasses.TImageProperties,
-  Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.jpeg, Vcl.Buttons;
+  Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.jpeg, Vcl.Buttons, Vcl.Mask;
 
 const
   XLS_COUNT = 7;
@@ -24,8 +24,8 @@ type
     edt1QiWen: TEdit;
     edt1ShiDu: TEdit;
     edt1FengSu: TEdit;
-    edt1KaiShiShiJian: TEdit;
-    edt1JieShuShiJian: TEdit;
+    edt1KaiShiShiJian: TMaskEdit;
+    edt1JieShuShiJian: TMaskEdit;
     cbb1HeGe: TComboBox;
     edt1JiaoZhunShiJian: TEdit;
     cbb1BeiHeCha: TComboBox;
@@ -56,8 +56,8 @@ type
     edt2QiWen: TEdit;
     edt2ShiDu: TEdit;
     edt2FengSu: TEdit;
-    edt2KaiShiShiJian: TEdit;
-    edt2JieShuShiJian: TEdit;
+    edt2KaiShiShiJian: TMaskEdit;
+    edt2JieShuShiJian: TMaskEdit;
     cbb2BiaoZhunQi: TComboBox;
     cbb2BeiHeCha: TComboBox;
     cbb2WaiGuanHeGe: TComboBox;
@@ -88,11 +88,11 @@ type
     cbb3WaiGuanHeGe: TComboBox;
     cbb3BeiHeCha: TComboBox;
     cbb3BiaoZhunQi: TComboBox;
-    edt3KaiShiShiJian: TEdit;
+    edt3KaiShiShiJian: TMaskEdit;
     edt3QiWen: TEdit;
     edt3ShiDu: TEdit;
     edt3FengSu: TEdit;
-    edt3JieShuShiJian: TEdit;
+    edt3JieShuShiJian: TMaskEdit;
     edt3JiLuBianHao: TEdit;
     lbl3BeiHeCha: TLabel;
     lbl3BiaoZhunQi: TLabel;
@@ -109,8 +109,8 @@ type
     edt4QiWen: TEdit;
     edt4ShiDu: TEdit;
     edt4FengSu: TEdit;
-    edt4KaiShiShiJian: TEdit;
-    edt4JieShuShiJian: TEdit;
+    edt4KaiShiShiJian: TMaskEdit;
+    edt4JieShuShiJian: TMaskEdit;
     cbb4BeiHeCha: TComboBox;
     lbl4BeiHeCha: TLabel;
     cbb4BiaoZhunQi: TComboBox;
@@ -139,8 +139,8 @@ type
     edt5QiWen: TEdit;
     edt5ShiDu: TEdit;
     edt5FengSu: TEdit;
-    edt5JieShuShiJian: TEdit;
-    edt5KaiShiShiJian: TEdit;
+    edt5JieShuShiJian: TMaskEdit;
+    edt5KaiShiShiJian: TMaskEdit;
     cbb5BiaoZhunQi: TComboBox;
     lbl5BiaoZhunQi: TLabel;
     cbb5BeiHeCha: TComboBox;
@@ -174,8 +174,8 @@ type
     edt6FengSu: TEdit;
     edt6ShiDu: TEdit;
     edt6QiWen: TEdit;
-    edt6KaiShiShiJian: TEdit;
-    edt6JieShuShiJian: TEdit;
+    edt6KaiShiShiJian: TMaskEdit;
+    edt6JieShuShiJian: TMaskEdit;
     cbb6BiaoZhunQi: TComboBox;
     lbl6BiaoZhunQi: TLabel;
     lbl6BeiHeCha: TLabel;
@@ -200,8 +200,8 @@ type
     edt7QiWen: TEdit;
     edt7ShiDu: TEdit;
     edt7FengSu: TEdit;
-    edt7JieShuShiJian: TEdit;
-    edt7KaiShiShiJian: TEdit;
+    edt7JieShuShiJian: TMaskEdit;
+    edt7KaiShiShiJian: TMaskEdit;
     cbb7BiaoZhunQi: TComboBox;
     cbb7BeiHeCha: TComboBox;
     lbl7BeiHeCha: TLabel;
@@ -524,7 +524,8 @@ begin
   for I := 0 to Prev.ControlCount - 1 do
   begin
     if (Prev.Controls[I] is TEdit) or (Prev.Controls[I] is TComboBox) or
-      (Prev.Controls[I] is TRadioGroup) or (Prev.Controls[I] is TLabel) then
+      (Prev.Controls[I] is TRadioGroup) or (Prev.Controls[I] is TLabel) or
+      (Prev.Controls[I] is TMaskEdit) then
     begin
       Prev.Controls[I].Visible := not Prev.Controls[I].Visible;
       Result := Prev.Controls[I].Visible;

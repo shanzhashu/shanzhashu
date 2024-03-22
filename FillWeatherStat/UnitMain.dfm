@@ -1,7 +1,7 @@
 object FormMain: TFormMain
   Left = 0
   Top = 0
-  Caption = #27668#35937#26680#26597#25253#21578#19968#38190#24335#29983#25104#31995#32479' 1.0.4'
+  Caption = #27668#35937#26680#26597#25253#21578#19968#38190#24335#29983#25104#31995#32479' 1.0.6'
   ClientHeight = 828
   ClientWidth = 629
   Color = clBtnFace
@@ -95,6 +95,7 @@ object FormMain: TFormMain
             BevelOuter = bvNone
             TabOrder = 1
             Text = '23.9'
+            OnChange = UpdateSheet1
           end
           object edt1ShiDu: TEdit
             Left = 325
@@ -106,6 +107,7 @@ object FormMain: TFormMain
             BevelOuter = bvNone
             TabOrder = 2
             Text = '42'
+            OnChange = UpdateSheet1
           end
           object edt1FengSu: TEdit
             Left = 437
@@ -117,8 +119,9 @@ object FormMain: TFormMain
             BevelOuter = bvNone
             TabOrder = 3
             Text = '2.0'
+            OnChange = UpdateSheet1
           end
-          object edt1KaiShiShiJian: TEdit
+          object edt1KaiShiShiJian: TMaskEdit
             Left = 201
             Top = 148
             Width = 41
@@ -126,10 +129,13 @@ object FormMain: TFormMain
             BevelEdges = []
             BevelInner = bvNone
             BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
             TabOrder = 4
             Text = '13:10'
+            OnChange = UpdateSheet1
           end
-          object edt1JieShuShiJian: TEdit
+          object edt1JieShuShiJian: TMaskEdit
             Left = 459
             Top = 148
             Width = 41
@@ -137,8 +143,11 @@ object FormMain: TFormMain
             BevelEdges = []
             BevelInner = bvNone
             BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
             TabOrder = 5
             Text = '15:10'
+            OnChange = UpdateSheet1
           end
           object cbb1HeGe: TComboBox
             Left = 215
@@ -149,6 +158,7 @@ object FormMain: TFormMain
             ItemIndex = 0
             TabOrder = 24
             Text = #21512#26684
+            OnChange = UpdateSheet1
             Items.Strings = (
               #21512#26684
               #19981#21512#26684)
@@ -179,6 +189,7 @@ object FormMain: TFormMain
             ItemIndex = 0
             TabOrder = 8
             Text = #21512#26684
+            OnChange = UpdateSheet1
             Items.Strings = (
               #21512#26684
               #19981#21512#26684)
@@ -192,6 +203,7 @@ object FormMain: TFormMain
             ItemIndex = 0
             TabOrder = 26
             Text = #26159
+            OnChange = UpdateSheet1
             Items.Strings = (
               #26159
               #21542)
@@ -203,6 +215,7 @@ object FormMain: TFormMain
             Height = 20
             Style = csDropDownList
             TabOrder = 27
+            OnChange = UpdateSheet1
           end
           object cbb1HeYan: TComboBox
             Left = 251
@@ -211,6 +224,7 @@ object FormMain: TFormMain
             Height = 20
             Style = csDropDownList
             TabOrder = 28
+            OnChange = UpdateSheet1
           end
           object cbb1HeChaYiJu: TComboBox
             Left = 215
@@ -219,6 +233,7 @@ object FormMain: TFormMain
             Height = 20
             Style = csDropDownList
             TabOrder = 25
+            OnChange = UpdateSheet1
           end
           object edt1JiLuBianHao: TEdit
             Left = 392
@@ -457,7 +472,7 @@ object FormMain: TFormMain
             Text = '2.0'
             OnChange = UpdateSheet2
           end
-          object edt2KaiShiShiJian: TEdit
+          object edt2KaiShiShiJian: TMaskEdit
             Left = 210
             Top = 147
             Width = 41
@@ -465,11 +480,13 @@ object FormMain: TFormMain
             BevelEdges = []
             BevelInner = bvNone
             BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
             TabOrder = 4
             Text = '13:10'
             OnChange = UpdateSheet2
           end
-          object edt2JieShuShiJian: TEdit
+          object edt2JieShuShiJian: TMaskEdit
             Left = 460
             Top = 147
             Width = 41
@@ -477,6 +494,8 @@ object FormMain: TFormMain
             BevelEdges = []
             BevelInner = bvNone
             BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
             TabOrder = 5
             Text = '15:50'
             OnChange = UpdateSheet2
@@ -783,7 +802,7 @@ object FormMain: TFormMain
             TabOrder = 6
             OnChange = UpdateSheet3
           end
-          object edt3KaiShiShiJian: TEdit
+          object edt3KaiShiShiJian: TMaskEdit
             Left = 209
             Top = 164
             Width = 41
@@ -791,6 +810,8 @@ object FormMain: TFormMain
             BevelEdges = []
             BevelInner = bvNone
             BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
             TabOrder = 4
             Text = '13:10'
             OnChange = UpdateSheet3
@@ -831,7 +852,7 @@ object FormMain: TFormMain
             Text = '2.0'
             OnChange = UpdateSheet3
           end
-          object edt3JieShuShiJian: TEdit
+          object edt3JieShuShiJian: TMaskEdit
             Left = 467
             Top = 164
             Width = 46
@@ -839,6 +860,8 @@ object FormMain: TFormMain
             BevelEdges = []
             BevelInner = bvNone
             BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
             TabOrder = 5
             Text = '15:10'
             OnChange = UpdateSheet3
@@ -1000,7 +1023,7 @@ object FormMain: TFormMain
             Text = '2.0'
             OnChange = UpdateSheet4
           end
-          object edt4JieShuShiJian: TEdit
+          object edt4JieShuShiJian: TMaskEdit
             Left = 468
             Top = 159
             Width = 46
@@ -1008,6 +1031,8 @@ object FormMain: TFormMain
             BevelEdges = []
             BevelInner = bvNone
             BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
             TabOrder = 5
             Text = '15:10'
             OnChange = UpdateSheet4
@@ -1107,7 +1132,7 @@ object FormMain: TFormMain
             TabOrder = 28
             OnChange = UpdateSheet4
           end
-          object edt4KaiShiShiJian: TEdit
+          object edt4KaiShiShiJian: TMaskEdit
             Left = 212
             Top = 159
             Width = 41
@@ -1115,6 +1140,8 @@ object FormMain: TFormMain
             BevelEdges = []
             BevelInner = bvNone
             BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
             TabOrder = 4
             Text = '13:10'
             OnChange = UpdateSheet3
@@ -1373,7 +1400,7 @@ object FormMain: TFormMain
             Text = '2.0'
             OnChange = UpdateSheet5
           end
-          object edt5JieShuShiJian: TEdit
+          object edt5JieShuShiJian: TMaskEdit
             Left = 463
             Top = 160
             Width = 41
@@ -1381,11 +1408,13 @@ object FormMain: TFormMain
             BevelEdges = []
             BevelInner = bvNone
             BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
             TabOrder = 5
             Text = '15:10'
             OnChange = UpdateSheet5
           end
-          object edt5KaiShiShiJian: TEdit
+          object edt5KaiShiShiJian: TMaskEdit
             Left = 207
             Top = 160
             Width = 41
@@ -1393,6 +1422,8 @@ object FormMain: TFormMain
             BevelEdges = []
             BevelInner = bvNone
             BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
             TabOrder = 4
             Text = '13:10'
             OnChange = UpdateSheet5
@@ -1721,7 +1752,7 @@ object FormMain: TFormMain
             Text = '23.9'
             OnChange = UpdateSheet6
           end
-          object edt6KaiShiShiJian: TEdit
+          object edt6KaiShiShiJian: TMaskEdit
             Left = 207
             Top = 163
             Width = 41
@@ -1729,11 +1760,13 @@ object FormMain: TFormMain
             BevelEdges = []
             BevelInner = bvNone
             BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
             TabOrder = 4
             Text = '13:10'
             OnChange = UpdateSheet6
           end
-          object edt6JieShuShiJian: TEdit
+          object edt6JieShuShiJian: TMaskEdit
             Left = 463
             Top = 163
             Width = 41
@@ -1741,6 +1774,8 @@ object FormMain: TFormMain
             BevelEdges = []
             BevelInner = bvNone
             BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
             TabOrder = 5
             Text = '15:10'
             OnChange = UpdateSheet6
@@ -1843,7 +1878,7 @@ object FormMain: TFormMain
           object edt6ChuanGanQi1: TEdit
             Left = 321
             Top = 489
-            Width = 94
+            Width = 90
             Height = 20
             TabOrder = 9
             Text = '10.2'
@@ -1852,7 +1887,7 @@ object FormMain: TFormMain
           object edt6ChuanGanQi2: TEdit
             Left = 321
             Top = 508
-            Width = 94
+            Width = 90
             Height = 20
             TabOrder = 10
             Text = '10.3'
@@ -1861,7 +1896,7 @@ object FormMain: TFormMain
           object edt6ChuanGanQi3: TEdit
             Left = 321
             Top = 527
-            Width = 94
+            Width = 90
             Height = 20
             TabOrder = 11
             Text = '10.2'
@@ -1870,7 +1905,7 @@ object FormMain: TFormMain
           object edt6ChuanGanQi4: TEdit
             Left = 321
             Top = 546
-            Width = 94
+            Width = 90
             Height = 20
             TabOrder = 12
             Text = '10.3'
@@ -1879,7 +1914,7 @@ object FormMain: TFormMain
           object edt6ChuanGanQi5: TEdit
             Left = 321
             Top = 564
-            Width = 94
+            Width = 90
             Height = 20
             TabOrder = 13
             Text = '10.3'
@@ -1888,7 +1923,7 @@ object FormMain: TFormMain
           object edt6ChuanGanQi6: TEdit
             Left = 321
             Top = 581
-            Width = 94
+            Width = 90
             Height = 20
             TabOrder = 14
             Text = '10.3'
@@ -1988,7 +2023,7 @@ object FormMain: TFormMain
             Text = '2.0'
             OnChange = UpdateSheet7
           end
-          object edt7JieShuShiJian: TEdit
+          object edt7JieShuShiJian: TMaskEdit
             Left = 462
             Top = 163
             Width = 41
@@ -1996,11 +2031,13 @@ object FormMain: TFormMain
             BevelEdges = []
             BevelInner = bvNone
             BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
             TabOrder = 5
             Text = '15:10'
             OnChange = UpdateSheet7
           end
-          object edt7KaiShiShiJian: TEdit
+          object edt7KaiShiShiJian: TMaskEdit
             Left = 204
             Top = 163
             Width = 41
@@ -2008,6 +2045,8 @@ object FormMain: TFormMain
             BevelEdges = []
             BevelInner = bvNone
             BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
             TabOrder = 4
             Text = '13:10'
             OnChange = UpdateSheet7

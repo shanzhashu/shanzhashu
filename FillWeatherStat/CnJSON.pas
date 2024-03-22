@@ -49,7 +49,11 @@ unit CnJSON;
 * 开发平台：PWin7 + Delphi 7
 * 兼容测试：PWin7 + Delphi 2009 ~
 * 本 地 化：该单元中的字符串均符合本地化处理方式
-* 修改记录：2024.01.11 V1.1
+* 修改记录：2024.02.04 V1.3
+*                 JSONObject 的 Key Value 对数量超过阈值时，内部用哈希表进行加速
+*           2024.02.03 V1.2
+*                 加入全局函数并修复空数组的问题
+*           2024.01.11 V1.1
 *                 加入级联默认属性，加入 Reader 和 Writer
 *           2023.09.15 V1.0
 *                创建单元
@@ -62,7 +66,7 @@ interface
 
 uses
   Classes, SysUtils, {$IFNDEF COMPILER5} Variants, {$ENDIF} Contnrs, TypInfo,
-  CnNative, CnStrings;
+  CnNative, CnStrings, CnHashTable;
 
 type
   ECnJSONException = class(Exception);
@@ -87,7 +91,7 @@ type
     procedure KeywordProc;               // null true false 仨标识符
     procedure ObjectBeginProc;           // {
     procedure ObjectEndProc;             // }
-    procedure ArrayBeginProc;            // []
+    procedure ArrayBeginProc;            // [
     procedure ArrayEndProc;              // ]
     procedure NameValueSepProc;          // :
     procedure ArrayElementSepProc;       // ,
@@ -203,6 +207,8 @@ type
     {* 值对象索引，如果是数组则是数组元素，注意值可能是 TCnJSONValue 的不同子类实例}
   end;
 
+  TCnJSONArray = class;
+
 {
   object = begin-object [ member *( value-separator member ) ]
            end-object
@@ -213,7 +219,7 @@ type
   {* 代表 JSON 中的对象值的类，也是 JSON 顶层类}
   private
     FPairs: TObjectList;
-
+    FMap: TCnHashTable;
   protected
     function AddChild(AChild: TCnJSONBase): TCnJSONBase; override;
     {* 供内部解析时添加 Pair}
@@ -233,6 +239,9 @@ type
     procedure Clear;
     {* 清除所有内容}
 
+    procedure Sort(Recursive: Boolean = True; CompareProc: TListSortCompare = nil);
+    {* 排序}
+
     // 以下方法组装用
     function AddPair(const Name: string; Value: TCnJSONValue): TCnJSONPair; overload;
     function AddPair(const Name: string; const Value: string): TCnJSONPair; overload;
@@ -241,6 +250,9 @@ type
     function AddPair(const Name: string; Value: Extended): TCnJSONPair; overload;
     function AddPair(const Name: string; Value: Boolean): TCnJSONPair; overload;
     function AddPair(const Name: string): TCnJSONPair; overload;
+
+    function AddArray(const Name: string): TCnJSONArray;
+    {* 添加一个命名的空数组并返回该数组对象}
 
     function ToJSON(UseFormat: Boolean = True; Indent: Integer = 0): AnsiString; override;
     {* 生成 UTF8 格式的 JSON 字符串}
@@ -366,7 +378,7 @@ type
   end;
 
   TCnJSONPair = class(TCnJSONBase)
-  {* 代表 JSON 中 Object 内的 Name 和 Value 的组合类}
+  {* 代表 JSON 中 Object 内的 Name 和 Value 的组合类，并管理 Name 和 Value 对象}
   private
     FName: TCnJSONString;
     FValue: TCnJSONValue;
@@ -401,10 +413,18 @@ type
     function ReadInt64Value(Obj: TCnJSONObject; const Name: string; out Value: Int64): Boolean;
 
     procedure ReadProperty(Instance: TPersistent; PropInfo: PPropInfo; Obj: TCnJSONObject);
-    procedure Read(Instance: TPersistent; Obj: TCnJSONObject);
   public
+    procedure Read(Instance: TPersistent; Obj: TCnJSONObject);
+    {* 遍历 Instance 的各属性名并从 JSONObject 中读入对应属性值}
+
+    class function FileToJSONObject(const FileName: string): TCnJSONObject;
+    {* 从 JSON 文件中创建 JSON 对象}
+    class function FileToJSON(const FileName: string): AnsiString;
+    {* 从 JSON 文件中载入 JSON 字符串}
     class procedure LoadFromFile(Instance: TPersistent; const FileName: string);
+    {* 遍历 Instance 的各属性名并从 JSON 文件中读入对应属性值}
     class procedure LoadFromJSON(Instance: TPersistent; const JSON: AnsiString);
+    {* 遍历 Instance 的各属性名并从 JSON 字符串中读入对应属性值}
   end;
 
   TCnJSONWriter = class
@@ -417,12 +437,26 @@ type
     procedure WriteNullValue(Obj: TCnJSONObject; const Name: string);
 
     procedure WriteProperty(Instance: TPersistent; PropInfo: PPropInfo; Obj: TCnJSONObject);
-    procedure Write(Instance: TPersistent; Obj: TCnJSONObject);
   public
+    procedure Write(Instance: TPersistent; Obj: TCnJSONObject);
+    {* 将 Instance 的各属性赋值给 JSONObject}
+
+    class procedure JSONObjectToFile(Obj: TCnJSONObject; const FileName: string;
+       UseFormat: Boolean = True; Indent: Integer = 0; Utf8Bom: Boolean = True);
+    {* 将 JSON 对象写入文件，UseFormat 控制是否带缩进格式，Indent 表示缩进空格数，
+      Utf8Bom 控制是否写 Utf8 的 BOM 头}
+    class procedure JSONToFile(const JSON: AnsiString; const FileName: string;
+      Utf8Bom: Boolean = True);
+    {* 将 JSON 字符串写入文件，Utf8Bom 控制是否写 Utf8 的 BOM 头}
     class procedure SaveToFile(Instance: TPersistent; const FileName: string;
       Utf8Bom: Boolean = True);
+    {* 将 Instance 的各属性写入 JSON 文件，Utf8Bom 控制是否写 Utf8 的 BOM 头}
     class function SaveToJSON(Instance: TPersistent; UseFormat: Boolean = True): AnsiString;
+    {* 将 Instance 的各属性写入 JSON 字符串，UseFormat 控制是否带缩进格式}
   end;
+
+function CnJSONConstruct(Obj: TCnJSONObject; UseFormat: Boolean = True; Indent: Integer = 0): AnsiString;
+{* 将 JSON 对象转为 UTF8 格式的 JSON 字符串}
 
 function CnJSONParse(const JsonStr: AnsiString): TCnJSONObject;
 {* 解析 UTF8 格式的 JSON 字符串为 JSON 对象}
@@ -438,6 +472,9 @@ const
   CN_BLANK_CHARSET: set of AnsiChar = [#9, #10, #13, #32]; // RFC 规范中只允许这几个作为空白符
   CN_INDENT_DELTA = 4; // 输出时的缩进空格
   CRLF = #13#10;
+
+  CN_NAME_HASH_THRESHOLD = 128;
+  {* JSONObject 的 Key Value 对数量超过这个阈值时，内部用哈希表进行加速}
 
 resourcestring
   SCnErrorJSONTokenFmt = 'JSON Token %s Expected at Offset %d';
@@ -523,7 +560,7 @@ begin
   P.NextNoJunk;
 
   Current.AddChild(Result);
-  while P.TokenID <> jttTerminated do
+  while not (P.TokenID in [jttTerminated, jttArrayEnd]) do
   begin
     JSONParseValue(P, Result);
     if P.TokenID = jttElementSep then
@@ -624,6 +661,15 @@ begin
   finally
     P.Free;
   end;
+end;
+
+function CnJSONConstruct(Obj: TCnJSONObject; UseFormat: Boolean;
+  Indent: Integer): AnsiString;
+begin
+  if Obj <> nil then
+    Result := Obj.ToJSON(UseFormat, Indent)
+  else
+    Result := '';
 end;
 
 { TCnJSONParser }
@@ -852,13 +898,35 @@ end;
 
 { TCnJSONObject }
 
+function TCnJSONObject.AddArray(const Name: string): TCnJSONArray;
+begin
+  Result := TCnJSONArray.Create;
+  AddPair(Name, Result);
+end;
+
 function TCnJSONObject.AddChild(AChild: TCnJSONBase): TCnJSONBase;
+var
+  I: Integer;
 begin
   if AChild is TCnJSONPair then
   begin
     FPairs.Add(AChild);
     AChild.Parent := Self;
     Result := AChild;
+
+    // 如果之前已经超了 THRESHOLD，则有了 Map，无论如何都加 Map
+    if (FMap <> nil) or (FPairs.Count > CN_NAME_HASH_THRESHOLD) then
+    begin
+      if FMap = nil then
+      begin
+        // 如果是首次超，则创建 Map 并将之前的都加进来
+        FMap := TCnHashTable.Create;
+        for I := 0 to FPairs.Count - 1 do
+          FMap.Add(TCnJSONPair(FPairs[I]).Name.AsString, FPairs[I]);
+      end;
+
+      FMap.Add(TCnJSONPair(AChild).Name.AsString, Pointer(AChild)); // 暂未判重
+    end;
   end
   else
     Result := nil;
@@ -936,7 +1004,7 @@ begin
     begin
       Pair := TCnJSONPair.Create;
       Pair.Assign(TCnJSONPair(JObj.FPairs[I]));
-      FPairs.Add(Pair);
+      AddChild(Pair);
     end;
   end
   else
@@ -956,6 +1024,7 @@ end;
 
 destructor TCnJSONObject.Destroy;
 begin
+  FMap.Free;
   FPairs.Free;
   inherited;
 end;
@@ -995,13 +1064,25 @@ end;
 function TCnJSONObject.GetValueByName(const Name: string): TCnJSONValue;
 var
   I: Integer;
+  P: Pointer;
 begin
-  // TODO: 用散列来加速
-  for I := 0 to FPairs.Count - 1 do
+  if FMap = nil then
   begin
-    if TCnJSONPair(FPairs[I]).Name.AsString = Name then
+    for I := 0 to FPairs.Count - 1 do
     begin
-      Result := TCnJSONPair(FPairs[I]).Value;
+      if TCnJSONPair(FPairs[I]).Name.AsString = Name then
+      begin
+        Result := TCnJSONPair(FPairs[I]).Value;
+        Exit;
+      end;
+    end
+  end
+  else // 用散列来加速
+  begin
+    P := FMap.GetValues(Name);
+    if P <> nil then
+    begin
+      Result := TCnJSONPair(P).Value;
       Exit;
     end;
   end;
@@ -1011,6 +1092,53 @@ end;
 function TCnJSONObject.IsObject: Boolean;
 begin
   Result := True;
+end;
+
+function ComparePair(Item1, Item2: Pointer): Integer;
+var
+  P1, P2: TCnJSONPair;
+begin
+  if (Item1 = nil) and (Item2 = nil) then
+    Result := 0
+  else if Item1 = nil then
+    Result := -1
+  else if Item2 = nil then
+    Result := 1
+  else
+  begin
+    P1 := TCnJSONPair(Item1);
+    P2 := TCnJSONPair(Item2);
+    Result := CompareStr(P1.Name.AsString, P2.Name.AsString);
+  end;
+end;
+
+procedure TCnJSONObject.Sort(Recursive: Boolean;
+  CompareProc: TListSortCompare);
+var
+  I, J: Integer;
+  Arr: TCnJSONArray;
+begin
+  if not Assigned(CompareProc) then
+    CompareProc := ComparePair;
+  FPairs.Sort(ComparePair);
+
+  if Recursive then // 下属子 Object 也排序
+  begin
+    for I := 0 to Count - 1 do
+    begin
+      if Values[I] is TCnJSONObject then
+        (Values[I] as TCnJSONObject).Sort(Recursive, CompareProc)
+      else if Values[I] is TCnJSONArray then
+      begin
+        Arr := Values[I] as TCnJSONArray;
+        for J := 0 to Arr.Count - 1 do
+        begin
+          if Arr.Values[J] is TCnJSONObject then
+            (Arr.Values[J] as TCnJSONObject).Sort(Recursive, CompareProc);
+        end;
+      end;
+    end;
+  end;
 end;
 
 function TCnJSONObject.ToJSON(UseFormat: Boolean; Indent: Integer): AnsiString;
@@ -1672,10 +1800,8 @@ end;
 
 { TCnJSONReader }
 
-class procedure TCnJSONReader.LoadFromFile(Instance: TPersistent;
-  const FileName: string);
+class function TCnJSONReader.FileToJSON(const FileName: string): AnsiString;
 var
-  S: AnsiString;
   F: TFileStream;
 begin
   // 如有 UTF8Bom 则原始读入，无则直接读入，不处理 UTF16 格式也就碰到 UTF 16 会出错
@@ -1683,21 +1809,36 @@ begin
   try
     if F.Size > 0 then
     begin
-      SetLength(S, F.Size);
-      F.Read(S[1], F.Size);
+      SetLength(Result, F.Size);
+      F.Read(Result[1], F.Size);
 
       // 去掉 UTF8 的 BOM 头
-      if Length(S) > SizeOf(SCN_BOM_UTF8) then
+      if Length(Result) > SizeOf(SCN_BOM_UTF8) then
       begin
-        if CompareMem(@S[1], @SCN_BOM_UTF8[0], SizeOf(SCN_BOM_UTF8)) then
-          Delete(S, 1, SizeOf(SCN_BOM_UTF8));
+        if CompareMem(@Result[1], @SCN_BOM_UTF8[0], SizeOf(SCN_BOM_UTF8)) then
+          Delete(Result, 1, SizeOf(SCN_BOM_UTF8));
       end;
-
-      LoadFromJSON(Instance, S);
     end;
   finally
     F.Free;
   end;
+end;
+
+class function TCnJSONReader.FileToJSONObject(const FileName: string): TCnJSONObject;
+var
+  JSON: AnsiString;
+begin
+  JSON := FileToJSON(FileName);
+  Result := CnJSONParse(JSON);
+end;
+
+class procedure TCnJSONReader.LoadFromFile(Instance: TPersistent;
+  const FileName: string);
+var
+  S: AnsiString;
+begin
+  S := FileToJSON(FileName);
+  LoadFromJSON(Instance, S);
 end;
 
 class procedure TCnJSONReader.LoadFromJSON(Instance: TPersistent;
@@ -1913,7 +2054,7 @@ var
           if PropType = TypeInfo(Boolean) then
           begin
             if ReadBooleanValue(Obj, string(PropInfo^.Name), VB) then
-              SetOrdProp(Obj, string(PropInfo^.Name), Ord(VB));
+              SetOrdProp(Instance, string(PropInfo^.Name), Ord(VB));
           end
           else
           begin
@@ -1938,7 +2079,7 @@ var
       begin
         Sub := GetObjectProp(Instance, string(PropInfo^.Name));
         if Sub <> nil then
-        Read(TPersistent(Sub), Value as TCnJSONObject);
+          Read(TPersistent(Sub), Value as TCnJSONObject);
       end;
     end;
   end;
@@ -1964,25 +2105,40 @@ end;
 
 { TCnJSONWriter }
 
-class procedure TCnJSONWriter.SaveToFile(Instance: TPersistent;
-  const FileName: string; Utf8Bom: Boolean);
+class procedure TCnJSONWriter.JSONObjectToFile(Obj: TCnJSONObject;
+  const FileName: string; UseFormat: Boolean; Indent: Integer; Utf8Bom: Boolean);
 var
   JSON: AnsiString;
+begin
+  JSON := CnJSONConstruct(Obj, UseFormat, Indent);
+  JSONToFile(JSON, FileName, Utf8Bom);
+end;
+
+class procedure TCnJSONWriter.JSONToFile(const JSON: AnsiString;
+  const FileName: string; Utf8Bom: Boolean);
+var
   F: TFileStream;
 begin
-  JSON := SaveToJSON(Instance);
-  if JSON = '' then
-    Exit;
-
   // UTF8 格式的 AnsiString，写 BOM 头与内容到文件
   F := TFileStream.Create(FileName, fmCreate);
   try
     if Utf8Bom then
       F.Write(SCN_BOM_UTF8[0], SizeOf(SCN_BOM_UTF8));
-    F.Write(JSON[1], Length(JSON));
+
+    if Length(JSON) > 0 then
+      F.Write(JSON[1], Length(JSON));
   finally
     F.Free;
   end;
+end;
+
+class procedure TCnJSONWriter.SaveToFile(Instance: TPersistent;
+  const FileName: string; Utf8Bom: Boolean);
+var
+  JSON: AnsiString;
+begin
+  JSON := SaveToJSON(Instance);
+  JSONToFile(JSON, FileName, Utf8Bom);
 end;
 
 class function TCnJSONWriter.SaveToJSON(Instance: TPersistent;

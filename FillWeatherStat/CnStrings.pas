@@ -52,6 +52,10 @@ uses
 const
   SCN_BOM_UTF8: array[0..2] of Byte = ($EF, $BB, $BF);
 
+  SCN_BOM_UTF16_LE: array[0..1] of Byte = ($FF, $FE);
+
+  SCN_BOM_UTF16_BE: array[0..1] of Byte = ($FE, $FF);
+
 type
   // 匹配模式，开头匹配，中间匹配，全范围模糊匹配
   TCnMatchMode = (mmStart, mmAnywhere, mmFuzzy);
@@ -332,14 +336,16 @@ type
     function AppendLine(const Value: string): TCnStringBuilder; overload;
 
     function ToString: string; {$IFDEF OBJECT_HAS_TOSTRING} override; {$ENDIF}
-    {* 返回内容的 string 形式，无论是否 Unicode 环境，只要 AnsiMode 符合编译器的 Unicode 支持
+    {* 返回内容的 string 形式，无论是否 Unicode 环境，只要 AnsiMode 与编译器的 Unicode 支持一致
       换句话说非 Unicode 环境中 AnsiMode 为 True 时才返回 AnsiString，
       Unicode 环境中 AnsiMode 为 False 时才返回 UnicodeString，其余情况返回空}
 
     function ToAnsiString: AnsiString;
-    {* 强行返回内容的 AnsiString 形式，无论 AnsiMode 如何。应在 Unicode 环境中使用}
+    {* 强行返回内容的 AnsiString 形式，无论 AnsiMode 如何。
+      可在 Unicode 环境中使用，如在非 Unicode 环境中使用，等同于 ToString}
     function ToWideString: WideString;
-    {* 强行返回内容的 WideString 形式，无论 AnsiMode 如何。应在非 Unicode 环境中使用}
+    {* 强行返回内容的 WideString 形式，无论 AnsiMode 如何。
+      可在非 Unicode 环境中使用，如在 Unicode 环境中使用，等同于 ToString}
 
     property CharCapacity: Integer read GetCharCapacity write SetCharCapacity;
     {* 以字符为单位的内部缓冲区的容量}
@@ -2097,9 +2103,9 @@ function TCnStringBuilder.GetCharCapacity: Integer;
 begin
 {$IFDEF UNICODE}
    if FAnsiMode then
-     Result := Length(FData)
+     Result := Length(FAnsiData)
    else
-     Result := Length(FAnsiData);
+     Result := Length(FData);
 {$ELSE}
    if FAnsiMode then
      Result := Length(FData)
@@ -2346,7 +2352,11 @@ var
 begin
   SetLength(S, 1);
   Move(Value, S[1], SizeOf(AnsiChar));
-  Result := Append(S);
+{$IFDEF UNICODE}
+  Result := AppendAnsi(S);
+{$ELSE}
+  Result := Append(S); // Unicode 下 S 转为 string 可能会变问号
+{$ENDIF}
 end;
 
 function TCnStringBuilder.AppendWideChar(const Value: WideChar): TCnStringBuilder;
@@ -2355,7 +2365,11 @@ var
 begin
   SetLength(S, 1);
   Move(Value, S[1], SizeOf(WideChar));
+{$IFDEF UNICODE}
   Result := Append(S);
+{$ELSE}
+  Result := AppendWide(S);
+{$ENDIF}
 end;
 
 end.
