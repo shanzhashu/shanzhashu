@@ -247,6 +247,7 @@ type
     procedure UpdateSheet6(Sender: TObject);
     procedure UpdateSheet7(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure pgcMainChange(Sender: TObject);
   private
     FIniting: Boolean;
     FSettingFile: string;
@@ -334,7 +335,7 @@ const
     'G-%s-H(R)%s0101',
     'G-%s-H(VS)%s0201'
   );
-  OFFSET_ARRAY: array[1..XLS_COUNT] of Integer = (-33, -100, -130, -80, 0, -70, -150);
+  OFFSET_ARRAY: array[1..XLS_COUNT] of Integer = (-33, -100, -150, -110, 0, -70, -150);
 
 var
   XLS_FILES: array[1..XLS_COUNT] of string;
@@ -661,6 +662,33 @@ begin
   pgcMain.ActivePageIndex := 0;
 
   // 初始化填写元素，分页来
+  FBiaoZhunQiNames := TStringList.Create;
+  FBiaoZhunQiValues := TStringList.Create;
+
+  FBeiHeChaQiJuNames1 := TStringList.Create;
+  FBeiHeChaQiJuValues1 := TStringList.Create;
+
+  FBeiHeChaQiJuNames2 := TStringList.Create;
+  FBeiHeChaQiJuValues2 := TStringList.Create;
+
+  FBeiHeChaQiJuNames3 := TStringList.Create;
+  FBeiHeChaQiJuValues3 := TStringList.Create;
+
+  FBeiHeChaQiJuNames4 := TStringList.Create;
+  FBeiHeChaQiJuValues4 := TStringList.Create;
+
+  FBeiHeChaQiJuNames5 := TStringList.Create;
+  FBeiHeChaQiJuValues5 := TStringList.Create;
+
+  FBeiHeChaQiJuNames6 := TStringList.Create;
+  FBeiHeChaQiJuValues6 := TStringList.Create;
+
+  FBeiHeChaQiJuNames7 := TStringList.Create;
+  FBeiHeChaQiJuValues7 := TStringList.Create;
+
+  FJiaoZhun := TStringList.Create;
+  FHeYan := TStringList.Create;
+  FHeChaYiJu := TStringList.Create;
 
   FIniting := True;
   try
@@ -719,41 +747,14 @@ end;
 
 procedure TFormMain.Init0;
 begin
-  FBiaoZhunQiNames := TStringList.Create;
-  FBiaoZhunQiValues := TStringList.Create;
   FWSetting.GetType(S_Biao_Zhun_Qi, FBiaoZhunQiNames, FBiaoZhunQiValues);
-
-  FBeiHeChaQiJuNames1 := TStringList.Create;
-  FBeiHeChaQiJuValues1 := TStringList.Create;
   FWSetting.GetType(S_Bei_He_Cha_Qi_Ju1, FBeiHeChaQiJuNames1, FBeiHeChaQiJuValues1);
-
-  FBeiHeChaQiJuNames2 := TStringList.Create;
-  FBeiHeChaQiJuValues2 := TStringList.Create;
   FWSetting.GetType(S_Bei_He_Cha_Qi_Ju2, FBeiHeChaQiJuNames2, FBeiHeChaQiJuValues2);
-
-  FBeiHeChaQiJuNames3 := TStringList.Create;
-  FBeiHeChaQiJuValues3 := TStringList.Create;
   FWSetting.GetType(S_Bei_He_Cha_Qi_Ju3, FBeiHeChaQiJuNames3, FBeiHeChaQiJuValues3);
-
-  FBeiHeChaQiJuNames4 := TStringList.Create;
-  FBeiHeChaQiJuValues4 := TStringList.Create;
   FWSetting.GetType(S_Bei_He_Cha_Qi_Ju4, FBeiHeChaQiJuNames4, FBeiHeChaQiJuValues4);
-
-  FBeiHeChaQiJuNames5 := TStringList.Create;
-  FBeiHeChaQiJuValues5 := TStringList.Create;
   FWSetting.GetType(S_Bei_He_Cha_Qi_Ju5, FBeiHeChaQiJuNames5, FBeiHeChaQiJuValues5);
-
-  FBeiHeChaQiJuNames6 := TStringList.Create;
-  FBeiHeChaQiJuValues6 := TStringList.Create;
   FWSetting.GetType(S_Bei_He_Cha_Qi_Ju6, FBeiHeChaQiJuNames6, FBeiHeChaQiJuValues6);
-
-  FBeiHeChaQiJuNames7 := TStringList.Create;
-  FBeiHeChaQiJuValues7 := TStringList.Create;
   FWSetting.GetType(S_Bei_He_Cha_Qi_Ju7, FBeiHeChaQiJuNames7, FBeiHeChaQiJuValues7);
-
-  FJiaoZhun := TStringList.Create;
-  FHeYan := TStringList.Create;
-  FHeChaYiJu := TStringList.Create;
   FWSetting.GetType(S_Xiao_Zhun_Ren, FJiaoZhun, nil);
   FWSetting.GetType(S_He_Yan_Ren, FHeYan, nil);
   FWSetting.GetType(S_He_Cha_Yi_Ju, FHeChaYiJu, nil);
@@ -915,7 +916,7 @@ begin
     // 插入图像
     MP := TImageProperties.Create;
     MP.Anchor := TClientAnchor.Create(TFlxAnchorType.MoveAndDontResize,
-      16, OFFSET_ARRAY[Index], 4, 50, 256, 236, FXlses[Index]);
+      16, OFFSET_ARRAY[Index], 4, 40, 256, 236, FXlses[Index]);
       // 行、行偏移像素、列、列偏移像素、高、宽、XLS实例
     FXlses[Index].AddImage(FStampFile, MP);
     Inc(FStampIndexes[Index]);
@@ -958,6 +959,20 @@ begin
         Result := EncodeDate(Y, M, D);
       end;
     end;
+  end;
+end;
+
+procedure TFormMain.pgcMainChange(Sender: TObject);
+begin
+  Init0;
+  case pgcMain.ActivePageIndex of
+    0: UpdateSheet1(ts1);
+    1: UpdateSheet2(ts2);
+    2: UpdateSheet3(ts3);
+    3: UpdateSheet4(ts4);
+    4: UpdateSheet5(ts5);
+    5: UpdateSheet6(ts6);
+    6: UpdateSheet7(ts7);
   end;
 end;
 
@@ -1021,8 +1036,8 @@ begin
   FXlses[1].SetCellValue(5, 2, edt1KaiShiShiJian.Text);
   FXlses[1].SetCellValue(5, 5, edt1JieShuShiJian.Text);
 
-  if (cbb1BiaoZhunQi.ItemIndex >= 0) and (cbb1BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
-    FXlses[1].SetCellValue(7, 2, FBiaoZhunQiValues[cbb1BiaoZhunQi.ItemIndex]);
+//  if (cbb1BiaoZhunQi.ItemIndex >= 0) and (cbb1BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
+  FXlses[1].SetCellValue(7, 2, FBiaoZhunQiValues[0]);
 
   if (cbb1BeiHeCha.ItemIndex >= 0) and (cbb1BeiHeCha.ItemIndex < FBeiHeChaQiJuValues1.Count) then
     FXlses[1].SetCellValue(7, 4, FBeiHeChaQiJuValues1[cbb1BeiHeCha.ItemIndex]);
@@ -1094,8 +1109,8 @@ begin
   FXlses[2].SetCellValue(4, 2, edt2KaiShiShiJian.Text);
   FXlses[2].SetCellValue(4, 5, edt2JieShuShiJian.Text);
 
-  if (cbb2BiaoZhunQi.ItemIndex >= 0) and (cbb2BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
-    FXlses[2].SetCellValue(6, 2, FBiaoZhunQiValues[cbb2BiaoZhunQi.ItemIndex]);
+//  if (cbb2BiaoZhunQi.ItemIndex >= 0) and (cbb2BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
+  FXlses[2].SetCellValue(6, 2, FBiaoZhunQiValues[1]);
 
   if (cbb2BeiHeCha.ItemIndex >= 0) and (cbb2BeiHeCha.ItemIndex < FBeiHeChaQiJuValues2.Count) then
     FXlses[2].SetCellValue(6, 4, FBeiHeChaQiJuValues2[cbb2BeiHeCha.ItemIndex]);
@@ -1162,8 +1177,8 @@ begin
   FXlses[3].SetCellValue(5, 2, edt3KaiShiShiJian.Text);
   FXlses[3].SetCellValue(5, 5, edt3JieShuShiJian.Text);
 
-  if (cbb3BiaoZhunQi.ItemIndex >= 0) and (cbb3BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
-    FXlses[3].SetCellValue(7, 2, FBiaoZhunQiValues[cbb3BiaoZhunQi.ItemIndex]);
+//  if (cbb3BiaoZhunQi.ItemIndex >= 0) and (cbb3BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
+  FXlses[3].SetCellValue(7, 2, FBiaoZhunQiValues[2]);
 
   if (cbb3BeiHeCha.ItemIndex >= 0) and (cbb3BeiHeCha.ItemIndex < FBeiHeChaQiJuValues3.Count) then
     FXlses[3].SetCellValue(7, 4, FBeiHeChaQiJuValues3[cbb3BeiHeCha.ItemIndex]);
@@ -1221,8 +1236,8 @@ begin
   FXlses[4].SetCellValue(5, 2, edt4KaiShiShiJian.Text);
   FXlses[4].SetCellValue(5, 5, edt4JieShuShiJian.Text);
 
-  if (cbb4BiaoZhunQi.ItemIndex >= 0) and (cbb4BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
-    FXlses[4].SetCellValue(7, 2, FBiaoZhunQiValues[cbb4BiaoZhunQi.ItemIndex]);
+//  if (cbb4BiaoZhunQi.ItemIndex >= 0) and (cbb4BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
+  FXlses[4].SetCellValue(7, 2, FBiaoZhunQiValues[3]);
 
   if (cbb4BeiHeCha.ItemIndex >= 0) and (cbb4BeiHeCha.ItemIndex < FBeiHeChaQiJuValues4.Count) then
     FXlses[4].SetCellValue(7, 4, FBeiHeChaQiJuValues4[cbb4BeiHeCha.ItemIndex]);
@@ -1294,8 +1309,8 @@ begin
   FXlses[5].SetCellValue(5, 2, edt5KaiShiShiJian.Text);
   FXlses[5].SetCellValue(5, 5, edt5JieShuShiJian.Text);
 
-  if (cbb5BiaoZhunQi.ItemIndex >= 0) and (cbb5BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
-    FXlses[5].SetCellValue(7, 2, FBiaoZhunQiValues[cbb5BiaoZhunQi.ItemIndex]);
+//  if (cbb5BiaoZhunQi.ItemIndex >= 0) and (cbb5BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
+  FXlses[5].SetCellValue(7, 2, FBiaoZhunQiValues[4]);
 
   if (cbb5BeiHeCha.ItemIndex >= 0) and (cbb5BeiHeCha.ItemIndex < FBeiHeChaQiJuValues5.Count) then
     FXlses[5].SetCellValue(7, 4, FBeiHeChaQiJuValues5[cbb5BeiHeCha.ItemIndex]);
@@ -1367,8 +1382,8 @@ begin
   FXlses[6].SetCellValue(5, 2, edt6KaiShiShiJian.Text);
   FXlses[6].SetCellValue(5, 5, edt6JieShuShiJian.Text);
 
-  if (cbb6BiaoZhunQi.ItemIndex >= 0) and (cbb6BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
-    FXlses[6].SetCellValue(7, 2, FBiaoZhunQiValues[cbb6BiaoZhunQi.ItemIndex]);
+//  if (cbb6BiaoZhunQi.ItemIndex >= 0) and (cbb6BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
+  FXlses[6].SetCellValue(7, 2, FBiaoZhunQiValues[5]);
 
   if (cbb6BeiHeCha.ItemIndex >= 0) and (cbb6BeiHeCha.ItemIndex < FBeiHeChaQiJuValues6.Count) then
     FXlses[6].SetCellValue(7, 4, FBeiHeChaQiJuValues6[cbb6BeiHeCha.ItemIndex]);
@@ -1421,6 +1436,9 @@ begin
     [edt7QiWen.Text, edt7ShiDu.Text, edt7FengSu.Text]);
   FXlses[7].SetCellValue(4, 2, S);
 
+  if not FIniting then
+    FXlses[7].RecalcAndVerify;
+
   if cbb7WaiGuanHeGe.ItemIndex = 0 then
     S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$2611, #$25A1])
   else
@@ -1430,8 +1448,8 @@ begin
   FXlses[7].SetCellValue(5, 2, edt7KaiShiShiJian.Text);
   FXlses[7].SetCellValue(5, 5, edt7JieShuShiJian.Text);
 
-  if (cbb7BiaoZhunQi.ItemIndex >= 0) and (cbb7BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
-    FXlses[7].SetCellValue(7, 2, FBiaoZhunQiValues[cbb7BiaoZhunQi.ItemIndex]);
+//  if (cbb7BiaoZhunQi.ItemIndex >= 0) and (cbb7BiaoZhunQi.ItemIndex < FBiaoZhunQiValues.Count) then
+  FXlses[7].SetCellValue(7, 2, FBiaoZhunQiValues[6]);
 
   if (cbb7BeiHeCha.ItemIndex >= 0) and (cbb7BeiHeCha.ItemIndex < FBeiHeChaQiJuValues7.Count) then
     FXlses[7].SetCellValue(7, 4, FBeiHeChaQiJuValues7[cbb7BeiHeCha.ItemIndex]);
