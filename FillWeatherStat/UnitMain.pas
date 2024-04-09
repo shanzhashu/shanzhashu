@@ -237,6 +237,7 @@ type
   private
     FIniting: Boolean;
     FSettingFile: string;
+    FValueFile: string;
     FStampFile: string;
     FStampIndexes: array[1..XLS_COUNT] of Integer;
     FStampAddeds: array[1..XLS_COUNT] of Boolean;
@@ -263,6 +264,9 @@ type
     function PreviewerByIndex(Index: Integer): TFlexCelPreviewer;
     function CurrentPreviewer: TFlexCelPreviewer;
     function CurrentBeiHeCha: TComboBox;
+
+    procedure LoadValues;
+    procedure SaveValues;
   public
     procedure Init0;
     procedure Init1;
@@ -310,6 +314,7 @@ const
 
 const
   S_F_SET = 'Setting.json';
+  S_F_VALUE = 'Value.json';
   S_F_STAMP = 'stamp.png';
   S_ARR_HEGE: array[0..1] of string = ('合格', '不合格');
   S_BIANHAO_FMT: array[1..XLS_COUNT] of string = (
@@ -633,6 +638,8 @@ var
 begin
   Application.Title := '气象系统';
 
+  FValueFile := ExtractFilePath(Application.ExeName) + S_F_VALUE;
+
   // 初始化选项文件
   FSettingFile := ExtractFilePath(Application.ExeName) + S_F_SET;
   if FileExists(FSettingFile) then
@@ -701,6 +708,8 @@ begin
     Init6;
     Init7;
 
+    LoadValues;
+
     UpdateSheet1(nil);
     UpdateSheet2(nil);
     UpdateSheet3(nil);
@@ -715,6 +724,8 @@ end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
 begin
+  SaveValues;
+
   FBiaoZhunQiNames.Free;
   FBiaoZhunQiValues.Free;
 
@@ -911,6 +922,43 @@ begin
   end;
 end;
 
+procedure TFormMain.LoadValues;
+var
+  C: TComponent;
+  N: string;
+  I: Integer;
+  Obj: TCnJSONObject;
+begin
+  if not FileExists(FValueFile) then
+    Exit;
+
+  Obj := TCnJSONReader.FileToJSONObject(FValueFile);
+  try
+    for I := 0 to Self.ComponentCount - 1 do
+    begin
+      C := Self.Components[I];
+      N := C.Name;
+      if Pos('JiaoZhunShiJian', N) > 0 then  // 不加载校准时间
+        Continue;
+
+      if C is TEdit then
+      begin
+        (C as TEdit).Text := Obj.ValueByName[N].AsString;
+      end
+      else if C is TMaskEdit then
+      begin
+        (C as TMaskEdit).Text := Obj.ValueByName[N].AsString;
+      end
+      else if C is TComboBox then
+      begin
+        (C as TComboBox).ItemIndex := Obj.ValueByName[N].AsInteger;
+      end;
+    end;
+  finally
+    Obj.Free;
+  end;
+end;
+
 function TFormMain.MyStrToDate(const Str: string): TDate;
 var
   Idx, Y, M, D: Integer;
@@ -966,6 +1014,41 @@ begin
   Result := FindComponent('fcpSheet' + IntToStr(Index)) as TFlexCelPreviewer;
   if Result = nil then
     raise Exception.Create(S_No_Fcpsheet_For + IntToStr(Index));
+end;
+
+procedure TFormMain.SaveValues;
+var
+  C: TComponent;
+  N: string;
+  I: Integer;
+  Obj: TCnJSONObject;
+begin
+  Obj := TCnJSONObject.Create;
+  try
+    for I := 0 to Self.ComponentCount - 1 do
+    begin
+      C := Self.Components[I];
+      N := C.Name;
+      if Pos('JiaoZhunShiJian', N) > 0 then  // 不保存校准时间
+        Continue;
+
+      if C is TEdit then
+      begin
+        Obj.AddPair(N, (C as TEdit).Text);
+      end
+      else if C is TMaskEdit then
+      begin
+        Obj.AddPair(N, (C as TMaskEdit).Text);
+      end
+      else if C is TComboBox then
+      begin
+        Obj.AddPair(N, (C as TComboBox).ItemIndex);
+      end;
+    end;
+    TCnJSONWriter.JSONObjectToFile(Obj, FValueFile);
+  finally
+    Obj.Free;
+  end;
 end;
 
 procedure TFormMain.SetNumberValue(Xls: TExcelFile; Row, Col: Integer;
