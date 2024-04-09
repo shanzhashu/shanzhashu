@@ -18,9 +18,7 @@ type
     ScrollBox1: TScrollBox;
     fcpSheet1: TFlexCelPreviewer;
     edt1JiLuBianHao: TEdit;
-    lbl1BiaoZhunQi: TLabel;
     lbl1BeiHeCha: TLabel;
-    cbb1BiaoZhunQi: TComboBox;
     edt1QiWen: TEdit;
     edt1ShiDu: TEdit;
     edt1FengSu: TEdit;
@@ -58,7 +56,6 @@ type
     edt2FengSu: TEdit;
     edt2KaiShiShiJian: TMaskEdit;
     edt2JieShuShiJian: TMaskEdit;
-    cbb2BiaoZhunQi: TComboBox;
     cbb2BeiHeCha: TComboBox;
     cbb2WaiGuanHeGe: TComboBox;
     cbb2HeGe: TComboBox;
@@ -68,7 +65,6 @@ type
     cbb2HeYan: TComboBox;
     edt2JiaoZhunShiJian: TEdit;
     lbl2BeiHeCha: TLabel;
-    lbl2BiaoZhunQi: TLabel;
     edt2BiaoZhunZhi1: TEdit;
     edt2BiaoZhunZhi2: TEdit;
     edt2BiaoZhunZhi3: TEdit;
@@ -87,7 +83,6 @@ type
     cbb3HeGe: TComboBox;
     cbb3WaiGuanHeGe: TComboBox;
     cbb3BeiHeCha: TComboBox;
-    cbb3BiaoZhunQi: TComboBox;
     edt3KaiShiShiJian: TMaskEdit;
     edt3QiWen: TEdit;
     edt3ShiDu: TEdit;
@@ -95,7 +90,6 @@ type
     edt3JieShuShiJian: TMaskEdit;
     edt3JiLuBianHao: TEdit;
     lbl3BeiHeCha: TLabel;
-    lbl3BiaoZhunQi: TLabel;
     cbb3JiaoZhun: TComboBox;
     edt3JiaoZhunShiJian: TEdit;
     cbb3HeYan: TComboBox;
@@ -113,8 +107,6 @@ type
     edt4JieShuShiJian: TMaskEdit;
     cbb4BeiHeCha: TComboBox;
     lbl4BeiHeCha: TLabel;
-    cbb4BiaoZhunQi: TComboBox;
-    lbl4BiaoZhunQi: TLabel;
     cbb4WaiGuanHeGe: TComboBox;
     cbb4HeGe: TComboBox;
     cbb4HeChaYiJu: TComboBox;
@@ -141,8 +133,6 @@ type
     edt5FengSu: TEdit;
     edt5JieShuShiJian: TMaskEdit;
     edt5KaiShiShiJian: TMaskEdit;
-    cbb5BiaoZhunQi: TComboBox;
-    lbl5BiaoZhunQi: TLabel;
     cbb5BeiHeCha: TComboBox;
     lbl5BeiHeCha: TLabel;
     cbb5WaiGuanHeGe: TComboBox;
@@ -176,8 +166,6 @@ type
     edt6QiWen: TEdit;
     edt6KaiShiShiJian: TMaskEdit;
     edt6JieShuShiJian: TMaskEdit;
-    cbb6BiaoZhunQi: TComboBox;
-    lbl6BiaoZhunQi: TLabel;
     lbl6BeiHeCha: TLabel;
     cbb6BeiHeCha: TComboBox;
     cbb6WaiGuanHeGe: TComboBox;
@@ -202,10 +190,8 @@ type
     edt7FengSu: TEdit;
     edt7JieShuShiJian: TMaskEdit;
     edt7KaiShiShiJian: TMaskEdit;
-    cbb7BiaoZhunQi: TComboBox;
     cbb7BeiHeCha: TComboBox;
     lbl7BeiHeCha: TLabel;
-    lbl7BiaoZhunQi: TLabel;
     cbb7WaiGuanHeGe: TComboBox;
     cbb7HeChaYiJu: TComboBox;
     cbb7FuHeYaoQiu: TComboBox;
@@ -519,16 +505,29 @@ end;
 
 function TFormMain.ToggleSheetControlsVisible(Prev: TFlexCelPreviewer): Boolean;
 var
+  V: Boolean;
   I: Integer;
 begin
   Result := False;
+  V := False;
   for I := 0 to Prev.ControlCount - 1 do
   begin
     if (Prev.Controls[I] is TEdit) or (Prev.Controls[I] is TComboBox) or
       (Prev.Controls[I] is TRadioGroup) or (Prev.Controls[I] is TLabel) or
       (Prev.Controls[I] is TMaskEdit) then
     begin
-      Prev.Controls[I].Visible := not Prev.Controls[I].Visible;
+      V := Prev.Controls[I].Visible;
+      Break;
+    end;
+  end;
+
+  for I := 0 to Prev.ControlCount - 1 do
+  begin
+    if (Prev.Controls[I] is TEdit) or (Prev.Controls[I] is TComboBox) or
+      (Prev.Controls[I] is TRadioGroup) or (Prev.Controls[I] is TLabel) or
+      (Prev.Controls[I] is TMaskEdit) then
+    begin
+      Prev.Controls[I].Visible := not V;
       Result := Prev.Controls[I].Visible;
     end;
   end;
@@ -764,8 +763,6 @@ procedure TFormMain.Init1;
 begin
   edt1JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
 
-  cbb1BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
-
   cbb1BeiHeCha.Items.Assign(FBeiHeChaQiJuNames1);
 
   cbb1JiaoZhun.Items.Assign(FJiaoZhun);
@@ -784,8 +781,6 @@ end;
 procedure TFormMain.Init2;
 begin
   edt2JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
-
-  cbb2BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
 
   cbb2BeiHeCha.Items.Assign(FBeiHeChaQiJuNames2);
 
@@ -806,8 +801,6 @@ procedure TFormMain.Init3;
 begin
   edt3JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
 
-  cbb3BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
-
   cbb3BeiHeCha.Items.Assign(FBeiHeChaQiJuNames3);
 
   cbb3JiaoZhun.Items.Assign(FJiaoZhun);
@@ -826,8 +819,6 @@ end;
 procedure TFormMain.Init4;
 begin
   edt4JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
-
-  cbb4BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
 
   cbb4BeiHeCha.Items.Assign(FBeiHeChaQiJuNames4);
 
@@ -848,8 +839,6 @@ procedure TFormMain.Init5;
 begin
   edt5JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
 
-  cbb5BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
-
   cbb5BeiHeCha.Items.Assign(FBeiHeChaQiJuNames5);
 
   cbb5JiaoZhun.Items.Assign(FJiaoZhun);
@@ -869,8 +858,6 @@ procedure TFormMain.Init6;
 begin
   edt6JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
 
-  cbb6BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
-
   cbb6BeiHeCha.Items.Assign(FBeiHeChaQiJuNames6);
 
   cbb6JiaoZhun.Items.Assign(FJiaoZhun);
@@ -889,8 +876,6 @@ end;
 procedure TFormMain.Init7;
 begin
   edt7JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
-
-  cbb7BiaoZhunQi.Items.Assign(FBiaoZhunQiNames);
 
   cbb7BeiHeCha.Items.Assign(FBeiHeChaQiJuNames7);
 
