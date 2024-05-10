@@ -643,7 +643,7 @@ end;
 
 function TFormMain.ExtractBianHao(const CellValue: string): string;
 var
-  I: Integer;
+  I, J: Integer;
   SL: TStringList;
 begin
   Result := '0000';
@@ -655,7 +655,16 @@ begin
     begin
       if (Length(SL[I]) > 4) and (Pos('区站号', SL[I])  > 0) then
       begin
-        Result := Copy(SL[I], Length(SL[I]) - 3, MaxInt);
+        // Result := Copy(SL[I], Length(SL[I]) - 3, MaxInt);
+        // 改成从右往左找所有数字
+        for J := Length(SL[I]) downto 1 do
+        begin
+          if not (SL[I][J] in ['0'..'9']) then
+          begin
+            Result := Copy(SL[I], J + 1, MaxInt);
+            Exit;
+          end;
+        end;
         Exit;
       end;
     end;

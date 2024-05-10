@@ -1,7 +1,7 @@
 object FormMain: TFormMain
   Left = 0
   Top = 0
-  Caption = #27668#35937#26680#26597#25253#21578#19968#38190#24335#29983#25104#31995#32479' 1.1.0'
+  Caption = #27668#35937#26680#26597#25253#21578#19968#38190#24335#29983#25104#31995#32479' 1.1.2'
   ClientHeight = 863
   ClientWidth = 612
   Color = clBtnFace
@@ -27,7 +27,7 @@ object FormMain: TFormMain
     Top = 0
     Width = 613
     Height = 828
-    ActivePage = ts8
+    ActivePage = ts1
     Font.Charset = GB2312_CHARSET
     Font.Color = clWindowText
     Font.Height = -20
@@ -2254,7 +2254,7 @@ object FormMain: TFormMain
             Height = 20
             Style = csDropDownList
             ItemIndex = 0
-            TabOrder = 12
+            TabOrder = 14
             Text = #26159
             OnChange = UpdateSheet8
             Items.Strings = (
@@ -2267,7 +2267,7 @@ object FormMain: TFormMain
             Width = 323
             Height = 20
             Style = csDropDownList
-            TabOrder = 11
+            TabOrder = 13
             OnChange = UpdateSheet8
           end
           object cbb8JiaoZhun: TComboBox
@@ -2276,7 +2276,7 @@ object FormMain: TFormMain
             Width = 65
             Height = 20
             Style = csDropDownList
-            TabOrder = 13
+            TabOrder = 15
             OnChange = UpdateSheet8
           end
           object cbb8HeYan: TComboBox
@@ -2285,7 +2285,7 @@ object FormMain: TFormMain
             Width = 77
             Height = 20
             Style = csDropDownList
-            TabOrder = 14
+            TabOrder = 16
             OnChange = UpdateSheet8
           end
           object edt8JiaoZhunShiJian: TEdit
@@ -2293,7 +2293,7 @@ object FormMain: TFormMain
             Top = 671
             Width = 132
             Height = 20
-            TabOrder = 15
+            TabOrder = 17
             Text = '2023'#24180'12'#26376'31'#26085
             OnChange = UpdateSheet8
           end
@@ -2311,7 +2311,7 @@ object FormMain: TFormMain
             Top = 534
             Width = 177
             Height = 20
-            TabOrder = 10
+            TabOrder = 11
             Text = '1005'
             OnChange = UpdateSheet8
           end
@@ -2328,7 +2328,7 @@ object FormMain: TFormMain
             Top = 496
             Width = 73
             Height = 20
-            TabOrder = 16
+            TabOrder = 10
             Text = '102'
             OnChange = UpdateSheet8
           end
@@ -2337,7 +2337,7 @@ object FormMain: TFormMain
             Top = 534
             Width = 73
             Height = 20
-            TabOrder = 17
+            TabOrder = 12
             Text = '1005'
             OnChange = UpdateSheet8
           end
