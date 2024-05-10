@@ -1,7 +1,7 @@
 object FormMain: TFormMain
   Left = 0
   Top = 0
-  Caption = #27668#35937#26680#26597#25253#21578#19968#38190#24335#29983#25104#31995#32479' 1.0.9'
+  Caption = #27668#35937#26680#26597#25253#21578#19968#38190#24335#29983#25104#31995#32479' 1.1.0'
   ClientHeight = 863
   ClientWidth = 612
   Color = clBtnFace
@@ -27,10 +27,10 @@ object FormMain: TFormMain
     Top = 0
     Width = 613
     Height = 828
-    ActivePage = ts1
+    ActivePage = ts8
     Font.Charset = GB2312_CHARSET
     Font.Color = clWindowText
-    Font.Height = -24
+    Font.Height = -20
     Font.Name = #23435#20307
     Font.Style = []
     ParentFont = False
@@ -49,7 +49,7 @@ object FormMain: TFormMain
         Left = 0
         Top = 0
         Width = 605
-        Height = 790
+        Height = 794
         Align = alClient
         BevelInner = bvNone
         BevelOuter = bvNone
@@ -57,16 +57,16 @@ object FormMain: TFormMain
         TabOrder = 0
         DesignSize = (
           605
-          790)
+          794)
         object fcpSheet1: TFlexCelPreviewer
           Left = 0
           Top = 0
           Width = 603
-          Height = 788
+          Height = 792
           Margins.Top = 1
           HorzScrollBar.Range = 20
           HorzScrollBar.Tracking = True
-          VertScrollBar.Range = 798
+          VertScrollBar.Range = 802
           VertScrollBar.Tracking = True
           VertScrollBar.Visible = False
           Zoom = 0.700000000000000000
@@ -389,7 +389,7 @@ object FormMain: TFormMain
         Left = 0
         Top = 0
         Width = 605
-        Height = 790
+        Height = 794
         Align = alClient
         BevelInner = bvNone
         BevelOuter = bvNone
@@ -397,16 +397,16 @@ object FormMain: TFormMain
         TabOrder = 0
         DesignSize = (
           605
-          790)
+          794)
         object fcpSheet2: TFlexCelPreviewer
           Left = 0
           Top = 1
           Width = 603
-          Height = 788
+          Height = 792
           Margins.Top = 1
           HorzScrollBar.Range = 20
           HorzScrollBar.Tracking = True
-          VertScrollBar.Range = 798
+          VertScrollBar.Range = 802
           VertScrollBar.Tracking = True
           VertScrollBar.Visible = False
           Zoom = 0.700000000000000000
@@ -685,7 +685,7 @@ object FormMain: TFormMain
         Left = 0
         Top = 0
         Width = 605
-        Height = 790
+        Height = 794
         Align = alClient
         BevelInner = bvNone
         BevelOuter = bvNone
@@ -693,16 +693,16 @@ object FormMain: TFormMain
         TabOrder = 0
         DesignSize = (
           605
-          790)
+          794)
         object fcpSheet3: TFlexCelPreviewer
           Left = 0
           Top = 0
           Width = 603
-          Height = 788
+          Height = 792
           Margins.Top = 1
           HorzScrollBar.Range = 20
           HorzScrollBar.Tracking = True
-          VertScrollBar.Range = 798
+          VertScrollBar.Range = 802
           VertScrollBar.Tracking = True
           VertScrollBar.Visible = False
           Zoom = 0.700000000000000000
@@ -918,7 +918,7 @@ object FormMain: TFormMain
         Left = 0
         Top = 0
         Width = 605
-        Height = 790
+        Height = 794
         Align = alClient
         BevelInner = bvNone
         BevelOuter = bvNone
@@ -926,16 +926,16 @@ object FormMain: TFormMain
         TabOrder = 0
         DesignSize = (
           605
-          790)
+          794)
         object fcpSheet4: TFlexCelPreviewer
           Left = 0
           Top = -1
           Width = 603
-          Height = 788
+          Height = 792
           Margins.Top = 1
           HorzScrollBar.Range = 20
           HorzScrollBar.Tracking = True
-          VertScrollBar.Range = 798
+          VertScrollBar.Range = 802
           VertScrollBar.Tracking = True
           VertScrollBar.Visible = False
           Zoom = 0.700000000000000000
@@ -1284,7 +1284,7 @@ object FormMain: TFormMain
         Left = 0
         Top = 0
         Width = 605
-        Height = 790
+        Height = 794
         Align = alClient
         BevelInner = bvNone
         BevelOuter = bvNone
@@ -1292,16 +1292,16 @@ object FormMain: TFormMain
         TabOrder = 0
         DesignSize = (
           605
-          790)
+          794)
         object fcpSheet5: TFlexCelPreviewer
           Left = 0
           Top = -1
           Width = 603
-          Height = 788
+          Height = 792
           Margins.Top = 1
           HorzScrollBar.Range = 20
           HorzScrollBar.Tracking = True
-          VertScrollBar.Range = 798
+          VertScrollBar.Range = 802
           VertScrollBar.Tracking = True
           VertScrollBar.Visible = False
           Zoom = 0.700000000000000000
@@ -1625,7 +1625,7 @@ object FormMain: TFormMain
         Left = 0
         Top = 0
         Width = 605
-        Height = 790
+        Height = 794
         Align = alClient
         BevelInner = bvNone
         BevelOuter = bvNone
@@ -1633,16 +1633,16 @@ object FormMain: TFormMain
         TabOrder = 0
         DesignSize = (
           605
-          790)
+          794)
         object fcpSheet6: TFlexCelPreviewer
           Left = 0
           Top = -1
           Width = 603
-          Height = 788
+          Height = 792
           Margins.Top = 1
           HorzScrollBar.Range = 20
           HorzScrollBar.Tracking = True
-          VertScrollBar.Range = 798
+          VertScrollBar.Range = 802
           VertScrollBar.Tracking = True
           VertScrollBar.Visible = False
           Zoom = 0.700000000000000000
@@ -1885,7 +1885,7 @@ object FormMain: TFormMain
         Left = 0
         Top = 0
         Width = 605
-        Height = 790
+        Height = 794
         Align = alClient
         BevelInner = bvNone
         BevelOuter = bvNone
@@ -1893,16 +1893,16 @@ object FormMain: TFormMain
         TabOrder = 0
         DesignSize = (
           605
-          790)
+          794)
         object fcpSheet7: TFlexCelPreviewer
           Left = 0
           Top = 0
           Width = 603
-          Height = 788
+          Height = 792
           Margins.Top = 1
           HorzScrollBar.Range = 20
           HorzScrollBar.Tracking = True
-          VertScrollBar.Range = 798
+          VertScrollBar.Range = 802
           VertScrollBar.Tracking = True
           VertScrollBar.Visible = False
           Zoom = 0.700000000000000000
@@ -2101,6 +2101,245 @@ object FormMain: TFormMain
             Height = 20
             TabOrder = 12
             OnChange = UpdateSheet7
+          end
+        end
+      end
+    end
+    object ts8: TTabSheet
+      Caption = #33021#35265#24230
+      Font.Charset = GB2312_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -12
+      Font.Name = #23435#20307
+      Font.Style = []
+      ImageIndex = 7
+      ParentFont = False
+      object ScrollBox8: TScrollBox
+        Left = 0
+        Top = 0
+        Width = 605
+        Height = 794
+        Align = alClient
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        BorderStyle = bsNone
+        TabOrder = 0
+        object fcpSheet8: TFlexCelPreviewer
+          Left = 0
+          Top = 0
+          Width = 603
+          Height = 792
+          HorzScrollBar.Range = 20
+          HorzScrollBar.Tracking = True
+          VertScrollBar.Range = 802
+          VertScrollBar.Tracking = True
+          VertScrollBar.Visible = False
+          Zoom = 0.700000000000000000
+          TabOrder = 0
+          object lbl8BeiHeCha: TLabel
+            Left = 321
+            Top = 193
+            Width = 72
+            Height = 12
+            Caption = #34987#26680#26597#22120#20855#65306
+            Transparent = True
+          end
+          object lbl8BiaoZhunQi: TLabel
+            Left = 139
+            Top = 193
+            Width = 48
+            Height = 12
+            Caption = #26631#20934#22120#65306
+            Transparent = True
+          end
+          object edt8JiLuBianHao: TEdit
+            Left = 404
+            Top = 111
+            Width = 144
+            Height = 20
+            TabOrder = 0
+            Text = 'G-7231-H(VS)2303150201'
+            OnChange = UpdateSheet8
+          end
+          object edt8QiWen: TEdit
+            Left = 227
+            Top = 138
+            Width = 39
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 3
+            Text = '10.6'
+            OnChange = UpdateSheet8
+          end
+          object edt8ShiDu: TEdit
+            Left = 429
+            Top = 137
+            Width = 22
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 2
+            Text = '66'
+            OnChange = UpdateSheet8
+          end
+          object edt8YaLi: TEdit
+            Left = 312
+            Top = 137
+            Width = 46
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 1
+            Text = '999.6'
+            OnChange = UpdateSheet8
+          end
+          object edt8KaiShiShiJian: TMaskEdit
+            Left = 204
+            Top = 163
+            Width = 41
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
+            TabOrder = 4
+            Text = '13:10'
+            OnChange = UpdateSheet8
+          end
+          object edt8JieShuShiJian: TMaskEdit
+            Left = 462
+            Top = 163
+            Width = 41
+            Height = 20
+            BevelEdges = []
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            EditMask = '!90:00;1;_'
+            MaxLength = 5
+            TabOrder = 5
+            Text = '15:10'
+            OnChange = UpdateSheet8
+          end
+          object cbb8BeiHeCha: TComboBox
+            Left = 394
+            Top = 188
+            Width = 115
+            Height = 20
+            TabOrder = 6
+            OnChange = UpdateSheet8
+          end
+          object cbb8WaiGuanHeGe: TComboBox
+            Left = 128
+            Top = 430
+            Width = 81
+            Height = 20
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 8
+            Text = #21512#26684
+            OnChange = UpdateSheet8
+            Items.Strings = (
+              #21512#26684
+              #19981#21512#26684)
+          end
+          object cbb8FuHeYaoQiu: TComboBox
+            Left = 214
+            Top = 647
+            Width = 65
+            Height = 20
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 12
+            Text = #26159
+            OnChange = UpdateSheet8
+            Items.Strings = (
+              #26159
+              #21542)
+          end
+          object cbb8HeChaYiJu: TComboBox
+            Left = 214
+            Top = 622
+            Width = 323
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 11
+            OnChange = UpdateSheet8
+          end
+          object cbb8JiaoZhun: TComboBox
+            Left = 122
+            Top = 671
+            Width = 65
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 13
+            OnChange = UpdateSheet8
+          end
+          object cbb8HeYan: TComboBox
+            Left = 254
+            Top = 671
+            Width = 77
+            Height = 20
+            Style = csDropDownList
+            TabOrder = 14
+            OnChange = UpdateSheet8
+          end
+          object edt8JiaoZhunShiJian: TEdit
+            Left = 416
+            Top = 671
+            Width = 132
+            Height = 20
+            TabOrder = 15
+            Text = '2023'#24180'12'#26376'31'#26085
+            OnChange = UpdateSheet8
+          end
+          object edt8NengRuDu1: TEdit
+            Left = 128
+            Top = 496
+            Width = 177
+            Height = 20
+            TabOrder = 9
+            Text = '102'
+            OnChange = UpdateSheet8
+          end
+          object edt8NengRuDu2: TEdit
+            Left = 128
+            Top = 534
+            Width = 177
+            Height = 20
+            TabOrder = 10
+            Text = '1005'
+            OnChange = UpdateSheet8
+          end
+          object cbb8BiaoZhunQi: TComboBox
+            Left = 193
+            Top = 189
+            Width = 112
+            Height = 20
+            TabOrder = 7
+            OnChange = UpdateSheet8
+          end
+          object edt8BiaoChenZhi1: TEdit
+            Left = 336
+            Top = 496
+            Width = 73
+            Height = 20
+            TabOrder = 16
+            Text = '102'
+            OnChange = UpdateSheet8
+          end
+          object edt8BiaoChenZhi2: TEdit
+            Left = 336
+            Top = 534
+            Width = 73
+            Height = 20
+            TabOrder = 17
+            Text = '1005'
+            OnChange = UpdateSheet8
           end
         end
       end

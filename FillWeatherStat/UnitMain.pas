@@ -9,7 +9,7 @@ uses
   Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.jpeg, Vcl.Buttons, Vcl.Mask;
 
 const
-  XLS_COUNT = 7;
+  XLS_COUNT = 8;
 
 type
   TFormMain = class(TForm)
@@ -114,6 +114,11 @@ type
     edt4JiaoZhunShiJian: TEdit;
     cbb4JiaoZhun: TComboBox;
     cbb4HeYan: TComboBox;
+    cbb4JieGuoHeGe1: TComboBox;
+    cbb4JieGuoHeGe2: TComboBox;
+    cbb4JieGuoHeGe3: TComboBox;
+    cbb4JieGuoHeGe4: TComboBox;
+    cbb4JieGuoHeGe5: TComboBox;
     edt4BiaoZhunZhi1: TEdit;
     edt4BiaoZhunZhi2: TEdit;
     edt4BiaoZhunZhi3: TEdit;
@@ -202,6 +207,27 @@ type
     edt7BiaoZhunZhi2: TEdit;
     edt7BiaoZhunZhi3: TEdit;
     edt7HeChaJieGuo: TEdit;
+    edt7ZuiDaYunXuZhi: TEdit;
+
+    ts8: TTabSheet;
+    ScrollBox8: TScrollBox;
+    fcpSheet8: TFlexCelPreviewer;
+    edt8JiLuBianHao: TEdit;
+    edt8QiWen: TEdit;
+    edt8ShiDu: TEdit;
+    edt8YaLi: TEdit;
+    edt8KaiShiShiJian: TMaskEdit;
+    edt8JieShuShiJian: TMaskEdit;
+    cbb8BeiHeCha: TComboBox;
+    lbl8BeiHeCha: TLabel;
+    cbb8WaiGuanHeGe: TComboBox;
+    cbb8FuHeYaoQiu: TComboBox;
+    cbb8HeChaYiJu: TComboBox;
+    cbb8JiaoZhun: TComboBox;
+    cbb8HeYan: TComboBox;
+    edt8JiaoZhunShiJian: TEdit;
+    edt8NengRuDu1: TEdit;
+    edt8NengRuDu2: TEdit;
 
     pnlMain: TPanel;
     btnPDF: TSpeedButton;
@@ -212,12 +238,10 @@ type
     dlgOpenForStamp: TOpenDialog;
     dlgSaveStamp: TSaveDialog;
     chkImage: TCheckBox;
-    edt7ZuiDaYunXuZhi: TEdit;
-    cbb4JieGuoHeGe1: TComboBox;
-    cbb4JieGuoHeGe2: TComboBox;
-    cbb4JieGuoHeGe3: TComboBox;
-    cbb4JieGuoHeGe4: TComboBox;
-    cbb4JieGuoHeGe5: TComboBox;
+    lbl8BiaoZhunQi: TLabel;
+    cbb8BiaoZhunQi: TComboBox;
+    edt8BiaoChenZhi1: TEdit;
+    edt8BiaoChenZhi2: TEdit;
 
     procedure FormCreate(Sender: TObject);
     procedure btnPDFClick(Sender: TObject);
@@ -232,6 +256,7 @@ type
     procedure UpdateSheet5(Sender: TObject);
     procedure UpdateSheet6(Sender: TObject);
     procedure UpdateSheet7(Sender: TObject);
+    procedure UpdateSheet8(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure pgcMainChange(Sender: TObject);
   private
@@ -244,6 +269,7 @@ type
     FXlses: array[1..XLS_COUNT] of TExcelFile;
     FImgExports: array[1..XLS_COUNT] of TFlexCelImgExport;
     FBiaoZhunQiNames, FBiaoZhunQiValues: TStringList;
+    FNengJianDuBiaoZhunQiNames, FNengJianDuBiaoZhunQiValues: TStringList;
     FBeiHeChaQiJuNames1, FBeiHeChaQiJuValues1: TStringList;
     FBeiHeChaQiJuNames2, FBeiHeChaQiJuValues2: TStringList;
     FBeiHeChaQiJuNames3, FBeiHeChaQiJuValues3: TStringList;
@@ -251,6 +277,7 @@ type
     FBeiHeChaQiJuNames5, FBeiHeChaQiJuValues5: TStringList;
     FBeiHeChaQiJuNames6, FBeiHeChaQiJuValues6: TStringList;
     FBeiHeChaQiJuNames7, FBeiHeChaQiJuValues7: TStringList;
+    FBeiHeChaQiJuNames8, FBeiHeChaQiJuValues8: TStringList;
     FHeChaYiJu, FJiaoZhun, FHeYan: TStringList;
     function ExtractBianHao(const CellValue: string): string;
     function CalcCurrentBianhao(const QuZhanHao: string): string;
@@ -276,6 +303,7 @@ type
     procedure Init5;
     procedure Init6;
     procedure Init7;
+    procedure Init8;
   end;
 
 var
@@ -292,6 +320,7 @@ const
   S_Gai_Zhang_Cheng_Gong = '盖章成功！';
   S_Ti_Shi = '提示';
   S_Biao_Zhun_Qi = '标准器';
+  S_Neng_Jian_Du_Biao_Zhun_Qi = '能见度标准器';
   S_Bei_He_Cha_Qi_Ju1 = '被核查器具气温';
   S_Bei_He_Cha_Qi_Ju2 = '被核查器具湿度';
   S_Bei_He_Cha_Qi_Ju3 = '被核查器具风向';
@@ -299,6 +328,7 @@ const
   S_Bei_He_Cha_Qi_Ju5 = '被核查器具气压';
   S_Bei_He_Cha_Qi_Ju6 = '被核查器具雨量';
   S_Bei_He_Cha_Qi_Ju7 = '被核查器具起动风';
+  S_Bei_He_Cha_Qi_Ju8 = '被核查器具能见度';
   S_Xiao_Zhun_Ren = '校准人';
   S_He_Yan_Ren = '核验人';
   S_He_Cha_Yi_Ju = '核查依据';
@@ -307,6 +337,7 @@ const
   S_No_Combo_For = 'NO ComboBox for ';
   S_Ji_Lu_Bian_Hao_S = '记录编号：%s';
   S_Qi_Wen_S_Shi_Dong_S_Rh_Feng_Su = '气温：%s℃     湿度：%s％RH    风速：%sm/s';
+  S_Qi_Wen_S_Ya_Li_S_Shi_Du = '气温：%s℃  压力：%shpa   湿度：%s％RH';
   S_S_He_Ge_S_Bu_He_Ge = '%s合格                  %s 不合格';
   S_S_Shi_S_Fou = '%s 是        %s 否';
   S_Xiao_Zhun = '校准：';
@@ -324,9 +355,10 @@ const
     'G-%s-H(VS)%s0101',
     'G-%s-H(P)%s0101',
     'G-%s-H(R)%s0101',
-    'G-%s-H(VS)%s0201'
+    'G-%s-H(VS)%s0201',
+    'G-%s-H(V)%s0101'
   );
-  OFFSET_ARRAY: array[1..XLS_COUNT] of Integer = (-33, -100, -150, -110, 0, -70, -150);
+  OFFSET_ARRAY: array[1..XLS_COUNT] of Integer = (-33, -100, -150, -110, 0, -70, -150, -160);
 
 var
   XLS_FILES: array[1..XLS_COUNT] of string;
@@ -671,6 +703,9 @@ begin
   FBiaoZhunQiNames := TStringList.Create;
   FBiaoZhunQiValues := TStringList.Create;
 
+  FNengJianDuBiaoZhunQiNames := TStringList.Create;
+  FNengJianDuBiaoZhunQiValues := TStringList.Create;
+
   FBeiHeChaQiJuNames1 := TStringList.Create;
   FBeiHeChaQiJuValues1 := TStringList.Create;
 
@@ -692,6 +727,9 @@ begin
   FBeiHeChaQiJuNames7 := TStringList.Create;
   FBeiHeChaQiJuValues7 := TStringList.Create;
 
+  FBeiHeChaQiJuNames8 := TStringList.Create;
+  FBeiHeChaQiJuValues8 := TStringList.Create;
+
   FJiaoZhun := TStringList.Create;
   FHeYan := TStringList.Create;
   FHeChaYiJu := TStringList.Create;
@@ -707,6 +745,7 @@ begin
     Init5;
     Init6;
     Init7;
+    Init8;
 
     LoadValues;
 
@@ -717,6 +756,7 @@ begin
     UpdateSheet5(nil);
     UpdateSheet6(nil);
     UpdateSheet7(nil);
+    UpdateSheet8(nil);
   finally
     FIniting := False;
   end;
@@ -728,6 +768,12 @@ begin
 
   FBiaoZhunQiNames.Free;
   FBiaoZhunQiValues.Free;
+
+  FNengJianDuBiaoZhunQiNames.Free;
+  FNengJianDuBiaoZhunQiValues.Free;
+
+  FBeiHeChaQiJuNames8.Free;
+  FBeiHeChaQiJuValues8.Free;
 
   FBeiHeChaQiJuNames7.Free;
   FBeiHeChaQiJuValues7.Free;
@@ -758,6 +804,7 @@ end;
 procedure TFormMain.Init0;
 begin
   FWSetting.GetType(S_Biao_Zhun_Qi, FBiaoZhunQiNames, FBiaoZhunQiValues);
+  FWSetting.GetType(S_Neng_Jian_Du_Biao_Zhun_Qi, FNengJianDuBiaoZhunQiNames, FNengJianDuBiaoZhunQiValues);
   FWSetting.GetType(S_Bei_He_Cha_Qi_Ju1, FBeiHeChaQiJuNames1, FBeiHeChaQiJuValues1);
   FWSetting.GetType(S_Bei_He_Cha_Qi_Ju2, FBeiHeChaQiJuNames2, FBeiHeChaQiJuValues2);
   FWSetting.GetType(S_Bei_He_Cha_Qi_Ju3, FBeiHeChaQiJuNames3, FBeiHeChaQiJuValues3);
@@ -765,6 +812,8 @@ begin
   FWSetting.GetType(S_Bei_He_Cha_Qi_Ju5, FBeiHeChaQiJuNames5, FBeiHeChaQiJuValues5);
   FWSetting.GetType(S_Bei_He_Cha_Qi_Ju6, FBeiHeChaQiJuNames6, FBeiHeChaQiJuValues6);
   FWSetting.GetType(S_Bei_He_Cha_Qi_Ju7, FBeiHeChaQiJuNames7, FBeiHeChaQiJuValues7);
+  FWSetting.GetType(S_Bei_He_Cha_Qi_Ju8, FBeiHeChaQiJuNames8, FBeiHeChaQiJuValues8);
+
   FWSetting.GetType(S_Xiao_Zhun_Ren, FJiaoZhun, nil);
   FWSetting.GetType(S_He_Yan_Ren, FHeYan, nil);
   FWSetting.GetType(S_He_Cha_Yi_Ju, FHeChaYiJu, nil);
@@ -901,6 +950,26 @@ begin
   cbb7HeChaYiJu.Items.Assign(FHeChaYiJu);
   if cbb7HeChaYiJu.Items.Count > 0 then
     cbb7HeChaYiJu.ItemIndex := 0;
+end;
+
+procedure TFormMain.Init8;
+begin
+  edt8JiaoZhunShiJian.Text := FormatDateTime(S_Yyyy_Nian_Mm_Yue_Dd_Ri, Now());
+
+  cbb8BiaoZhunQi.Items.Assign(FNengJianDuBiaoZhunQiNames);
+  cbb8BeiHeCha.Items.Assign(FBeiHeChaQiJuNames8);
+
+  cbb8JiaoZhun.Items.Assign(FJiaoZhun);
+  if cbb8JiaoZhun.Items.Count > 0 then
+    cbb8JiaoZhun.ItemIndex := 0;
+
+  cbb8HeYan.Items.Assign(FHeYan);
+  if cbb8HeYan.Items.Count > 0 then
+    cbb8HeYan.ItemIndex := 0;
+
+  cbb8HeChaYiJu.Items.Assign(FHeChaYiJu);
+  if cbb8HeChaYiJu.Items.Count > 0 then
+    cbb8HeChaYiJu.ItemIndex := 0;
 end;
 
 procedure TFormMain.InsertStamp(Index: Integer);
@@ -1541,6 +1610,65 @@ begin
   FXlses[7].SetCellValue(16, 5, edt7JiaoZhunShiJian.Text);
 
   FcpSheet7.InvalidatePreview;
+end;
+
+procedure TFormMain.UpdateSheet8(Sender: TObject);
+var
+  S: string;
+begin
+  if Sender <> edt8JiLuBianHao then
+  begin
+    if (cbb8BeiHeCha.ItemIndex >= 0) and
+     (cbb8BeiHeCha.ItemIndex < FBeiHeChaQiJuValues8.Count) then
+    begin
+      S := FBeiHeChaQiJuValues8[cbb8BeiHeCha.ItemIndex];
+      edt8JiLuBianHao.Text := CalcCurrentBianhao(ExtractBianHao(S));
+    end;
+  end;
+
+  S := Format(S_Ji_Lu_Bian_Hao_S, [edt8JiLuBianHao.Text]);
+  FXlses[8].SetCellValue(3, 4, S);
+
+  S := Format(S_Qi_Wen_S_Ya_Li_S_Shi_Du,
+    [edt8QiWen.Text, edt8YaLi.Text, edt8ShiDu.Text]);
+  FXlses[8].SetCellValue(4, 2, S);
+
+  // 非固定，改动态
+  // FXlses[8].SetCellValue(7, 2, FBiaoZhunQiValues[7]);
+  if (cbb8BiaoZhunQi.ItemIndex >= 0) and (cbb8BiaoZhunQi.ItemIndex < FNengJianDuBiaoZhunQiValues.Count) then
+    FXlses[8].SetCellValue(7, 2, FNengJianDuBiaoZhunQiValues[cbb8BiaoZhunQi.ItemIndex]);
+
+
+  if (cbb8BeiHeCha.ItemIndex >= 0) and (cbb8BeiHeCha.ItemIndex < FBeiHeChaQiJuValues8.Count) then
+    FXlses[8].SetCellValue(7, 4, FBeiHeChaQiJuValues8[cbb8BeiHeCha.ItemIndex]);
+
+  if cbb8WaiGuanHeGe.ItemIndex = 0 then
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$2611, #$25A1])
+  else
+    S := Format(S_S_He_Ge_S_Bu_He_Ge, [#$25A1, #$2611]);
+  FXlses[8].SetCellValue(8, 2, S);
+
+  SetNumberValue(FXlses[8], 10, 2, edt8NengRuDu1.Text);
+  SetNumberValue(FXlses[8], 11, 2, edt8NengRuDu2.Text);
+  SetNumberValue(FXlses[8], 10, 4, edt8BiaoChenZhi1.Text);
+  SetNumberValue(FXlses[8], 11, 4, edt8BiaoChenZhi2.Text);
+
+  if not FIniting then
+    FXlses[8].RecalcAndVerify;
+
+  if cbb8FuHeYaoQiu.ItemIndex = 0 then
+    S := Format(S_S_Shi_S_Fou, [#$2611, #$25A1])
+  else
+    S := Format(S_S_Shi_S_Fou, [#$25A1, #$2611]);
+
+  FXlses[8].SetCellValue(14, 3, cbb8HeChaYiJu.Items[cbb8HeChaYiJu.ItemIndex]);
+  FXlses[8].SetCellValue(15, 3, S);
+
+  FXlses[8].SetCellValue(16, 2, cbb8JiaoZhun.Items[cbb8JiaoZhun.ItemIndex]);
+  FXlses[8].SetCellValue(16, 3, S_He_Yan + cbb8HeYan.Items[cbb8HeYan.ItemIndex]);
+  FXlses[8].SetCellValue(16, 5, edt8JiaoZhunShiJian.Text);
+
+  FcpSheet8.InvalidatePreview;
 end;
 
 end.
