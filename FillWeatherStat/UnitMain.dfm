@@ -1,7 +1,7 @@
 object FormMain: TFormMain
   Left = 0
   Top = 0
-  Caption = #27668#35937#26680#26597#25253#21578#19968#38190#24335#29983#25104#31995#32479' 1.1.2'
+  Caption = #27668#35937#26680#26597#25253#21578#19968#38190#24335#29983#25104#31995#32479' 1.1.3'
   ClientHeight = 863
   ClientWidth = 612
   Color = clBtnFace
@@ -385,6 +385,10 @@ object FormMain: TFormMain
       Font.Style = []
       ImageIndex = 1
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ScrollBox2: TScrollBox
         Left = 0
         Top = 0
@@ -681,6 +685,10 @@ object FormMain: TFormMain
       Font.Style = []
       ImageIndex = 1
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ScrollBox3: TScrollBox
         Left = 0
         Top = 0
@@ -914,6 +922,10 @@ object FormMain: TFormMain
       Font.Style = []
       ImageIndex = 1
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ScrollBox4: TScrollBox
         Left = 0
         Top = 0
@@ -1280,6 +1292,10 @@ object FormMain: TFormMain
       Font.Style = []
       ImageIndex = 1
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ScrollBox5: TScrollBox
         Left = 0
         Top = 0
@@ -1621,6 +1637,10 @@ object FormMain: TFormMain
       Font.Style = []
       ImageIndex = 1
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ScrollBox6: TScrollBox
         Left = 0
         Top = 0
@@ -1881,6 +1901,10 @@ object FormMain: TFormMain
       Font.Style = []
       ImageIndex = 1
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ScrollBox7: TScrollBox
         Left = 0
         Top = 0
@@ -2114,6 +2138,10 @@ object FormMain: TFormMain
       Font.Style = []
       ImageIndex = 7
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ScrollBox8: TScrollBox
         Left = 0
         Top = 0

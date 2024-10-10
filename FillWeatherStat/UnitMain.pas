@@ -1642,6 +1642,9 @@ begin
     [edt8QiWen.Text, edt8YaLi.Text, edt8ShiDu.Text]);
   FXlses[8].SetCellValue(4, 2, S);
 
+  FXlses[8].SetCellValue(5, 2, edt8KaiShiShiJian.Text);
+  FXlses[8].SetCellValue(5, 5, edt8JieShuShiJian.Text);
+
   // 非固定，改动态
   // FXlses[8].SetCellValue(7, 2, FBiaoZhunQiValues[7]);
   if (cbb8BiaoZhunQi.ItemIndex >= 0) and (cbb8BiaoZhunQi.ItemIndex < FNengJianDuBiaoZhunQiValues.Count) then
