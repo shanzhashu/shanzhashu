@@ -40,7 +40,7 @@ if os.path.exists(idpath):
 else:
   print 'No maxid, do backup.'
 
-count = curs.execute('SELECT f_time, f_content FROM my_content WHERE f_name = \'liuxiao\'')
+count = curs.execute('SELECT f_time, f_content FROM my_content WHERE f_name = \'liuxiao\' ORDERED BY \'f_time\'')
 #print count
 body = '';
 for i in range(count):
