@@ -333,10 +333,25 @@ public class MainActivity extends Activity {
             holder.tvContent.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    ClipboardManager clipboardManager = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
-                    clipboardManager.setPrimaryClip(ClipData.newPlainText(null, holder.tvContent.getText()));
-                    showToast("已复制到剪贴板");
-                    return false;
+                    final String msgId = holder.tvId.getText().toString().startsWith("#")
+                            ? holder.tvId.getText().toString().substring(1)
+                            : holder.tvId.getText().toString();
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("操作")
+                            .setItems(new String[]{"复制到剪贴板", "显示邻近内容"}, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    if (which == 0) {
+                                        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                        clipboardManager.setPrimaryClip(ClipData.newPlainText(null, holder.tvContent.getText()));
+                                        showToast("已复制到剪贴板");
+                                    } else {
+                                        loadItemByMsgId(msgId);
+                                    }
+                                }
+                            })
+                            .show();
+                    return true;
                 }
             });
             holder.imDelete.setOnClickListener(new View.OnClickListener() {
@@ -410,6 +425,53 @@ public class MainActivity extends Activity {
 //        cs[5] = '6';
 //        s = cs.toString();
         return BlogConst.SESSION_ID1 + BlogConst.SESSION_ID2;
+    }
+
+    private void loadItemByMsgId(String msgId)
+    {
+        String url = BlogConst.URL_INDEX + "?session=" + generateSeedSession() + "&msgid=" + msgId;
+
+        Utf8StringRequest jar = new Utf8StringRequest(url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String res) {
+                hideProgress();
+                try {
+                    JSONArray arr = new JSONArray(res);
+                    if (arr.length() == 0) {
+                        showToast("未找到邻近内容。");
+                        return;
+                    }
+                    mList.clear();
+                    mCurrentPage = 0;
+                    for (int i = 0; i < arr.length(); i++) {
+                        JSONObject obj = arr.getJSONObject(i);
+                        MsgBean bean = new MsgBean();
+                        bean.setId(obj.optString(MsgBean.F_ID));
+                        bean.setTime(obj.optString(MsgBean.F_TIME));
+                        bean.setContent(obj.optString(MsgBean.F_CONTENT));
+                        mList.insertBean(bean);
+                    }
+                    mList.sortBeans();
+                    mAdapter.notifyDataSetChanged();
+                    updateCaption(mList.size());
+                } catch (JSONException e) {
+                    showToast("解析失败：" + res);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.e(TAG, "onErrorResponse" + volleyError.toString());
+                showToast("加载邻近内容出错：" + volleyError.toString());
+                hideProgress();
+            }
+        });
+        showProgress();
+        MyX509TrustManager.allowAllSSL();
+        jar.setRetryPolicy(new DefaultRetryPolicy(BlogConst.TIME_OUT,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        mQueue.add(jar);
     }
 
     private void loadItemByPage(int page, final boolean fromHead)

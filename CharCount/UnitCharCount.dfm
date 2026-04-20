@@ -13,20 +13,21 @@ object FormCharCount: TFormCharCount
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
   DesignSize = (
     812
     468)
   PixelsPerInch = 96
   TextHeight = 12
   object lblInput: TLabel
-    Left = 49
+    Left = 37
     Top = 16
     Width = 60
     Height = 12
     Caption = #36755#20837#35799#35789#65306
   end
   object lblResult: TLabel
-    Left = 444
+    Left = 448
     Top = 16
     Width = 132
     Height = 12
@@ -48,10 +49,10 @@ object FormCharCount: TFormCharCount
     TabOrder = 0
   end
   object mmoResult: TMemo
-    Left = 447
-    Top = 34
+    Left = 449
+    Top = 40
     Width = 360
-    Height = 415
+    Height = 409
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 1

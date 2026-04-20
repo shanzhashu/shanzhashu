@@ -248,7 +248,7 @@ begin
           begin
             // 检查是否已包含该行号
             if Pos(';' + IntToStr(CurLine) + ';', ';' + LineSet + ';') = 0 then
-              LineSet := LineSet + ',' + IntToStr(CurLine);
+              LineSet := LineSet + ', ' + IntToStr(CurLine);
           end
           else
             LineSet := IntToStr(CurLine);
@@ -299,7 +299,7 @@ begin
     else
       LineBuf := Format('%-6s %-6d', [C, CharArr[I].Count]);
     end;
-    // 数量大于1时打印所在行
+    // 数量大于 1 时打印所在行
     if CharArr[I].Count > 1 then
       LineBuf := LineBuf + CharArr[I].Lines;
     mmoResult.Lines.Add(LineBuf);
